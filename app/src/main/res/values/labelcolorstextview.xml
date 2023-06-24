@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="pressed_color">#11555555</drawable> <!--custom color for pressed state -->
+    <drawable name="pressed_colorsharing">#ffffff</drawable> <!--custom color for pressed state -->
+    <drawable name="pressed_colorsharingwhite2">#55202124</drawable> <!--custom color for pressed state -->
+    <drawable name="pressed_colorsharingwhite">#f0f2f2</drawable> <!--custom color for pressed state -->
+    <drawable name="pressed_downloadiconwhite">#55f0f2f2</drawable> <!--custom color for pressed state -->
+    <drawable name="pressed_colordialog">#22ffffff</drawable> <!--custom color for pressed state -->
+    <drawable name="pressed_colorwhite">#11000000</drawable> <!--custom color for pressed state -->
+    <drawable name="normal_color">#00FFFFFF</drawable> <!--transperent color for normal state -->
+    <drawable name="normal_color1">#000000</drawable> <!--transperent color for normal state -->
+    <drawable name="normal_color2">#ffffff</drawable> <!--transperent color for normal state -->
+</resources>

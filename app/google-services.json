@@ -1,0 +1,152 @@
+{
+  "project_info": {
+    "project_number": "836509680775",
+    "project_id": "instastorytaleproduction",
+    "storage_bucket": "instastorytaleproduction.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836509680775:android:c10353d6d05b47f1242422",
+        "android_client_info": {
+          "package_name": "com.app.autoinstastorytale"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836509680775-39env2hbu6eikl2p42tfjpegihnpdpk2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.autoinstastorytale",
+            "certificate_hash": "637f1990543033e67c0e1b98b055b9f39c11feeb"
+          }
+        },
+        {
+          "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATR75ySvjINkYB5N1czFSHEYU7dqInBPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-1622510493301918~6479814370"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836509680775:android:30719633c5ad5940242422",
+        "android_client_info": {
+          "package_name": "com.app.imagedownloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATR75ySvjINkYB5N1czFSHEYU7dqInBPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836509680775:android:ed94114a39333933242422",
+        "android_client_info": {
+          "package_name": "com.app.instastorytale"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836509680775-dn63id5hiq6jluqoupauh8dhktctuu6e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.instastorytale",
+            "certificate_hash": "6c1a2c063ce7a7c8af9bde984d15b8daaaafc439"
+          }
+        },
+        {
+          "client_id": "836509680775-e4bb9c0s7hb67t6je27uuljnb7aenbbl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.instastorytale",
+            "certificate_hash": "637f1990543033e67c0e1b98b055b9f39c11feeb"
+          }
+        },
+        {
+          "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATR75ySvjINkYB5N1czFSHEYU7dqInBPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-1622510493301918~9297549403"
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836509680775:android:9f2d96df5168c3ef242422",
+        "android_client_info": {
+          "package_name": "com.app.pinterestvideodownloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATR75ySvjINkYB5N1czFSHEYU7dqInBPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836509680775-4rd4lmbpfrepash7gvk8hl8sf0chdcj3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

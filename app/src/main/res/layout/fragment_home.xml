@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dullwhite"
+    tools:context=".framework.presentation.ui.main.home.Home">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/searchbarPlaceholderCard"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            ads:cardCornerRadius="24dp"
+            ads:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guideline7"
+            app:layout_constraintStart_toStartOf="@id/guideline6">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/linkholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="0dp"
+                    android:drawableTint="@color/pin_red"
+                    android:gravity="center"
+                    android:text="@string/search_photos"
+                    android:textColor="@color/pin_red"
+                    android:textSize="18sp"
+                    ads:drawableStartCompat="@drawable/ic_baseline_search_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <com.google.android.gms.ads.nativead.NativeAdView
+            android:id="@+id/native_ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:visibility="gone"
+            ads:layout_constraintTop_toBottomOf="@id/progressBar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:padding="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.gms.ads.nativead.MediaView
+                    android:id="@+id/media_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_margin="@dimen/gnt_no_size"
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintBottom_toTopOf="@id/middle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/middle"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="@dimen/gnt_default_margin"
+                    app:layout_constraintBottom_toTopOf="@+id/body"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/media_view">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+
+                        android:layout_width="@dimen/gnt_no_size"
+                        android:layout_height="@dimen/gnt_no_size"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/icon"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/gnt_default_margin"
+                            android:layout_marginLeft="@dimen/gnt_default_margin"
+                            android:layout_marginTop="@dimen/gnt_no_margin"
+                            android:layout_marginEnd="@dimen/gnt_no_margin"
+                            android:layout_marginRight="@dimen/gnt_no_margin"
+                            android:layout_marginBottom="@dimen/gnt_no_margin"
+                            android:layout_weight="0"
+                            android:scaleType="fitCenter"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintDimensionRatio="H,1:1"
+                            app:layout_constraintEnd_toStartOf="@id/content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/content"
+                            android:layout_width="@dimen/gnt_no_size"
+                            android:layout_height="@dimen/gnt_no_size"
+                            android:layout_marginLeft="@dimen/gnt_default_margin"
+                            android:orientation="vertical"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@id/icon"
+                            app:layout_constraintTop_toTopOf="parent">
+
+
+                            <LinearLayout
+                                android:id="@+id/row_two"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/gnt_no_size"
+                                android:layout_weight="0.5"
+                                android:orientation="horizontal"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toBottomOf="@id/headline">
+
+                                <TextView
+                                    android:id="@+id/ad_notification_view"
+                                    android:layout_width="@dimen/gnt_ad_indicator_width"
+                                    android:layout_height="@dimen/gnt_ad_indicator_height"
+                                    android:layout_marginStart="@dimen/gnt_no_margin"
+                                    android:layout_marginLeft="@dimen/gnt_no_margin"
+                                    android:layout_marginTop="@dimen/gnt_ad_indicator_top_margin"
+                                    android:layout_marginEnd="@dimen/gnt_default_margin"
+                                    android:layout_marginRight="@dimen/gnt_default_margin"
+                                    android:background="@drawable/gnt_rounded_corners_shape"
+                                    android:gravity="center"
+                                    android:text="Ad"
+                                    android:textColor="@color/gnt_ad_green"
+                                    android:textSize="@dimen/gnt_ad_indicator_text_size"
+                                    android:textStyle="bold"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <RatingBar
+                                    android:id="@+id/rating_bar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginStart="@dimen/gnt_no_margin"
+                                    android:layout_marginTop="@dimen/gnt_no_margin"
+                                    android:layout_marginEnd="@dimen/gnt_no_margin"
+                                    android:layout_marginBottom="@dimen/gnt_no_margin"
+                                    android:background="@color/gnt_white"
+                                    android:lines="1"
+                                    android:numStars="5"
+                                    android:stepSize="0.1"
+                                    android:textColor="@color/gnt_gray"
+                                    android:textSize="@dimen/gnt_text_size_small"
+                                    android:visibility="gone"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/ad_notification_view"
+                                    app:layout_constraintTop_toTopOf="parent">
+
+                                </RatingBar>
+
+                                <TextView
+                                    android:id="@+id/secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginStart="@dimen/gnt_no_margin"
+                                    android:layout_marginTop="@dimen/gnt_no_margin"
+                                    android:layout_marginEnd="@dimen/gnt_no_margin"
+                                    android:layout_marginBottom="@dimen/gnt_no_margin"
+                                    android:ellipsize="end"
+                                    android:gravity="top"
+                                    android:maxLines="1"
+                                    android:textColor="@color/gnt_gray"
+                                    android:textSize="14sp"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="@id/ad_notification_view"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/headline"
+                                android:layout_width="match_parent"
+                                android:layout_height="@dimen/gnt_no_size"
+                                android:layout_weight="0.5"
+                                android:gravity="left"
+                                android:orientation="horizontal"
+                                app:layout_constraintBottom_toTopOf="@+id/row_two"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <TextView
+                                    android:id="@+id/primary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginStart="@dimen/gnt_no_margin"
+                                    android:layout_marginTop="@dimen/gnt_no_margin"
+                                    android:layout_marginEnd="@dimen/gnt_no_margin"
+                                    android:layout_marginBottom="@dimen/gnt_no_margin"
+                                    android:lines="1"
+                                    android:textColor="@color/gnt_black"
+                                    android:textSize="@dimen/gnt_text_size_large"
+                                    android:textStyle="bold"
+                                    app:layout_constraintBottom_toBottomOf="parent"
+                                    app:layout_constraintEnd_toEndOf="parent"
+                                    app:layout_constraintStart_toEndOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+                            </LinearLayout>
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/gnt_no_size"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="@dimen/gnt_default_margin"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:padding="15dp"
+                    android:paddingBottom="@dimen/gnt_default_margin"
+                    android:textColor="@color/gnt_black"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/middle" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/cta"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="5dp"
+                    android:background="@color/pin_red"
+                    android:gravity="center"
+                    android:lines="1"
+                    android:textColor="@color/gnt_white"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/body" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.gms.ads.nativead.NativeAdView>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateDrawable="@drawable/progressbar"
+            android:visibility="gone"
+            ads:layout_constraintTop_toBottomOf="@id/chipView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            ads:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            ads:layout_constraintGuide_percent="0.95" />
+
+        <HorizontalScrollView
+            android:id="@+id/chipView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            ads:layout_constraintTop_toBottomOf="@id/searchbarPlaceholderCard">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                ads:layout_constraintEnd_toEndOf="parent"
+                ads:layout_constraintStart_toStartOf="parent"
+                ads:layout_constraintTop_toBottomOf="@id/recycler_view"
+                ads:singleLine="true"
+                ads:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Wallpapers"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Nature"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Travel"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Architecture &amp; Interiors"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Street Photography"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Films"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Animals"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Fashion &amp; Beauty"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Business &amp; Work"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Food &amp; Drinks"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Spirituality"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Athletics"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Health &amp; Wellness"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Arts &amp; Culture"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+
+                <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:checkable="true"
+                    android:text="Current Events"
+                    android:textColor="@color/white"
+                    ads:checkedIconEnabled="false"
+                    ads:chipBackgroundColor="@color/pin_red" />
+            </com.google.android.material.chip.ChipGroup>
+
+        </HorizontalScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

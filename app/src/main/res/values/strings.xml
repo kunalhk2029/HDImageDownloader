@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">HD+ Image Downloader</string>
+
+    <string name="criticalupdate">Critical Update</string>
+    <string name="mandatoryupdatewarning">\"Mandatory update is required to continue using the app.This update contains bug fixes to the core functionalities of the app. \"</string>
+    <string name="playbackerror">Playback Error…</string>
+    <string name="delete">Delete</string>
+    <string name="not_nowrt">Not Now 😔</string>
+    <string name="ad">Ad</string>
+    <string name="go_ads_free">Go Ads-Free</string>
+    <string name="showingadsin">Showing Ads in %1$d Sec</string>
+    <string name="ad_space">Ad Space</string>
+    <string name="update_available">Update Available</string>
+    <string name="you_are_missing_out_on_the_new_features_of_the_app_update_the_app_to_the_latest_version">You are missing out on the new features of the app. Update the app to the latest version</string>
+    <string name="update_now">Update Now</string>
+    <string name="not_now">Not Now</string>
+    <string name="home">Home</string>
+    <string name="downloaded_media">Downloads</string>
+    <string name="settings">Settings</string>
+
+    <string name="buyannualplan">Buy Annual Plan</string>
+    <string name="buymonthlyplan">Buy Monthly Plan</string>
+    <string name="selectplan">Select Plan</string>
+    <string name="pp">Premium Plan</string>
+    <string name="planloaderror">There is some error. Please try back again after some time. We apologize for the inconvenience</string>
+
+    <string name="type_your_feedback">Type Your feedback</string>
+    <string name="send">Send</string>
+    <string name="feedback_category">Feedback Category</string>
+    <string name="select_category">Select Category</string>
+    <string name="give_feedback">Give feedback</string>
+    <string name="contact_us">Contact us</string>
+    <string name="enterfeedback">Enter your feedback…</string>
+    <string name="rate_amp_review_app"><![CDATA[Rate & Review App]]></string>
+    <string name="rate_us">Rate us</string>
+    <string name="feedback">Feedback</string>
+    <string name="help">Help</string>
+    <string name="don_t_ask_me_again">Don\'t ask me again</string>
+    <string name="yeah_why_not">Yeah why not 🙌</string>
+    <string name="are_you_enjoying_the_app">Are you enjoying the App 😇 ?</string>
+
+    <string name="will_you_take_a_moment_of_your_time_to_review_us_on_google_play_store_it_would_only_take_a_couple_of_seconds_your_feedback_helps_us_provinding_the_best_experience_to_our_customers">Will you take a moment of your time to review us on Google Play Store.It would only take a couple of seconds .Your feedback helps us providing the best experience to our customers ?</string>
+    <string name="askfeedback">Please take a moment of your time to provide us with your feedback.It would only take a couple of seconds .Your feedback helps us providing the best experience to our customers</string>
+    <string name="directtowebsite">We want to thank you for using our service and are committed to delivering the highest quality services to our customers.\nFor more info and exploring more features of our app visit our website.You will find great video explanation and all the details there…</string>
+    <string name="we_want_to_thank_you_for_using_our_service_and_are_committed_to_delivering_the_highest_quality_services_to_our_customers">We want to thank you for using our service and are committed to delivering the highest quality services to our customers.</string>
+    <string name="search_photos">Search Photos…</string>
+    <string name="paste_link">Paste Link</string>
+    <string name="download">Download</string>
+    <string name="knowcreator">Know About Creator</string>
+    <string name="moreoptions">More Options</string>
+
+    <string name="fullHd">FullHD+ Quality</string>
+    <string name="hd">HD Quality</string>
+    <string name="normal">Normal Quality</string>
+    <string name="medium">Medium Quality</string>
+    <string name="thumbnail">Thumbnail Quality</string>
+    <string name="setwallpaper">Set As Wallpaper</string>
+
+    <string name="dismiss">DISMISS</string>
+    <string name="sharing">Sharing…</string>
+    <string name="downloadingd">Downloading…</string>
+    <string name="we_couldn_t_process_media_ntry_again">We couldn\'t process media\nTry again…</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="download_completed">Download Completed…</string>
+    <string name="view">View</string>
+    <string name="Cancel">Cancel</string>
+
+    <string name="premium_features">Premium Features</string>
+    <string name="premium">Premium</string>
+    <string name="vibration">Vibration</string>
+    <string name="haptic_feedback">Haptic feedback</string>
+    <string name="this_ad_helps_keep_pinterest_downloader_free">This ad helps keep Pinterest Downloader free</string>
+
+    <string name="view_in_gallery">View in Gallery</string>
+    <string name="share">Share</string>
+    <string name="areyousure">Are you sure ?</string>
+    <string name="hapticfeedback">Haptic Feedback</string>
+    <string name="enablefeedback">Enable feedback</string>
+    <string name="disablefeedback">Disable feedback</string>
+    <string name="ok">OK</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disabled</string>
+
+    <string-array name="feedbackcategory">
+        <item>Review</item>
+        <item>Performance</item>
+        <item>Bug</item>
+        <item>Compatibility</item>
+        <item>Feature</item>
+        <item>UI/UX</item>
+        <item>Others</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="settingwallpaper">Setting Wallpaper...</string>
+    <string name="filter_dilaog_heading">Search Filter</string>
+    <string name="filter_sort_by">Sort by</string>
+    <string name="filter_orientation">Orientation</string>
+    <string name="filter_tag">Tags</string>
+    <string name="filter_color">Colors</string>
+    <string name="filter_dilaog_apply">Apply</string>
+    <string name="filter">Filter</string>
+
+
+</resources>

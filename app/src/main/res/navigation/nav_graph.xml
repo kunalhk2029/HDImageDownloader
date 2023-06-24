@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/downloadedMedia"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.DownloadsPreview"
+        android:label="Downloaded Media"
+        tools:layout="@layout/fragment_downloaded_media" >
+        <action
+            android:id="@+id/action_downloadedMedia_to_singleImagePreview"
+            app:destination="@id/singleImagePreview"
+            app:popUpTo="@id/downloadedMedia" />
+    </fragment>
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.settings.Settings"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settings_to_payment"
+            app:destination="@id/payment"
+            app:popUpTo="@id/settings"
+            app:enterAnim="@anim/fromright"
+            app:exitAnim="@anim/toleft"
+            app:popEnterAnim="@anim/fromleft"
+            app:popExitAnim="@anim/toright"
+            />
+        <action
+            android:id="@+id/action_settings_to_feedback"
+            app:destination="@id/feedback"
+            app:popUpTo="@id/settings"
+            app:enterAnim="@anim/fromright"
+            app:exitAnim="@anim/toleft"
+            app:popEnterAnim="@anim/fromleft"
+            app:popExitAnim="@anim/toright"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/home"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.home.Home"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_home_to_searchPhotos"
+            app:destination="@id/searchPhotos"
+            app:popUpTo="@id/home" />
+        <action
+            android:id="@+id/action_home_to_searchResultPhotosPreview"
+            app:destination="@id/searchResultPhotosPreview"
+            app:popUpTo="@id/home" />
+    </fragment>
+    <fragment
+        android:id="@+id/payment"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.Payment.Payment"
+        android:label="Premium "
+        tools:layout="@layout/fragment_on_boarding8" />
+    <fragment
+        android:id="@+id/feedback"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.Settings.HelpAndFeedback.Feedback"
+        android:label="Feedback" />
+    <fragment
+        android:id="@+id/searchPhotos"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.searchPhotos.SearchPhotos"
+        android:label="Search"
+        tools:layout="@layout/fragment_search_photos" />
+    <fragment
+        android:id="@+id/searchResultPhotosPreview"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.searchResultPhotosPreview"
+        android:label="Photos"
+        tools:layout="@layout/fragment_search_result_photos_preview" >
+        <action
+            android:id="@+id/action_searchResultPhotosPreview_to_singleImagePreview"
+            app:destination="@id/singleImagePreview"
+            app:popUpTo="@id/searchResultPhotosPreview" />
+    </fragment>
+    <fragment
+        android:id="@+id/singleImagePreview"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.SingleImagePreview"
+        android:label="View Image"
+        tools:layout="@layout/fragment_single_image_preview" >
+        <action
+            android:id="@+id/action_singleImagePreview_to_downloadOptionsBottomSheet"
+            app:destination="@id/downloadOptionsBottomSheet"
+            app:popUpTo="@id/singleImagePreview" />
+        <action
+            android:id="@+id/action_singleImagePreview_to_downloadedMedia2"
+            app:destination="@id/downloadedMedia"
+            app:popUpTo="@id/singleImagePreview" />
+        <action
+            android:id="@+id/action_singleImagePreview_to_moreOptionsBottomSheet"
+            app:destination="@id/moreOptionsBottomSheet"
+            app:popUpTo="@id/singleImagePreview" />
+    </fragment>
+    <dialog
+        android:id="@+id/downloadOptionsBottomSheet"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.bottomSheet.DownloadOptionsBottomSheet"
+        android:label="Download"
+        tools:layout="@layout/fragment_download_options_bottom_sheet" />
+    <dialog
+        android:id="@+id/moreOptionsBottomSheet"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.bottomSheet.MoreOptionsBottomSheet"
+        android:label="More Options"
+        tools:layout="@layout/fragment_more_options_bottom_sheet" />
+</navigation>
