@@ -1,4 +1,4 @@
-package com.app.imagedownloader.Utils
+package com.app.imagedownloader.business.domain.core
 
 /**
  * Used as a wrapper for data that is exposed via a LiveData that represents an event.

@@ -1,7 +1,7 @@
 package com.app.imagedownloader.business.domain.NetworkBoundResource
 
 import com.app.imagedownloader.business.data.network.ApiResponses.InstagramApiResult.ApiResult
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.framework.Utils.Logger
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.Dispatchers

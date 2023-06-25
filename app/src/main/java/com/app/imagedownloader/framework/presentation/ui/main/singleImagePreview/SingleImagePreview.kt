@@ -19,8 +19,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.app.imagedownloader.R
-import com.app.imagedownloader.Utils.SystemUiVisibility.changeStatusAndNavigationBarColor
-import com.app.imagedownloader.Utils.SystemUiVisibility.setDefaultBarColor
+import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.changeStatusAndNavigationBarColor
+import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.setDefaultBarColor
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
 import com.app.imagedownloader.databinding.FragmentSingleImagePreviewBinding

@@ -1,6 +1,6 @@
 package com.app.imagedownloader.framework.presentation.ui
 
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 
 
 interface UICommunicationListener {

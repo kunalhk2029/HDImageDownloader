@@ -1,6 +1,7 @@
 package com.app.imagedownloader.framework.presentation.ui.main
 
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.app.imagedownloader.R
+import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity.Companion.premiumLiveData
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -25,6 +27,29 @@ class BottomMenu:BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         return  inflater.inflate(R.layout.bottom_menu,container,false)
+    }
+
+
+    lateinit var uiCommunicationListener: UICommunicationListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        setuiCommunicationLiatener(null, context)
+    }
+
+    private fun setuiCommunicationLiatener(
+        uICommunicationListener: UICommunicationListener?,
+        context: Context?
+    ) {
+        if (uICommunicationListener != null) {
+            uiCommunicationListener = uICommunicationListener
+        } else {
+            try {
+                uiCommunicationListener = context as UICommunicationListener
+            } catch (e: ClassCastException) {
+
+            }
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -56,12 +81,7 @@ class BottomMenu:BottomSheetDialogFragment() {
         }
 
         requireView().findViewById<TextView>(R.id.settingsmenu).setOnClickListener {
-            findNavController().navigate(
-                R.id.settings,
-                null, NavOptions.Builder().setEnterAnim(R.anim.fromright)
-                    .setExitAnim(R.anim.toleft).setPopExitAnim(R.anim.toright)
-                    .setPopEnterAnim(R.anim.fromleft).build()
-            )
+            uiCommunicationListener.askForRating(true)
         }
 
         requireView().findViewById<TextView>(R.id.helpmenu).setOnClickListener {

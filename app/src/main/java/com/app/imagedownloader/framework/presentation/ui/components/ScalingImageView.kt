@@ -1,4 +1,4 @@
-package com.app.imagedownloader.framework.Utils
+package com.app.imagedownloader.framework.presentation.ui.components
 
 
 import android.content.Context

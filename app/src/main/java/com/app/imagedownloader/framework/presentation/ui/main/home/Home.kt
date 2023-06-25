@@ -1,6 +1,7 @@
 package com.app.imagedownloader.framework.presentation.ui.main.home
 
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
@@ -91,6 +92,9 @@ class Home : Fragment(R.layout.fragment_home) {
                     chip.isCheckedIconVisible=false
                     chip.closeIcon = ContextCompat.getDrawable(requireContext(),R.drawable.ic_baseline_delete_24)
                     chip.isCloseIconVisible=true
+                     chip.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
+                    chip.closeIconTint=
+                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.white))
                     chip.setOnCloseIconClickListener {
                         MaterialDialog(requireContext()).show {
                             title(null,getString(R.string.delete_recent_search))

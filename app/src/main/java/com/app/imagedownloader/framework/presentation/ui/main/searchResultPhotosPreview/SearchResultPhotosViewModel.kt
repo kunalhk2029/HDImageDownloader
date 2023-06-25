@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.imagedownloader.business.data.cache.model.FavPhotosEntity
 import com.app.imagedownloader.business.data.cache.model.RecentSearch
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.Filters.SortByFilter
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo

@@ -1,6 +1,6 @@
-package com.app.imagedownloader.business.domain.DataState
+package com.app.imagedownloader.business.domain.core.DataState
 
-import com.app.imagedownloader.Utils.Event
+import com.app.imagedownloader.business.domain.core.Event
 
 data class DataState<T>(
     val data: Event<T>? = null,

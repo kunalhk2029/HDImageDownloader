@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.interactors.searchPhotos.GetAutoCompleteRelatedSearchKeywords
 import com.app.imagedownloader.framework.presentation.ui.main.searchPhotos.state.SearchPhotosStateEvents
 import com.app.imagedownloader.framework.presentation.ui.main.searchPhotos.state.SearchPhotosViewState

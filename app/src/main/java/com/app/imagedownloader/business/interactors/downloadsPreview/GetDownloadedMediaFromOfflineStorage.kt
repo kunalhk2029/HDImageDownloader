@@ -5,7 +5,7 @@ import android.content.ContentUris
 import android.os.Build
 import android.provider.MediaStore
 import com.app.imagedownloader.Utils.Constants.StorageDirectoryConstants.IMAGE_MEDIA_DIRECTORY
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.DownloadedMediaInfo
 import com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.state.DownloadsPreviewViewState
 import kotlinx.coroutines.flow.Flow

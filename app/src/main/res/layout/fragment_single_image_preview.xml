@@ -13,7 +13,7 @@
         android:alpha="0.25"
         android:orientation="vertical" />
 
-    <com.app.imagedownloader.framework.Utils.ScalingImageView
+    <com.app.imagedownloader.framework.presentation.ui.components.ScalingImageView
         android:id="@+id/imagePreview"
         android:layout_width="match_parent"
         android:layout_height="0dp"

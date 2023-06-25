@@ -2,7 +2,7 @@ package com.app.imagedownloader.business.interactors.singleImagePreview
 
 import com.app.imagedownloader.business.data.network.ApiResponses.InstagramApiResult.ApiResult
 import com.app.imagedownloader.business.data.network.abstraction.UnsplashApiService
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.NetworkBoundResource.NetworkResponseHandler
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewViewState

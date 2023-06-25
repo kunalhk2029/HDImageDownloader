@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.DownloadedMediaInfo
 import com.app.imagedownloader.business.domain.model.FavPhotos
 import com.app.imagedownloader.business.interactors.favPhotos.GetFavPhotos

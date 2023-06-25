@@ -1,4 +1,4 @@
-package com.app.imagedownloader.Utils
+package com.app.imagedownloader.framework.presentation.ui.main
 
 import android.view.View
 import androidx.annotation.ColorInt
@@ -8,7 +8,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.app.imagedownloader.R
-import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
 
 object SystemUiVisibility {
 
@@ -25,7 +24,8 @@ object SystemUiVisibility {
                 ContextCompat.getColor(requireContext(), R.color.pin_red)
             requireActivity().window.navigationBarColor = initialNacigationBarCcolor
 
-            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(initialNacigationBarCcolor) == false
+            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(
+                initialNacigationBarCcolor) == false
             windowInsetsControllerCompat.isAppearanceLightStatusBars =
                 isDark(ContextCompat.getColor(requireContext(), R.color.pin_red)) == false
         } catch (_: Exception) {

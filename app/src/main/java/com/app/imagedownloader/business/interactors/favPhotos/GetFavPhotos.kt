@@ -1,6 +1,6 @@
 package com.app.imagedownloader.business.interactors.favPhotos
 
-import com.app.imagedownloader.business.domain.DataState.DataState
+import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.FavPhotos
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao

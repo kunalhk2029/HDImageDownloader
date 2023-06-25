@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.PinterestVideoDownloader" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimary">@color/pin_red</item>
         <item name="colorPrimaryVariant">@color/pin_red</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
