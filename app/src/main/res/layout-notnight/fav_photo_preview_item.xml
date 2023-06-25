@@ -21,7 +21,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/dullwhite">
+            android:background="@color/dullwhite"
+            >
 
             <ImageView
                 android:id="@+id/mediaPreview"
@@ -49,27 +50,6 @@
                     android:background="@color/grey" />
             </com.facebook.shimmer.ShimmerFrameLayout>
 
-            <ImageButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                ads:layout_constraintTop_toTopOf="parent"
-                ads:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/unmark_fav_icon"
-                android:layout_margin="8dp"
-                android:visibility="gone"
-                android:background="@drawable/ic_baseline_star_rate_24"
-                />
-
-            <ImageButton
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                ads:layout_constraintTop_toTopOf="parent"
-                ads:layout_constraintEnd_toEndOf="parent"
-                android:id="@+id/mark_fav_icon"
-                android:layout_margin="8dp"
-                android:visibility="gone"
-                android:background="@drawable/ic_baseline_star_outline_24"
-                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
@@ -231,7 +211,7 @@
                     android:layout_marginEnd="@dimen/gnt_no_margin"
                     android:layout_marginBottom="@dimen/gnt_no_margin"
                     android:lines="1"
-                    android:textColor="@color/gnt_white"
+                    android:textColor="@color/gnt_black"
                     android:textSize="@dimen/gnt_text_size_large"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -249,7 +229,7 @@
                 android:ellipsize="end"
                 android:maxLines="4"
                 android:padding="15dp"
-                android:textColor="@color/gnt_white"
+                android:textColor="@color/gnt_black"
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -290,7 +270,7 @@
         android:gravity="center"
         android:maxLines="1"
         android:text="@string/ad_space"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
         android:visibility="gone"

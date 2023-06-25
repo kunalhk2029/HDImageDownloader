@@ -1,5 +1,6 @@
 package com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.bottomSheet
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
@@ -17,7 +18,11 @@ import com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.net.HttpURLConnection
+import java.net.URL
 import javax.inject.Inject
 
 
@@ -60,52 +65,125 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
         return dialog
     }
 
-    private fun handleButtonClick() {
-        binding?.let {
-            val model: UnsplashPhotoInfo.photoInfo =
+
+    private suspend fun getDownloadSizeMap(): HashMap<String, String> {
+        return withContext(IO) {
+
+            val map = HashMap<String, String>()
+
+            val model =
                 requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
-            it.fullHdCard.setOnClickListener {
-                saveMediaInScopedStorage(url = model.uris.fullHdUrl, requireContext(),model.colorCode) {
-                    lifecycleScope.launch {
-                        SingleImagePreview.downloadCompletedPlaybackListener.send(true)
-                    }
-                }
-                requireActivity().onBackPressed()
-            }
-            it.hdCard.setOnClickListener {
-                saveMediaInScopedStorage(url = model.uris.fullHdUrl, requireContext(),model.colorCode) {
-                    lifecycleScope.launch {
-                        SingleImagePreview.downloadCompletedPlaybackListener.send(true)
-                    }
-                }
-                requireActivity().onBackPressed()
 
-            }
-            it.NormalCard.setOnClickListener {
-                saveMediaInScopedStorage(url = model.uris.fullHdUrl, requireContext(),model.colorCode) {
-                    lifecycleScope.launch {
-                        SingleImagePreview.downloadCompletedPlaybackListener.send(true)
-                    }
-                }
-                requireActivity().onBackPressed()
+            val fullHdUrlSize = mediaSize(URL(model.uris.fullHdUrl))
+                map["fullHdUrl"] = fullHdUrlSize
 
-            }
-            it.mediumCard.setOnClickListener {
-                saveMediaInScopedStorage(url = model.uris.fullHdUrl, requireContext(),model.colorCode) {
-                    lifecycleScope.launch {
-                        SingleImagePreview.downloadCompletedPlaybackListener.send(true)
-                    }
-                }
-                requireActivity().onBackPressed()
+            val hdUrlSize = mediaSize(URL(model.uris.hdUrl))
+                map["hdUrl"] = hdUrlSize
 
-            }
-            it.thumnailCard.setOnClickListener {
-                saveMediaInScopedStorage(url = model.uris.fullHdUrl, requireContext(),model.colorCode) {
-                lifecycleScope.launch {
-                        SingleImagePreview.downloadCompletedPlaybackListener.send(true)
+            val regularUrlSize = mediaSize(URL(model.uris.regularUrl))
+                map["regularUrl"] = regularUrlSize
+
+            val smallUrlSize = mediaSize(URL(model.uris.smallUrl))
+                map["smallUrl"] = smallUrlSize
+
+            val thumbnailUrlSize = mediaSize(URL(model.uris.thumbnailUrl))
+                map["thumbnailUrl"] = thumbnailUrlSize
+
+            map
+        }
+    }
+
+    private fun mediaSize(url: URL): String {
+        val connection = url.openConnection() as HttpURLConnection
+        val size =  try {
+            connection.contentLength
+        } catch (e: Exception) {
+            null
+        } finally {
+            connection.disconnect()
+        }
+
+       return if (size!=null){
+           val sizeInKb = size / 1024
+           val sizeInMb = sizeInKb / 1024
+           return if (sizeInMb > 0) " : ${sizeInMb}MB" else " : ${sizeInKb}kB"
+        }else{
+            ""
+       }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun handleButtonClick() {
+
+        lifecycleScope.launch {
+            getDownloadSizeMap().let { sizeMap ->
+                binding?.let {
+                    it.progressbar.visibility=View.GONE
+                    it.downloadOptions.visibility=View.VISIBLE
+                    val model: UnsplashPhotoInfo.photoInfo =
+                        requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
+                    it.fullhdtext.text = it.fullhdtext.text.toString() + sizeMap["fullHdUrl"]
+                    it.hdtext.text = it.hdtext.text.toString() + sizeMap["hdUrl"]
+                    it.normaltext.text = it.normaltext.text.toString() + sizeMap["regularUrl"]
+                    it.mediumtext.text = it.mediumtext.text.toString() + sizeMap["smallUrl"]
+                    it.thumbnailtext.text =
+                        it.thumbnailtext.text.toString() + sizeMap["thumbnailUrl"]
+
+                    it.fullHdCard.setOnClickListener {
+                        saveMediaInScopedStorage(url = model.uris.fullHdUrl,
+                            requireContext(),
+                            model.colorCode) {
+                            lifecycleScope.launch {
+                                SingleImagePreview.downloadCompletedPlaybackListener.send(true)
+                            }
+                        }
+                        requireActivity().onBackPressed()
+                    }
+
+                    it.hdCard.setOnClickListener {
+                        saveMediaInScopedStorage(url = model.uris.hdUrl,
+                            requireContext(),
+                            model.colorCode) {
+                            lifecycleScope.launch {
+                                SingleImagePreview.downloadCompletedPlaybackListener.send(true)
+                            }
+                        }
+                        requireActivity().onBackPressed()
+
+                    }
+                    it.NormalCard.setOnClickListener {
+                        saveMediaInScopedStorage(url = model.uris.regularUrl,
+                            requireContext(),
+                            model.colorCode) {
+                            lifecycleScope.launch {
+                                SingleImagePreview.downloadCompletedPlaybackListener.send(true)
+                            }
+                        }
+                        requireActivity().onBackPressed()
+
+                    }
+                    it.mediumCard.setOnClickListener {
+                        saveMediaInScopedStorage(url = model.uris.smallUrl,
+                            requireContext(),
+                            model.colorCode) {
+                            lifecycleScope.launch {
+                                SingleImagePreview.downloadCompletedPlaybackListener.send(true)
+                            }
+                        }
+                        requireActivity().onBackPressed()
+
+                    }
+                    it.thumnailCard.setOnClickListener {
+                        saveMediaInScopedStorage(url = model.uris.thumbnailUrl,
+                            requireContext(),
+                            model.colorCode) {
+                            lifecycleScope.launch {
+                                SingleImagePreview.downloadCompletedPlaybackListener.send(true)
+                            }
+                        }
+                        requireActivity().onBackPressed()
                     }
                 }
-                requireActivity().onBackPressed()
             }
         }
     }

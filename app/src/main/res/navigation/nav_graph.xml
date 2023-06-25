@@ -105,4 +105,9 @@
         android:name="com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.bottomSheet.MoreOptionsBottomSheet"
         android:label="More Options"
         tools:layout="@layout/fragment_more_options_bottom_sheet" />
+    <fragment
+        android:id="@+id/favPhotosPreview"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview.FavPhotosPreview"
+        android:label="Favourites"
+        tools:layout="@layout/fragment_fav_photos_preview" />
 </navigation>

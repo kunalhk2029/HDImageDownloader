@@ -31,6 +31,7 @@
     <color name="gnt_outline">#E0E0E0</color>
     <color name="yellowcaution">#F0CB35</color>
     <color name="orange">#FFA500</color>
-    <color name="pin_red">#00AD7C
-    </color>
+    <color name="pin_red">#00AD7C</color>
+    <color name="night_screen_background">#202124</color>
+
 </resources>

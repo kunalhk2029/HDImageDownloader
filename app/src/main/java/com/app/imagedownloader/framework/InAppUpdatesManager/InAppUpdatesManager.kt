@@ -16,15 +16,12 @@ class InAppUpdatesManager
     val appUpdateManager = AppUpdateManagerFactory.create(context)
 
     suspend fun initProductionUpdate(): Boolean? {
-        // false for flexible
-        // true for immediate
         var showCustomUpdateUi: Boolean? = null
         checkForUpdatesProductionByInAppApi().let {
             if (it == 2) {
                 val priority = checkUpdatePriority()
                 if (priority == 4 || priority == 5) {
                     showCustomUpdateUi = true
-//                    startImmediateProductionUpdate(activity)
                 } else if (priority != -1) {
                     showCustomUpdateUi = false
                 }
@@ -45,7 +42,6 @@ class InAppUpdatesManager
         var updateStatus = 0
         appUpdateManager.appUpdateInfo.addOnCompleteListener {
             if (it.isSuccessful) {
-//                 Logger.log("5965952+95955 = "+it.result.availableVersionCode())
                 when (it.result.updateAvailability()) {
                     1 -> {
                         updateStatus = 1
@@ -81,23 +77,5 @@ class InAppUpdatesManager
             delay(1000L)
         }
         return updatePriority
-    }
-
-    suspend fun extractIFdecider(vc: String?): Int? {
-//        Sfinder.IFdecider.Major.Minor.Patch//20.29.0.1.6
-//        val tempvc ="20.29.1.1.0.6"
-        val tempvc = vc
-        var fif: Int? = null
-        try {
-            if (tempvc != null) {
-                val finishdotind = tempvc.substring(6).indexOf(".")
-                val finalif = tempvc.substring(6, (6 + finishdotind))
-                fif = finalif.toInt()
-                Logger.log("Debug 454844564565 IFdecider......... = " + finalif)
-            }
-        } catch (e: Exception) {
-            fif = null
-        }
-        return fif
     }
 }

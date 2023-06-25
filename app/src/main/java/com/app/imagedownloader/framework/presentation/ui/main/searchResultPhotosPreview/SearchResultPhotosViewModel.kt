@@ -4,17 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.imagedownloader.business.data.cache.model.FavPhotosEntity
+import com.app.imagedownloader.business.data.cache.model.RecentSearch
 import com.app.imagedownloader.business.domain.DataState.DataState
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.Filters.SortByFilter
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
 import com.app.imagedownloader.business.interactors.singleImagePreview.FilterPhotos
 import com.app.imagedownloader.business.interactors.singleImagePreview.GetPhotosFromUnsplashApi
+import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewStateEvents
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,6 +27,7 @@ class SearchResultPhotosViewModel
 @Inject constructor(
     private val getPhotosFromUnsplashApi: GetPhotosFromUnsplashApi,
     private val filterPhotos: FilterPhotos,
+    private val photosDao: PhotosDao,
 ) : ViewModel() {
 
     private val _searchResultPhotosPreviewViewState: MutableLiveData<SearchResultPhotosPreviewViewState> =
@@ -157,7 +163,7 @@ class SearchResultPhotosViewModel
         searchResultPhotosPreviewViewState.value?.let { viewState ->
             val colorList = viewState.distinctColorsList.toMutableList()
             viewState.searchResultPhotos?.forEach {
-                if (!colorList.contains(it.colorCode)&&it.colorCode!="") {
+                if (!colorList.contains(it.colorCode) && it.colorCode != "") {
                     colorList.add(it.colorCode)
                 }
             }
@@ -184,6 +190,27 @@ class SearchResultPhotosViewModel
                 colorsFilter = viewState.colorsFilter).let {
                 setFilteredsearchResultPhotos(it)
             }
+        }
+    }
+
+    suspend fun getRecentSearches(): List<RecentSearch> {
+        return withContext(IO) {
+            photosDao.getRecentSearchQueries()
+        }
+    }
+
+    suspend fun markPhotoAsFav(photoInfo: UnsplashPhotoInfo.photoInfo): Long {
+        return withContext(IO) {
+            photosDao.insertFavouritePhoto(favPhotosEntity =
+            FavPhotosEntity(photoInfo.id,
+            photoInfo.previewUrl,photoInfo.uris,photoInfo.isPotrait,
+            photoInfo.colorCode,photoInfo.description))
+        }
+    }
+
+    suspend fun unmarkPhotoAsFav(photoInfo: UnsplashPhotoInfo.photoInfo): Int {
+        return withContext(IO) {
+            photosDao.deleteFavouritePhoto(photoInfo.id)
         }
     }
 }

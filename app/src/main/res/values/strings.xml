@@ -101,6 +101,13 @@
     <string name="filter_color">Colors</string>
     <string name="filter_dilaog_apply">Apply</string>
     <string name="filter">Filter</string>
+    <string name="favourites">Favourite</string>
+    <string name="popularSearch">Popular Searches</string>
+    <string name="recentSearch">Recent Searches</string>
+    <string name="permanaent_delete_message">Permanently delete from device ?</string>
+    <string name="delete_recent_search">Delete Recent Search ?</string>
+    <string name="remove_fav">Remove from Favourites</string>
+    <string name="add_fav">Add to Favourites</string>
 
 
 </resources>

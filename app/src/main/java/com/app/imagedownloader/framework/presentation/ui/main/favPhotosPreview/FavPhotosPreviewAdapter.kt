@@ -1,4 +1,4 @@
-package com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview
+package com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -13,36 +13,37 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.app.imagedownloader.R
+import com.app.imagedownloader.business.domain.model.FavPhotos
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
 import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.gms.ads.nativead.NativeAdView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SearchResultPhotosPreviewAdapter(
+class FavPhotosPreviewAdapter(
     private val interaction: Interaction? = null,
     private val glideManager: GlideManager,
     private val generalAdsManager: GeneralAdsManager
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<UnsplashPhotoInfo.photoInfo>() {
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<FavPhotos>() {
 
         override fun areItemsTheSame(
-            oldItem: UnsplashPhotoInfo.photoInfo,
-            newItem: UnsplashPhotoInfo.photoInfo
+            oldItem: FavPhotos,
+            newItem: FavPhotos,
         ): Boolean {
-            return oldItem.previewUrl == newItem.previewUrl
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(
-            oldItem: UnsplashPhotoInfo.photoInfo,
-            newItem: UnsplashPhotoInfo.photoInfo
+            oldItem: FavPhotos,
+            newItem: FavPhotos,
         ): Boolean {
-            return oldItem.previewUrl == newItem.previewUrl
+            return oldItem.id == newItem.id
         }
 
     }
@@ -51,19 +52,19 @@ class SearchResultPhotosPreviewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        return SearchResultPhotosPreviewViewHolder(
+        return DownloadedMediaPreviewViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.searchresults_photo_preview_item,
+                R.layout.fav_photo_preview_item,
                 parent,
                 false
             ),
-            interaction, glideManager,generalAdsManager
-        )
+            interaction, glideManager
+        ,generalAdsManager)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is SearchResultPhotosPreviewViewHolder -> {
+            is DownloadedMediaPreviewViewHolder -> {
                 holder.bind(differ.currentList.get(position))
             }
         }
@@ -73,11 +74,11 @@ class SearchResultPhotosPreviewAdapter(
         return differ.currentList.size
     }
 
-    fun submitList(list: List<UnsplashPhotoInfo.photoInfo>) {
+    fun submitList(list: List<FavPhotos>) {
         differ.submitList(list)
     }
 
-    class SearchResultPhotosPreviewViewHolder
+    class DownloadedMediaPreviewViewHolder
     constructor(
         itemView: View,
         private val interaction: Interaction?,
@@ -93,22 +94,18 @@ class SearchResultPhotosPreviewAdapter(
         val shimmer_layout = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer_layout)
         val adView =itemView.findViewById(R.id.native_ad_view) as NativeAdView
         val adViewCta =itemView.findViewById(R.id.ctaCard) as CardView
-        val markFavIcon =itemView.findViewById(R.id.mark_fav_icon) as ImageView
-        val unmarkFavIcon =itemView.findViewById(R.id.unmark_fav_icon) as ImageView
 
-        fun bind(item: UnsplashPhotoInfo.photoInfo) = with(itemView) {
+        fun bind(item: FavPhotos) = with(itemView) {
             adView.visibility=View.GONE
             adViewCta.visibility=View.GONE
             adspaceholder.visibility=View.GONE
-            markFavIcon.visibility=View.GONE
-            unmarkFavIcon.visibility=View.GONE
 
             if (item.previewUrl=="previewUrl"){
                 adspaceholder.visibility=View.VISIBLE
                 descriptionCard.visibility=View.GONE
                 adsFreeCard.visibility=View.VISIBLE
                 preview.visibility=View.GONE
-                CoroutineScope(Main).launch {
+                CoroutineScope(Dispatchers.Main).launch {
                     generalAdsManager.showNativeAdapterItemAd(adView,itemView).let {
                         adspaceholder.visibility=View.GONE
                     }
@@ -116,13 +113,7 @@ class SearchResultPhotosPreviewAdapter(
                 return@with
             }
 
-            if (item.isFav) {
-                unmarkFavIcon.visibility=View.VISIBLE
-                markFavIcon.visibility=View.GONE
-            }else{
-                unmarkFavIcon.visibility=View.GONE
-                markFavIcon.visibility=View.VISIBLE
-            }
+
             adsFreeCard.visibility=View.GONE
             descriptionCard.visibility=View.VISIBLE
             preview.visibility=View.VISIBLE
@@ -136,7 +127,6 @@ class SearchResultPhotosPreviewAdapter(
                 }, placeholder =
                 R.drawable.image_placeholder
             )
-
 
             description.visibility = View.GONE
             item.description?.let {
@@ -152,30 +142,9 @@ class SearchResultPhotosPreviewAdapter(
                 description.visibility = View.GONE
             }
             itemView.setOnClickListener {
-                interaction?.onItemClicked(bindingAdapterPosition, item)
+                interaction?.onItemSelected(bindingAdapterPosition, item)
             }
 
-            markFavIcon.setOnClickListener {
-                if (item.isFav) return@setOnClickListener
-                CoroutineScope(Main).launch {
-                    interaction?.onMarkFavClicked(bindingAdapterPosition,item)?.let {
-                        item.isFav=true
-                        unmarkFavIcon.visibility=View.VISIBLE
-                        markFavIcon.visibility=View.GONE
-                    }
-                }
-            }
-
-            unmarkFavIcon.setOnClickListener {
-                if (!item.isFav) return@setOnClickListener
-                CoroutineScope(Main).launch {
-                    interaction?.onUnmarkFavClicked(bindingAdapterPosition,item)?.let {
-                        item.isFav=false
-                        unmarkFavIcon.visibility=View.GONE
-                        markFavIcon.visibility=View.VISIBLE
-                    }
-                }
-            }
         }
 
         fun isDark(@ColorInt color: Int): Boolean {
@@ -184,8 +153,6 @@ class SearchResultPhotosPreviewAdapter(
     }
 
     interface Interaction {
-        fun onItemClicked(position: Int, item: UnsplashPhotoInfo.photoInfo)
-        suspend fun onMarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo):Long
-        suspend fun onUnmarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo):Int
+        fun onItemSelected(position: Int, item: FavPhotos)
     }
 }

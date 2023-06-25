@@ -99,6 +99,7 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             topLevelDestinationIds = setOf(
                 R.id.home,
                 R.id.downloadedMedia,
+                R.id.favPhotosPreview,
                 R.id.settings,
             )
         )
@@ -113,6 +114,8 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         handleNavDrawerClick()
 
         handleBottomNavClick()
+
+        handleCustomBottomNavClick()
 
         handleStoragePermission()
 
@@ -187,6 +190,37 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
     override fun showTooltip(text: String, onHide: (() -> Unit)?) {
     }
 
+    private fun handleCustomBottomNavClick() {
+        binding?.let {
+            it.homeScreen.setOnClickListener {
+                if (handleBottomNavBackstack(R.id.home)) return@setOnClickListener
+                navController.navigate(
+                    R.id.home, null
+                )
+            }
+
+            it.downloadsScreen.setOnClickListener {
+                if (handleBottomNavBackstack(R.id.downloadedMedia)) return@setOnClickListener
+                navController.navigate(
+                    R.id.downloadedMedia, null
+                )
+            }
+
+            it.favScreen.setOnClickListener {
+                if (handleBottomNavBackstack(R.id.favPhotosPreview)) return@setOnClickListener
+                navController.navigate(
+                    R.id.favPhotosPreview, null
+                )
+            }
+
+            it.settingsScreen.setOnClickListener {
+                if (handleBottomNavBackstack(R.id.settings)) return@setOnClickListener
+                navController.navigate(
+                    R.id.settings, null
+                )
+            }
+        }
+    }
 
     private fun handleBottomNavClick() {
         binding?.let {
@@ -207,6 +241,14 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             }
 
             it.navView.menu[2].setOnMenuItemClickListener {
+                if (handleBottomNavBackstack(R.id.favPhotosPreview)) return@setOnMenuItemClickListener true
+                navController.navigate(
+                    R.id.favPhotosPreview, null
+                )
+                true
+            }
+
+            it.navView.menu[3].setOnMenuItemClickListener {
                 if (handleBottomNavBackstack(R.id.settings)) return@setOnMenuItemClickListener true
                 navController.navigate(
                     R.id.settings, null
@@ -215,7 +257,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             }
         }
     }
-
 
     private fun handleNavDrawerClick() {
 //        handleDrawerHeader()
@@ -382,7 +423,7 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         binding?.let {
             it.drawerLayout.close()
         } ?: kotlin.run {
-            lifecycleScope.launch() {
+            lifecycleScope.launch{
                 while (binding == null) {
                     delay(100L)
                 }

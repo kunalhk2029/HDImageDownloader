@@ -5,6 +5,7 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="com.app.imagedownloader.framework.presentation.ui.main.MainActivity">
 
     <LinearLayout
@@ -24,7 +25,7 @@
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:backgroundTint="@color/customblack"
+                android:backgroundTint="@color/pin_red"
                 app:layout_collapseMode="pin"
                 app:layout_constraintTop_toTopOf="parent"
                 app:navigationIconTint="@color/white"
@@ -125,12 +126,13 @@
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="35dp"
+            android:backgroundTint="@color/black"
             android:visibility="gone"
-            android:backgroundTint="@color/white"
             android:id="@+id/customBottomNavCard"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -155,6 +157,7 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:id="@+id/homeIcon"
+                        app:tint="@color/white"
                         android:src="@drawable/ic_baseline_home_24"
                         />
                     <TextView
@@ -163,7 +166,7 @@
                         android:textSize="12sp"
                         android:text="@string/home"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -185,6 +188,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:id="@+id/downloadsIcon"
+                        app:tint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:src="@drawable/ic_baseline_download_24"
                         />
@@ -192,7 +196,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:text="@string/downloaded_media"
                         android:textAlignment="center"
                         app:layout_constraintStart_toStartOf="parent"
@@ -218,12 +222,12 @@
                         android:id="@+id/favIcon"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:src="@drawable/ic_baseline_star_rate_24"
-                        app:tint="@color/black" />
+                         />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:text="@string/favourites"
                         android:textAlignment="center"
                         app:layout_constraintStart_toStartOf="parent"
@@ -247,6 +251,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         android:id="@+id/settingsIcon"
+                        app:tint="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:src="@drawable/ic_baseline_settings_24"
                         />
@@ -256,7 +261,7 @@
                         android:textSize="12sp"
                         android:text="@string/settings"
                         android:textAlignment="center"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"

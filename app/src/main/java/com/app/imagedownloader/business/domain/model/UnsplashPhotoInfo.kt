@@ -9,6 +9,7 @@ data class UnsplashPhotoInfo(
 ):java.io.Serializable{
 
     data class photoInfo(
+        val id: String,
         val previewUrl: String,
         val uploaderInfo: UploaderInfo?,
         var uris: urls,
@@ -18,6 +19,7 @@ data class UnsplashPhotoInfo(
         val tags_preview: List<String>?,
         val likes:Int,
         val updatedAt:Long,
+        var isFav:Boolean=false
     ):java.io.Serializable
     data class urls(
         val fullHdUrl: String,

@@ -1,14 +1,14 @@
 package com.app.instastorytale.business.data.network.Volley.JsonObjConversion
 
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
-import com.app.imagedownloader.framework.Utils.Logger
-import kotlinx.coroutines.delay
+import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class JsonObjConversionServiceImpl(
+    private val photosDao: PhotosDao
 ) : JsonObjConversionService {
 
     override suspend fun convertJsonObjToListOfRelatedKeywords(jsonObject: JSONObject): List<String>? {
@@ -31,16 +31,18 @@ class JsonObjConversionServiceImpl(
         val total_pages = jsonObject.getString("total_pages").toInt()
         val total = jsonObject.getString("total").toInt()
 
-        list.add(UnsplashPhotoInfo.photoInfo(previewUrl = "previewUrl",null,
-            UnsplashPhotoInfo.urls("","","","",""),false,"",null,null,0,0L))
+        list.add(UnsplashPhotoInfo.photoInfo(id = "", previewUrl = "previewUrl", null,
+            UnsplashPhotoInfo.urls("", "", "", "", ""), false, "", null, null, 0, 0L))
 
         for (index in 0 until resultArray.length()) {
             try {
                 val jsonObjectt = resultArray.getJSONObject(index)
-                var description :String?=null
-                try {
+                var description: String
+                description = jsonObjectt.getString("description")
+                if (description == "null")
                     description = jsonObjectt.getString("alt_description")
-                }catch (_:Exception){ }
+
+                val id = jsonObjectt.getString("id")
                 val color = jsonObjectt.getString("color")
                 val height = jsonObjectt.getString("height").toInt()
                 val width = jsonObjectt.getString("width").toInt()
@@ -76,39 +78,43 @@ class JsonObjConversionServiceImpl(
                         creator_fullname = fullname, portfolio_url = portfolio_url, profile_image =
                         profile_image, instagram_username = instagram_username
                     )
-                } catch (_: Exception) { }
+                } catch (_: Exception) {
+                }
 
 
                 var tags_preview_list: MutableList<String>? = mutableListOf()
                 try {
                     val tags_previewArray = jsonObjectt.getJSONArray("tags_preview")
-                    for (i in 0 until tags_previewArray.length()){
+                    for (i in 0 until tags_previewArray.length()) {
                         try {
                             val tagTitle = tags_previewArray.getJSONObject(i).getString("title")
                             tags_preview_list?.add(tagTitle)
-                        }catch (_:Exception){
+                        } catch (_: Exception) {
                         }
                     }
                 } catch (_: Exception) {
-                    tags_preview_list=null
+                    tags_preview_list = null
                 }
 
                 val serverDateformat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ENGLISH)
                 val updatedAtInEpoch = serverDateformat.parse(updatedAt.dropLast(1)).time.div(1000L)
                 val unsplashPhotoInfo = UnsplashPhotoInfo.photoInfo(
+                    id,
                     previewUrl = regularUri,
                     uploaderInfo = uploaderInfo,
                     urls,
                     isPotrait,
                     colorCode = color,
-                    description = if (description.toString()=="null") null else description,
+                    description = description,
                     tags_preview_list,
                     likes = likes,
-                    updatedAt =  updatedAtInEpoch
+                    updatedAt = updatedAtInEpoch,
+                    isFav = photosDao.getFavouritePhotoById(id)!=null
                 )
                 list.add(unsplashPhotoInfo)
 
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
         return UnsplashPhotoInfo(total_pages, totalItems = total, list)
     }

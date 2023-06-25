@@ -16,8 +16,14 @@
         android:title="@string/downloaded_media" />
 
     <item
+        android:id="@+id/favPhotosPreview"
+        android:icon="@drawable/ic_baseline_star_rate_24"
+        android:title="@string/favourites" />
+
+    <item
         android:id="@+id/settings"
         android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/settings" />
+
 
 </menu>

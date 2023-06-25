@@ -20,12 +20,14 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.afollestad.materialdialogs.MaterialDialog
 import com.app.imagedownloader.R
+import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.Filters.SortByFilter
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
@@ -38,6 +40,9 @@ import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotos
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,6 +54,9 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
     @Inject
     lateinit var generalAdsManager: GeneralAdsManager
+
+    @Inject
+    lateinit var vibrateExtension: VibrateExtension
 
     private val searchResultPhotosViewModel by activityViewModels<SearchResultPhotosViewModel>()
 
@@ -94,6 +102,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             setContentView(R.layout.filter_dialog)
         }
 
+        val dialogCreationTime =System.currentTimeMillis()
         val previousSortFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.sortFilter
         val previousOrientationFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter
         val previousTagsFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.tagFilter
@@ -115,7 +124,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         sortBySpinner.setSelection(selectedSortSpinnerPosistion)
         sortBySpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-//                Logger.log("53355335 = "+p2)
+                if (System.currentTimeMillis()>=dialogCreationTime+1000L) vibrateExtension.vibrate()
                 searchResultPhotosViewModel.onEvent(
                     searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateSortByFilter(
                         sortByFilter = when (p2) {
@@ -155,6 +164,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         orientationSpinner.setSelection(selectedOrientatationSpinnerPosistion)
         orientationSpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                if (System.currentTimeMillis()>=dialogCreationTime+1000L) vibrateExtension.vibrate()
                 searchResultPhotosViewModel.onEvent(
                     searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
                         orientationFilter = when (p2) {
@@ -193,6 +203,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.let { state ->
                     if (p2!=0&&state.tagFilter.contains(state.distinctTagsList[p2])) return
+                    if (System.currentTimeMillis()>=dialogCreationTime+1000L) vibrateExtension.vibrate()
                     val updatedTagList= if (p2 == 0) state.tagFilter else{
                         val list =  state.tagFilter + listOf(state.distinctTagsList[p2])
                         list.distinct()
@@ -222,7 +233,6 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                 chip.layoutParams = if (index % 2 == 0) filtertemplatechip.layoutParams else
                     filtertemplatechip2.layoutParams
                 chip.isCheckable = true
-                chip.alpha = 0.85f
                 chip.checkedIcon = ContextCompat.getDrawable(requireContext(), R.drawable.chip_check)
                 chip.checkedIconTint = if (isDark(Color.parseColor(s)))
                     ColorStateList.valueOf(Color.parseColor("#ffffff"))
@@ -256,10 +266,14 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             }
 
             filterDialog.dismiss()
+
+            vibrateExtension.vibrate()
+
         }
 
         filterDialog.findViewById<Button>(R.id.apply_filter).setOnClickListener {
             filterDialog.dismiss()
+            vibrateExtension.vibrate()
             searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.FilterPhotos)
         }
     }
@@ -306,7 +320,6 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             onBackPressedCallback)
     }
 
-
     private fun subscribeObservers() {
         searchResultPhotosViewModel.searchResultPhotosPreviewDataState.observe(viewLifecycleOwner) { dataState ->
             val it = dataState
@@ -314,14 +327,10 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                 if (!it) hidePaginationProgressbar()
             }
             it.data?.getContentIfNotHandled()?.let {
-                if (!dataState.loading && searchResultPhotosViewModel.PAGINATION_EXECUTING) {
+                if (!dataState.loading) {
                     searchResultPhotosViewModel.PAGINATION_EXECUTING = false
                     searchResultPhotosViewModel.updateCurrentPage()
                 }
-
-                Logger.log("88985959  121 = " + it.currentPage)
-                Logger.log("88985959  121 = " + it.totalPages)
-                Logger.log("88985959  121 = " + it.totalPhotosItems)
 
                 it.searchResultPhotos?.let {
                     searchResultPhotosViewModel.setSearchResultPhotosList(it)
@@ -336,7 +345,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                     searchResultPhotosViewModel.PAGINATION_EXECUTING = false
                     errorDialog?.hide()
                     errorDialog = MaterialDialog(requireContext()).show {
-                        message(null, "Error")
+                        message(null, it)
                         title(null, "Retry Again")
                         positiveButton(null, "OK")
                     }
@@ -353,6 +362,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
     private fun handleFilterDialogColorChipGroupClick(chipGroup: ChipGroup) {
         chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
+             vibrateExtension.vibrate()
             val selectedColor = mutableListOf<Int>()
             checkedIds.forEach {
                 val colorInInt = group.findViewById<Chip>(it).chipBackgroundColor?.defaultColor
@@ -379,6 +389,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                     it.visibility=View.GONE
                 }
             }
+            vibrateExtension.vibrate()
             searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(updatedTagList.distinct()))
         }
     }
@@ -463,5 +474,13 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             R.id.action_searchResultPhotosPreview_to_singleImagePreview,
             bundle
         )
+    }
+
+    override suspend fun onMarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo): Long {
+       return searchResultPhotosViewModel.markPhotoAsFav(item)
+    }
+
+    override suspend fun onUnmarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo): Int {
+        return searchResultPhotosViewModel.unmarkPhotoAsFav(item)
     }
 }

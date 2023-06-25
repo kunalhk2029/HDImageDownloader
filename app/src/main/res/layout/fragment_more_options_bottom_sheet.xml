@@ -7,6 +7,35 @@
     tools:context=".framework.presentation.ui.main.singleImagePreview.bottomSheet.MoreOptionsBottomSheet">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/MarkFavCard"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/MarkFavCardBtView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/markfavtext"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/ShareCard"
         android:layout_width="0dp"
         android:layout_height="50dp"
@@ -14,7 +43,8 @@
         app:cardCornerRadius="25dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/MarkFavCard"
+        >
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/shareBtView"

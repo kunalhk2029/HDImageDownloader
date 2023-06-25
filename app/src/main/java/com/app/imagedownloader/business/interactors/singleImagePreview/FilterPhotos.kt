@@ -68,7 +68,7 @@ class FilterPhotos
             }
         }
 
-        return colorsFilterList
+        return colorsFilterList.distinct()
     }
 
 }

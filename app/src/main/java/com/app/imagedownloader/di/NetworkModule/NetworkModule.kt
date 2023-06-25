@@ -5,6 +5,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 import com.app.imagedownloader.business.data.network.abstraction.UnsplashApiService
 import com.app.imagedownloader.business.data.network.implementation.UnsplashApiServiceImpl
+import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
 import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionServiceImpl
 import dagger.Module
@@ -37,7 +38,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideJsonObjConversionService(
+        photosDao: PhotosDao
     ): JsonObjConversionService {
-        return JsonObjConversionServiceImpl()
+        return JsonObjConversionServiceImpl(photosDao)
     }
 }
