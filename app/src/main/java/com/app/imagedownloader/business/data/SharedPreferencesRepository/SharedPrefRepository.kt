@@ -4,6 +4,10 @@ import java.util.*
 
 interface SharedPrefRepository {
 
+    fun changetheme(id: Int)
+
+    fun getTheme(): Int
+
     fun setOnBoarding(boolean: Boolean)
 
     fun getOnBoarding(): Boolean

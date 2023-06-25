@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.MediaStore
@@ -13,6 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,6 +31,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.app.imagedownloader.R
+import com.app.imagedownloader.Utils.SystemUiVisibility
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.DataState.DataState
 import com.app.imagedownloader.databinding.ActivityMainBinding
@@ -39,10 +42,12 @@ import com.app.imagedownloader.framework.InAppUpdatesManager.InAppUpdatesManager
 import com.app.imagedownloader.framework.PlayStoreRatingFlow.PlayStoreRatingFlow
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
+import com.app.imagedownloader.framework.presentation.ui.main.MainViewModel.Companion.appThemeChannel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.qonversion.android.sdk.Qonversion.launch
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -104,6 +109,8 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             )
         )
         navView.setupWithNavController(navController)
+
+        handleAppTheme()
 
         setupNavigation()
 
@@ -432,18 +439,7 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         }
     }
 
-    override fun unlockDrawer() {
-//        binding?.let {
-//            it.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-//        } ?: kotlin.run {
-//            lifecycleScope.launch() {
-//                while (binding == null) {
-//                    delay(100L)
-//                }
-//                binding?.drawerLayout?.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-//            }
-//        }
-    }
+    override fun unlockDrawer() {}
 
     override fun askPermission(execute: () -> Unit) {
         requestreadperm()
@@ -478,11 +474,17 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             it.topAppBar.setupWithNavController(navController, it.drawerLayout)
             setSupportActionBar(it.topAppBar)
             it.topAppBar.setNavigationOnClickListener { _ ->
-//                if ((navController.currentDestination?.id == R.id.autoDownloadManager || navController.currentDestination?.id == R.id.autodownloadtiles || navController.currentDestination?.id == R.id.favouriteusers || navController.currentDestination?.id == R.id.favouritestories) && navController.backQueue.size <= 2) {
-//                    binding?.drawerLayout?.open()
-//                } else {
-//                    onBackPressedDispatcher.onBackPressed()
-//                }
+                if (navController.currentDestination?.id == R.id.home ){
+                    try {
+                        navController.navigate(
+                            R.id.action_home_to_bottomMenu
+                        )
+                    }catch (e:Exception){
+
+                    }
+                } else {
+                    onBackPressedDispatcher.onBackPressed()
+                }
             }
         }
         onDestinationChangedListener =
@@ -490,21 +492,25 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
                 setCurrentScreen(destination.displayName)
                 vibrateExtension.vibrate(true)
 
+                binding?.topAppBar?.navigationIcon=
+                    if (destination.id==R.id.home)
+                        ContextCompat.getDrawable(this,R.drawable.ic_baseline_menu_24) else
+                        ContextCompat.getDrawable(this,R.drawable.ic_baseline_arrow_back_24)
+
+
                 val disableBannerAd =
                     destination.id != R.id.downloadedMedia
 
                 if (disableBannerAd) {
                     hideBannerAd()
                 }
-//                else if (destination.id != R.id.bottomMenu) {
-//                    binding?.appbar?.setExpanded(true)
-//                }
                 if (
                     destination.id == R.id.payment ||
                     destination.id == R.id.singleImagePreview ||
                     destination.id == R.id.searchResultPhotosPreview ||
                     destination.id == R.id.downloadOptionsBottomSheet ||
                     destination.id == R.id.moreOptionsBottomSheet ||
+                    destination.id == R.id.bottomMenu ||
                     navController.backQueue.find { it.destination.id==R.id.singleImagePreview }!=null||
                     destination.id == R.id.feedback
                         ) {
@@ -513,6 +519,63 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
                     showBottomNav()
                 }
             }
+    }
+
+    private  fun handleAppTheme(){
+        viewModel.getAppTheme().let {
+            lifecycleScope.launch {
+                appThemeChannel.send(it)
+            }
+        }
+        appThemeChannel.receiveAsFlow().onEach {
+            if (it == 0) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                setAppTheme(0)
+            } else if (it == 1) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                setAppTheme(1)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                val nightModeFlags = this@MainActivity.resources.configuration.uiMode and
+                        Configuration.UI_MODE_NIGHT_MASK
+                when (nightModeFlags) {
+                    Configuration.UI_MODE_NIGHT_YES -> {
+                        setAppTheme(1)
+                    }
+                    Configuration.UI_MODE_NIGHT_NO -> {
+                        setAppTheme(0)
+                    }
+                    Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                        setAppTheme(1)
+                    }
+                }
+            }
+        }.launchIn(lifecycleScope)
+    }
+
+    private fun setAppTheme(theme: Int) {
+        var statusAndNavBar = ContextCompat.getColor(this, R.color.customblack)
+        var isAppearanceLightNavigationBars = false
+        if (theme == 0) {
+             statusAndNavBar = ContextCompat.getColor(this, R.color.white)
+            isAppearanceLightNavigationBars=true
+        }
+        try {
+            window.statusBarColor = statusAndNavBar
+
+            window.navigationBarColor =statusAndNavBar
+
+            WindowInsetsControllerCompat(
+                window,
+                window.decorView
+            ).isAppearanceLightNavigationBars =
+                isAppearanceLightNavigationBars
+            WindowInsetsControllerCompat(
+                window,
+                window.decorView
+            ).isAppearanceLightStatusBars =isAppearanceLightNavigationBars
+        } catch (_: Exception) {
+        }
     }
 
     @SuppressLint("RestrictedApi")

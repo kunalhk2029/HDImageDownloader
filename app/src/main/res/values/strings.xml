@@ -108,6 +108,13 @@
     <string name="delete_recent_search">Delete Recent Search ?</string>
     <string name="remove_fav">Remove from Favourites</string>
     <string name="add_fav">Add to Favourites</string>
+    <string name="share_app">Share App</string>
+    <string name="help_and_feedback">Help And feedback</string>
+    <string name="app_theme">App Theme</string>
+    <string name="choose_theme">Change Theme</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="light_theme">Light Theme</string>
+    <string name="systemdefault">System Default</string>
 
 
 </resources>

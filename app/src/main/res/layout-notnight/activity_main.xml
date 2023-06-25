@@ -25,11 +25,11 @@
                 style="@style/Widget.MaterialComponents.Toolbar.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:backgroundTint="@color/pin_red"
+                android:backgroundTint="@color/white"
                 app:layout_collapseMode="pin"
                 app:layout_constraintTop_toTopOf="parent"
-                app:navigationIconTint="@color/white"
-                app:titleTextColor="@color/white" />
+                app:navigationIconTint="@color/black"
+                app:titleTextColor="@color/black" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -276,8 +276,8 @@
             android:id="@+id/navView"
             android:layout_width="match_parent"
             android:layout_height="57dp"
-            app:itemTextColor="@color/bottom_icon_color_selector"
-            app:itemIconTint="@color/bottom_icon_color_selector"
+            app:itemTextColor="@color/bottom_icon_color_selectorwhite"
+            app:itemIconTint="@color/bottom_icon_color_selectorwhite"
             app:menu="@menu/bottom_nav_menu" />
     </LinearLayout>
 

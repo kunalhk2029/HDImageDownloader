@@ -9,6 +9,7 @@ import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_DIALOG_N
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_DIALOG_NOT_NOW_TIME
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_GIVEN
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_SHOW_NEVER_BOX
+import com.app.imagedownloader.Utils.Constants.SettingsConstants.THEME
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.VIBRATION
 import com.app.imagedownloader.framework.Utils.Logger
 
@@ -134,4 +135,14 @@ class SharedPreferencesRepositoryImpl(private val pref: SharedPreferences) : Sha
         }
     }
 
+    override fun changetheme(id: Int) {
+        pref.edit().apply {
+            putInt(THEME, id)
+            apply()
+        }
+    }
+
+    override fun getTheme(): Int {
+        return pref.getInt(THEME, 2)
+    }
 }

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.list.listItemsSingleChoice
@@ -16,6 +17,8 @@ import com.app.imagedownloader.business.data.SharedPreferencesRepository.SharedP
 import com.app.imagedownloader.business.data.SharedPreferencesRepository.SharedPreferencesRepositoryImpl
 import com.app.imagedownloader.databinding.FragmentSettingsBinding
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
+import com.app.imagedownloader.framework.presentation.ui.main.MainViewModel.Companion.appThemeChannel
+import kotlinx.coroutines.launch
 
 class  Settings : Fragment(R.layout.fragment_settings) {
 
@@ -25,7 +28,6 @@ class  Settings : Fragment(R.layout.fragment_settings) {
 
     lateinit var sharedPrefRepository: SharedPrefRepository
 
-    var themebt: ConstraintLayout? = null
     var logout: ConstraintLayout? = null
     var vibratee: ConstraintLayout? = null
     var offlineeffect: ConstraintLayout? = null
@@ -58,7 +60,6 @@ class  Settings : Fragment(R.layout.fragment_settings) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        themebt = null
         logout = null
         vibratee = null
         offlineeffect = null
@@ -121,8 +122,39 @@ class  Settings : Fragment(R.layout.fragment_settings) {
         binding?.ratingsettings?.setOnClickListener {
             uiCommunicationListener.askForRating(true)
         }
+
+        binding?.themesettings?.setOnClickListener {
+            MaterialDialog(requireContext()).show {
+                title(null, getString(R.string.choose_theme))
+                listItemsSingleChoice(
+                    null, arrayListOf(
+                        getString(R.string.light_theme), getString(R.string.dark_theme), getString(
+                            R.string.systemdefault
+                        )
+                    )
+                ) { _, index, _ ->
+                    changetheme(index)
+                }
+                positiveButton(null, getString(R.string.ok)) {
+                    dismiss()
+                }
+            }
+        }
     }
 
+    private fun changetheme(index: Int) {
+        sharedPrefRepository.changetheme(index)
+        lifecycleScope.launch {
+            appThemeChannel.send(index)
+        }
+        if (index == 2) {
+            binding?.themevalue?.text = getString(R.string.systemdefault)
+        } else if (index == 1) {
+            binding?.themevalue?.text = getString(R.string.dark_theme)
+        } else if (index == 0) {
+            binding?.themevalue?.text = getString(R.string.light_theme)
+        }
+    }
 
     private fun setVibrateStatus(vibratee: Boolean = false) {
         if (get_HAPTIC_STATUS()) {

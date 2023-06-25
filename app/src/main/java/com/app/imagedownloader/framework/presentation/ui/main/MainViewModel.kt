@@ -23,6 +23,9 @@ class MainViewModel
 
     val permissionGranted: Channel<Boolean> = Channel()
 
+    companion object{
+        var appThemeChannel: Channel<Int> = Channel()
+    }
     init {
         CoroutineScope(IO).launch {
             launch(IO) {
@@ -42,4 +45,9 @@ class MainViewModel
     fun get_FCM_COMMON_SUBSCRIBED(): Boolean {
         return sharedPrefRepository.get_FCM_COMMON_SUBSCRIBED()
     }
+
+    fun getAppTheme(): Int {
+        return sharedPrefRepository.getTheme()
+    }
+
 }

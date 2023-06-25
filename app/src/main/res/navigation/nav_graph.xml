@@ -52,6 +52,9 @@
             android:id="@+id/action_home_to_searchResultPhotosPreview"
             app:destination="@id/searchResultPhotosPreview"
             app:popUpTo="@id/home" />
+        <action
+            android:id="@+id/action_home_to_bottomMenu"
+            app:destination="@id/bottomMenu" />
     </fragment>
     <fragment
         android:id="@+id/payment"
@@ -110,4 +113,8 @@
         android:name="com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview.FavPhotosPreview"
         android:label="Favourites"
         tools:layout="@layout/fragment_fav_photos_preview" />
+    <dialog
+        android:id="@+id/bottomMenu"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.BottomMenu"
+        android:label="BottomMenu" />
 </navigation>
