@@ -44,7 +44,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="15dp"
                 android:gravity="center"
-                android:text="The only app that download stories automatically"
+                android:text="@string/bottomMenuHeading"
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/name" />

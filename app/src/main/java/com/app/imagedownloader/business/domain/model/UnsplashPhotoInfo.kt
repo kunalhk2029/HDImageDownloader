@@ -13,6 +13,8 @@ data class UnsplashPhotoInfo(
         val previewUrl: String,
         val uploaderInfo: UploaderInfo?,
         var uris: urls,
+        var width: Int,
+        var height: Int,
         var isPotrait: Boolean,
         var colorCode: String,
         var description: String?,

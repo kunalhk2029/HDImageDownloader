@@ -79,6 +79,10 @@
             android:id="@+id/action_searchResultPhotosPreview_to_singleImagePreview"
             app:destination="@id/singleImagePreview"
             app:popUpTo="@id/searchResultPhotosPreview" />
+        <action
+            android:id="@+id/action_searchResultPhotosPreview_to_imageDetailsBottomSheet"
+            app:destination="@id/imageDetailsBottomSheet"
+            app:popUpTo="@id/searchResultPhotosPreview" />
     </fragment>
     <fragment
         android:id="@+id/singleImagePreview"
@@ -107,7 +111,12 @@
         android:id="@+id/moreOptionsBottomSheet"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.bottomSheet.MoreOptionsBottomSheet"
         android:label="More Options"
-        tools:layout="@layout/fragment_more_options_bottom_sheet" />
+        tools:layout="@layout/fragment_more_options_bottom_sheet" >
+        <action
+            android:id="@+id/action_moreOptionsBottomSheet_to_imageDetailsBottomSheet"
+            app:destination="@id/imageDetailsBottomSheet"
+            app:popUpTo="@id/moreOptionsBottomSheet" />
+    </dialog>
     <fragment
         android:id="@+id/favPhotosPreview"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview.FavPhotosPreview"
@@ -117,4 +126,8 @@
         android:id="@+id/bottomMenu"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.BottomMenu"
         android:label="BottomMenu" />
+    <dialog
+        android:id="@+id/imageDetailsBottomSheet"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.bottomSheet.ImageDetailsBottomSheet"
+        android:label="ImageDetailsBottomSheet" />
 </navigation>

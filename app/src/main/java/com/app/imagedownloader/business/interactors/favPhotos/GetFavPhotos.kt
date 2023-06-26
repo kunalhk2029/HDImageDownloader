@@ -19,13 +19,14 @@ class GetFavPhotos
         emit(DataState.loading())
 
         val finalList = mutableListOf<FavPhotos>()
-        val adList = FavPhotos("","previewUrl", uris = UnsplashPhotoInfo.urls("","","","",""),
-        false,"",null)
+        val adList = FavPhotos("","previewUrl", uris = UnsplashPhotoInfo.urls("","","","",""), 0,0,false,"",null)
         withContext(IO){
             finalList.add(adList)
             val  favPhotos = photosDao.getFavouritePhotos().sortedByDescending { it.createdAt }.map { it.mapToFavPhotos() }
             finalList.addAll(favPhotos)
+            finalList.add(adList)
         }
+
          emit(DataState.success(FavPhotosPreviewViewState(
              finalList
          )))

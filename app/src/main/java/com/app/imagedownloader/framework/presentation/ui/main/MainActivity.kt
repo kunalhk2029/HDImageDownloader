@@ -72,10 +72,10 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
     val viewModel by viewModels<MainViewModel>()
 
     companion object {
-        val IS_SHARED = "IS_SHARED"
         var premiumLiveData: Channel<Int> = Channel()
         var adsInfoLoadingStatus: MutableSharedFlow<Boolean> = MutableSharedFlow()
         var showInterstitialAd: Channel<List<(() -> Job)>?> = Channel()
+        var showFullScreenAds: Channel<List<() -> Job>> = Channel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,10 +116,29 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
 
         handleAdsOnDownloadCompletion()
 
+        handleDialogAds()
+
         askForRating()
 
     }
 
+    private  fun handleDialogAds() {
+        lifecycleScope.launch {
+            showFullScreenAds.receiveAsFlow().collectLatest { jobList ->
+                generalAdsManager.handleNativeFull(
+                    { jobList.first().invoke() },
+                    this@MainActivity, 0, true, afterInterstitialShown = {
+                        if ((jobList.size) > 1) {
+                            jobList.last().invoke()
+                        } else {
+                            Logger.log("4894894 showFullScreenAds = " + jobList.size)
+                        }
+                    },
+                    instantlyshowNativeInterstitialAdProgressBar = false
+                )
+            }
+        }
+    }
     private fun handleStoragePermission() {
         if (!isreadallowed()) {
             requestreadperm()

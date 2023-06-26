@@ -32,7 +32,7 @@ class JsonObjConversionServiceImpl(
         val total = jsonObject.getString("total").toInt()
 
         list.add(UnsplashPhotoInfo.photoInfo(id = "", previewUrl = "previewUrl", null,
-            UnsplashPhotoInfo.urls("", "", "", "", ""), false, "", null, null, 0, 0L))
+            UnsplashPhotoInfo.urls("", "", "", "", ""), 0,0,false, "", null, null, 0, 0L))
 
         for (index in 0 until resultArray.length()) {
             try {
@@ -103,6 +103,8 @@ class JsonObjConversionServiceImpl(
                     previewUrl = regularUri,
                     uploaderInfo = uploaderInfo,
                     urls,
+                    width = width,
+                    height=height,
                     isPotrait,
                     colorCode = color,
                     description = description,

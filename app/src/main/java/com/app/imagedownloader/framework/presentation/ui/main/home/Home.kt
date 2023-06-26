@@ -1,7 +1,6 @@
 package com.app.imagedownloader.framework.presentation.ui.main.home
 
 import android.content.res.ColorStateList
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.logging.Logger
 import javax.inject.Inject
 
 
@@ -75,44 +73,56 @@ class Home : Fragment(R.layout.fragment_home) {
 
         listenToFinalKeywordChannel()
 
+        lifecycleScope.launch {
+            binding?.let { binding ->
+                adsManager.showNativeHomeScreenAd(binding.nativeAdView).let {
+                    delay(250L)
+                    binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                }
+            }
+        }
     }
 
     private fun handleReecentSearchChipViewPopulation() {
-        val chipGroup =  binding?.recentSearchChipGroup
+        val chipGroup = binding?.recentSearchChipGroup
         chipGroup?.removeAllViews()
         lifecycleScope.launch {
             searchResultPhotosViewModel.getRecentSearches().let {
-                if (it.isNotEmpty()) binding?.recentSearchChipView?.visibility=View.VISIBLE
-                if (it.isNotEmpty()) binding?.recentSearches?.visibility=View.VISIBLE
-                val templateRecentSearchChip =  binding?.templateRecentSearchChip
+                if (it.isNotEmpty()) binding?.recentSearchChipView?.visibility = View.VISIBLE
+                if (it.isNotEmpty()) binding?.recentSearches?.visibility = View.VISIBLE
+                val templateRecentSearchChip = binding?.templateRecentSearchChip
                 it.forEach {
-                val chip = Chip(requireContext())
+                    val chip = Chip(requireContext())
                     chip.layoutParams = templateRecentSearchChip?.layoutParams
-                    chip.isCheckable=true
-                    chip.isCheckedIconVisible=false
-                    chip.closeIcon = ContextCompat.getDrawable(requireContext(),R.drawable.ic_baseline_delete_24)
-                    chip.isCloseIconVisible=true
-                     chip.setTextColor(ContextCompat.getColor(requireContext(),R.color.white))
-                    chip.closeIconTint=
-                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.white))
+                    chip.isCheckable = true
+                    chip.isCheckedIconVisible = false
+                    chip.closeIcon = ContextCompat.getDrawable(requireContext(),
+                        R.drawable.ic_baseline_delete_24)
+                    chip.isCloseIconVisible = true
+                    chip.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    chip.closeIconTint =
+                        ColorStateList.valueOf(ContextCompat.getColor(requireContext(),
+                            R.color.white))
                     chip.setOnCloseIconClickListener {
                         MaterialDialog(requireContext()).show {
-                            title(null,getString(R.string.delete_recent_search))
-                            message(null,"${chip.text} will be deleted from search history")
-                            positiveButton(null,getString(R.string.ok)) {
-                                lifecycleScope.launch(IO){
+                            title(null, getString(R.string.delete_recent_search))
+                            message(null, "${chip.text} will be deleted from search history")
+                            positiveButton(null, getString(R.string.ok)) {
+                                lifecycleScope.launch(IO) {
                                     photosDao.deleteRecentSearchQuery(chip.text.toString()).let {
-                                        withContext(Main){
+                                        withContext(Main) {
                                             chipGroup?.removeView(chip)
                                         }
                                     }
                                 }
                             }
-                            negativeButton(null,getString(R.string.Cancel))
+                            negativeButton(null, getString(R.string.Cancel))
                         }
                     }
                     chip.text = it.query
-                    chip.chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(requireContext(),R.color.pin_red))
+                    chip.chipBackgroundColor = ColorStateList.valueOf(ContextCompat.getColor(
+                        requireContext(),
+                        R.color.pin_red))
                     chipGroup?.addView(chip)
                 }
             }
@@ -121,7 +131,7 @@ class Home : Fragment(R.layout.fragment_home) {
 
     private fun listenToFinalKeywordChannel() {
         selectedKeyword.receiveAsFlow().onEach {
-            withContext(IO){
+            withContext(IO) {
                 photosDao.insertRecentSearchQuery(RecentSearch(it))
             }
             searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.searchPhotos(
@@ -201,7 +211,7 @@ class Home : Fragment(R.layout.fragment_home) {
             it.data?.peekContent()?.searchResultPhotos?.let {
                 searchResultPhotosViewModel.searchResultPhotosPreviewDataState.removeObservers(
                     viewLifecycleOwner)
-                binding?.let {binding->
+                binding?.let { binding ->
                     lifecycleScope.launch {
                         adsManager.showNativeHomeScreenAd(binding.nativeAdView).let {
                             delay(250L)

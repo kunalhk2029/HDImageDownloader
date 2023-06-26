@@ -18,21 +18,23 @@ interface AdsManager {
 
     suspend fun getpreLoadedInterstitialAd(skipTimeLimit: Boolean = false): InterstitialAd?
 
-    fun initNativeAdsPreload()
-
     suspend fun loadAdmobHomeScreenAd(
         nativeAdView: NativeAdView
     ) {
     }
 
+    suspend fun initNativeFullAd(): NativeAd?
+
     suspend fun loadAdmobAdapterItemAd(
         nativeAdView: NativeAdView,itemRootView:View
     ) {
     }
+
     suspend fun loadAdmobNativeAd(
         admobTemplateView: TemplateView?, banner: Boolean,
-        prevoiusBannerAd: NativeAd? = null,
-        decideBannerPosition: (suspend (newAdDeteceted: Boolean) -> TemplateView?)? = null
+        prevoiusBannerAd: NativeAd?=null,
+        forceToShowPreviousAdOnly:Boolean=false,
+        decideBannerPosition: (suspend (newAdDeteceted: Boolean) -> Unit)?=null,
     ): NativeAd? {
         return null
     }

@@ -18,23 +18,15 @@
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PinterestVideoDownloader"
+        android:theme="@style/Theme.ImageVideoDownloader"
         tools:targetApi="31">
 
         <activity
             android:name="com.app.imagedownloader.framework.presentation.ui.StartUp.StartupActivity"
             android:exported="true"
             android:launchMode="singleTask">
-            <intent-filter android:label="Download">
-
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="text/plain" />
-            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

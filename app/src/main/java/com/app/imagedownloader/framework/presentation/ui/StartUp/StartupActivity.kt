@@ -8,7 +8,6 @@ import com.app.imagedownloader.R
 import com.app.imagedownloader.business.data.SharedPreferencesRepository.SharedPrefRepository
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
-import com.app.imagedownloader.framework.presentation.ui.main.MainActivity.Companion.IS_SHARED
 import com.app.imagedownloader.framework.presentation.ui.OnBoarding.OnBoardingActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -33,10 +32,6 @@ class StartupActivity : AppCompatActivity() {
         startupimg = findViewById(R.id.startupimg)
     }
 
-    override fun onPause() {
-        super.onPause()
-    }
-
     override fun onResume() {
         super.onResume()
         if (!opened) {
@@ -56,14 +51,6 @@ class StartupActivity : AppCompatActivity() {
                                 this@StartupActivity,
                                 MainActivity::class.java
                             )
-                        if (this@StartupActivity.intent.getStringExtra(Intent.EXTRA_TEXT) != null) {
-                            intent.putExtra(
-                                IS_SHARED,
-                                this@StartupActivity.intent.getStringExtra(
-                                    Intent.EXTRA_TEXT
-                                )
-                            )
-                        }
                         startActivity(intent)
                         opened = true
                         finish()

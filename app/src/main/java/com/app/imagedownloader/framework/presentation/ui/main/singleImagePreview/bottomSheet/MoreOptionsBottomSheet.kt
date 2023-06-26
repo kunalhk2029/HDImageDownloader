@@ -1,7 +1,9 @@
 package com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.bottomSheet
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,7 @@ import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.app.imagedownloader.R
 import com.app.imagedownloader.business.data.cache.model.FavPhotosEntity
 import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
@@ -72,21 +75,38 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private fun handleButtonClick() {
         binding?.let {
-            val model: UnsplashPhotoInfo.photoInfo =
-                requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
-            model.uploaderInfo?.let { _ ->
-                it.AboutUploaderCard.visibility = View.VISIBLE
-            }
+            val model: UnsplashPhotoInfo.photoInfo = requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
+
             it.ShareCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.uris.regularUrl, false, requireContext())
+                shareMediaOrSetWallpaper(model.uris.hdUrl, false, requireContext())
                 requireActivity().onBackPressed()
             }
+
             it.AboutUploaderCard.setOnClickListener {
+                val intent = Intent().apply {
+                    action=Intent.ACTION_VIEW
+                    data= Uri.parse("https://unsplash.com/photos/${model.id}")
+                }
+                val chooser = Intent.createChooser(intent,"Select Browser")
+                requireActivity().startActivity(chooser)
                 requireActivity().onBackPressed()
             }
             it.setWallpaperCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.uris.regularUrl, true, requireContext())
+                shareMediaOrSetWallpaper(model.uris.hdUrl, true, requireContext())
                 requireActivity().onBackPressed()
+            }
+
+            it.MoreDetailsCard.setOnClickListener {
+                try {
+                    val bundle = Bundle().apply {
+                        putSerializable("onlinePreviewModel", model)
+                        putString("colorCode", model.colorCode)
+                    }
+                    findNavController().navigate(
+                        R.id.action_moreOptionsBottomSheet_to_imageDetailsBottomSheet,
+                        bundle
+                    )
+                }catch (_:Exception){ }
             }
 
             if (isFav(model)) it.markfavtext.text = getString(R.string.remove_fav)
@@ -107,6 +127,8 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
                         photosDao.insertFavouritePhoto(FavPhotosEntity(model.id,
                             model.previewUrl,
                             model.uris,
+                            width=model.width,
+                            height=model.height,
                             model.isPotrait,
                             model.colorCode,
                             model.description)).let {_->
@@ -129,6 +151,7 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
         val color = Color.parseColor(requireArguments().getString("colorCode"))
         binding?.let {
             it.sharetext.setTextColor(color)
+            it.moredetailstext.setTextColor(color)
             it.aboutUploadertext.setTextColor(color)
             it.setWallpapertext.setTextColor(color)
             it.markfavtext.setTextColor(color)
@@ -137,6 +160,7 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
             it.shareBtView.setBackgroundColor(colorr)
             it.AboutUploaderCardBtView.setBackgroundColor(colorr)
             it.setWallpaperBtView.setBackgroundColor(colorr)
+            it.MoreDetailsCardBtView.setBackgroundColor(colorr)
             it.MarkFavCardBtView.setBackgroundColor(colorr)
         }
     }

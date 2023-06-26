@@ -46,7 +46,6 @@ public class TemplateView extends FrameLayout {
 
   private TextView primaryView;
   private TextView secondaryView;
-  private RatingBar ratingBar;
   private TextView tertiaryView;
   private ImageView iconView;
   private MediaView mediaView;
@@ -74,6 +73,11 @@ public class TemplateView extends FrameLayout {
   public TemplateView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
     initView(context, attrs);
+  }
+
+
+  public Button getPremiumButton() {
+    return callToActionPremium;
   }
 
   public void setStyles(NativeTemplateStyle styles) {
@@ -203,7 +207,7 @@ public class TemplateView extends FrameLayout {
     String headline = nativeAd.getHeadline();
     String body = nativeAd.getBody();
     String cta = nativeAd.getCallToAction();
-    Double starRating = nativeAd.getStarRating();
+//    Double starRating = nativeAd.getStarRating();
     NativeAd.Image icon = nativeAd.getIcon();
 
     String secondaryText;
@@ -226,17 +230,16 @@ public class TemplateView extends FrameLayout {
     callToActionView.setText(cta);
 
     //  Set the secondary view to be the star rating if available.
-    if (starRating != null && starRating > 0) {
-      secondaryView.setVisibility(GONE);
-      ratingBar.setVisibility(VISIBLE);
-      ratingBar.setRating(starRating.floatValue());
-
-      nativeAdView.setStarRatingView(ratingBar);
-    } else {
+//    if (starRating != null && starRating > 0) {
+//      secondaryView.setVisibility(GONE);
+//      ratingBar.setVisibility(VISIBLE);
+//      ratingBar.setRating(starRating.floatValue());
+//
+//      nativeAdView.setStarRatingView(ratingBar);
+//    } else {
       secondaryView.setText(secondaryText);
       secondaryView.setVisibility(VISIBLE);
-      ratingBar.setVisibility(GONE);
-    }
+//    }
 
     if (icon != null) {
       iconView.setVisibility(VISIBLE);
@@ -296,12 +299,11 @@ public class TemplateView extends FrameLayout {
     secondaryView = (TextView) findViewById(R.id.secondary);
     tertiaryView = (TextView) findViewById(R.id.body);
 
-    ratingBar = (RatingBar) findViewById(R.id.rating_bar);
-    ratingBar.setEnabled(false);
 
     callToActionView = (Button) findViewById(R.id.cta);
     iconView = (ImageView) findViewById(R.id.icon);
     mediaView = (MediaView) findViewById(R.id.media_view);
+    callToActionPremium = (Button) findViewById(R.id.goadsfreesmall);
     background = (ConstraintLayout) findViewById(R.id.background);
   }
 }

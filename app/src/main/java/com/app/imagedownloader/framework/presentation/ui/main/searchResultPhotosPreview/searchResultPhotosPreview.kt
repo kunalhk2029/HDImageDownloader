@@ -20,7 +20,6 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,9 +39,6 @@ import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotos
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -102,11 +98,15 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             setContentView(R.layout.filter_dialog)
         }
 
-        val dialogCreationTime =System.currentTimeMillis()
-        val previousSortFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.sortFilter
-        val previousOrientationFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter
-        val previousTagsFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.tagFilter
-        val previousColorsFilter = searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter
+        val dialogCreationTime = System.currentTimeMillis()
+        val previousSortFilter =
+            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.sortFilter
+        val previousOrientationFilter =
+            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter
+        val previousTagsFilter =
+            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.tagFilter
+        val previousColorsFilter =
+            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter
 
         val sortBySpinner = filterDialog.findViewById<Spinner>(R.id.sortBySpinner)
         val sortByadapter = ArrayAdapter(requireContext(), R.layout.spinner_item, listOf(
@@ -124,7 +124,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         sortBySpinner.setSelection(selectedSortSpinnerPosistion)
         sortBySpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                if (System.currentTimeMillis()>=dialogCreationTime+1000L) vibrateExtension.vibrate()
+                if (System.currentTimeMillis() >= dialogCreationTime + 1000L) vibrateExtension.vibrate()
                 searchResultPhotosViewModel.onEvent(
                     searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateSortByFilter(
                         sortByFilter = when (p2) {
@@ -164,7 +164,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         orientationSpinner.setSelection(selectedOrientatationSpinnerPosistion)
         orientationSpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                if (System.currentTimeMillis()>=dialogCreationTime+1000L) vibrateExtension.vibrate()
+                if (System.currentTimeMillis() >= dialogCreationTime + 1000L) vibrateExtension.vibrate()
                 searchResultPhotosViewModel.onEvent(
                     searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
                         orientationFilter = when (p2) {
@@ -195,24 +195,24 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         tagSpinner.adapter = tagSpinneradapter
 
 
-        addTagFilterChips(tagChipGroup,false,null)
+        addTagFilterChips(tagChipGroup, false, null)
 
         handleFilterDialogTagChipGroupClick(tagChipGroup)
 
         tagSpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.let { state ->
-                    if (p2!=0&&state.tagFilter.contains(state.distinctTagsList[p2])) return
-                    if (System.currentTimeMillis()>=dialogCreationTime+1000L) vibrateExtension.vibrate()
-                    val updatedTagList= if (p2 == 0) state.tagFilter else{
-                        val list =  state.tagFilter + listOf(state.distinctTagsList[p2])
+                    if (p2 != 0 && state.tagFilter.contains(state.distinctTagsList[p2])) return
+                    if (System.currentTimeMillis() >= dialogCreationTime + 1000L) vibrateExtension.vibrate()
+                    val updatedTagList = if (p2 == 0) state.tagFilter else {
+                        val list = state.tagFilter + listOf(state.distinctTagsList[p2])
                         list.distinct()
                     }
                     searchResultPhotosViewModel.onEvent(
                         searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateTagsFilter(
-                            tagsList =updatedTagList)
+                            tagsList = updatedTagList)
                     )
-                    if (p2 != 0)  addTagFilterChips(tagChipGroup,true, state.distinctTagsList[p2])
+                    if (p2 != 0) addTagFilterChips(tagChipGroup, true, state.distinctTagsList[p2])
                 }
             }
 
@@ -227,21 +227,24 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.distinctColorsList
 
         colorList?.forEachIndexed { index, s ->
-            if (s!=""){
+            if (s != "") {
                 val chip = Chip(requireContext())
                 chip.id = index
                 chip.layoutParams = if (index % 2 == 0) filtertemplatechip.layoutParams else
                     filtertemplatechip2.layoutParams
                 chip.isCheckable = true
-                chip.checkedIcon = ContextCompat.getDrawable(requireContext(), R.drawable.chip_check)
+                chip.checkedIcon =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.chip_check)
                 chip.checkedIconTint = if (isDark(Color.parseColor(s)))
                     ColorStateList.valueOf(Color.parseColor("#ffffff"))
                 else
                     ColorStateList.valueOf(Color.parseColor("#121212"))
                 chip.chipBackgroundColor =
                     ColorStateList.valueOf(Color.parseColor(s))
-                if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter?.contains(Color.parseColor(s).toString()) == true){
-                    chip.isChecked=true
+                if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter?.contains(
+                        Color.parseColor(s).toString()) == true
+                ) {
+                    chip.isChecked = true
                 }
                 filterColorChipGroup.addView(chip)
             }
@@ -251,18 +254,22 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
         filterDialog.findViewById<Button>(R.id.cancel_filter).setOnClickListener {
             previousSortFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(it))
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(
+                    it))
             }
 
             previousOrientationFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateOrientationFilter(it))
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
+                    it))
             }
             previousTagsFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(it))
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(
+                    it))
             }
 
             previousColorsFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(it))
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(
+                    it))
             }
 
             filterDialog.dismiss()
@@ -362,7 +369,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
     private fun handleFilterDialogColorChipGroupClick(chipGroup: ChipGroup) {
         chipGroup.setOnCheckedStateChangeListener { group, checkedIds ->
-             vibrateExtension.vibrate()
+            vibrateExtension.vibrate()
             val selectedColor = mutableListOf<Int>()
             checkedIds.forEach {
                 val colorInInt = group.findViewById<Chip>(it).chipBackgroundColor?.defaultColor
@@ -385,12 +392,13 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                 updatedTagList.add(tagTitle)
             }
             chipGroup.allViews.forEach {
-                if (it is Chip && !updatedTagList.contains(it.text)){
-                    it.visibility=View.GONE
+                if (it is Chip && !updatedTagList.contains(it.text)) {
+                    it.visibility = View.GONE
                 }
             }
             vibrateExtension.vibrate()
-            searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(updatedTagList.distinct()))
+            searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(
+                updatedTagList.distinct()))
         }
     }
 
@@ -477,10 +485,21 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
     }
 
     override suspend fun onMarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo): Long {
-       return searchResultPhotosViewModel.markPhotoAsFav(item)
+        return searchResultPhotosViewModel.markPhotoAsFav(item)
     }
 
     override suspend fun onUnmarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo): Int {
         return searchResultPhotosViewModel.unmarkPhotoAsFav(item)
+    }
+
+    override fun onItemLongClicked(position: Int, item: UnsplashPhotoInfo.photoInfo) {
+        val bundle = Bundle().apply {
+            putSerializable("onlinePreviewModel", item)
+            putString("colorCode", item.colorCode)
+        }
+        findNavController().navigate(
+            R.id.action_searchResultPhotosPreview_to_imageDetailsBottomSheet,
+            bundle
+        )
     }
 }

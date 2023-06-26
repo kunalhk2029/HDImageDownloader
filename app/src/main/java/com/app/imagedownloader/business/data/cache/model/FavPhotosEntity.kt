@@ -11,6 +11,8 @@ data class FavPhotosEntity(
     @PrimaryKey(autoGenerate = false) val id:String,
     val previewUrl:String,
     var uris: UnsplashPhotoInfo.urls,
+    val width:Int,
+    val height:Int,
     var isPotrait: Boolean,
     var colorCode: String,
     var description: String?,
@@ -18,7 +20,7 @@ data class FavPhotosEntity(
 ){
     fun mapToFavPhotos():FavPhotos{
         return FavPhotos(
-            id,previewUrl,uris, isPotrait, colorCode, description
+            id,previewUrl,uris, width = width, height = height, isPotrait, colorCode, description
         )
     }
 }

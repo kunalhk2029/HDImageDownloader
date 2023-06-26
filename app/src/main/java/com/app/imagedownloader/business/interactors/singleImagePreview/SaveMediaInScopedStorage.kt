@@ -154,12 +154,9 @@ class SaveMediaInScopedStorage
                                 d.dismiss()
                             }
                         }
-                        generalAdsManager.showInterstitialAd().let {
-                            Logger.log("Debug Download Success.............")
-                            launch {
-                                val list = listOf(showCompleteDialog, hideDownloading)
-                                MainActivity.showInterstitialAd.send(list)
-                            }
+                        launch {
+                            val list = listOf(showCompleteDialog, hideDownloading)
+                            MainActivity.showFullScreenAds.send(list)
                         }
                     }
                 }

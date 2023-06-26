@@ -6,7 +6,6 @@ import android.view.View
 import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import com.app.imagedownloader.R
@@ -20,31 +19,33 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
-import dagger.hilt.internal.aggregatedroot.AggregatedRoot
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 
 class AdsManagerAdMobImpl(
-    val context: Context
+    val context: Context,
 ) : AdsManager {
 
     private var nativeFullAd: NativeAd? = null
     private var nativeBannerAd: NativeAd? = null
     private var nativeHomeAd: NativeAd? = null
-    private var interstitialAd: InterstitialAd? = null
-    private var lastInterstitialAdLoadedTime = 0L
     private var lastFullAdLoadedTime = 0L
     private var lastHomeAdLoadedTime = 0L
     private var lastBannerAdLoadedTime = 0L
 
     override fun initAdsSdk() {
         MobileAds.initialize(context)
-        initNativeAdsPreload()
+    }
+
+    override suspend fun initNativeFullAd(): NativeAd? {
+        return withContext(IO) {
+            getFullAd()
+        }
     }
 
     override suspend fun loadAdmobHomeScreenAd(
-        nativeAdView: NativeAdView
+        nativeAdView: NativeAdView,
     ) {
         val ad = getHomeAd() ?: nativeHomeAd
         ad.let {
@@ -62,22 +63,8 @@ class AdsManagerAdMobImpl(
         return if (banner) nativeBannerAd else nativeFullAd
     }
 
-
     override suspend fun getpreLoadedInterstitialAd(skipTimeLimit: Boolean): InterstitialAd? {
-        if (skipTimeLimit) return getInterstitialAd(true)
-        if (!skipTimeLimit&&interstitialAd==null) return getInterstitialAd()
-        return interstitialAd
-    }
-
-    override fun initNativeAdsPreload() {
-        CoroutineScope(IO).launch {
-            launch {
-                getFullAd()
-            }
-            launch {
-                getInterstitialAd()
-            }
-        }
+        return getInterstitialAd()
     }
 
     override fun getAdsServiceCompany(): Boolean {
@@ -88,15 +75,14 @@ class AdsManagerAdMobImpl(
         admobTemplateView: TemplateView?,
         banner: Boolean,
         prevoiusBannerAd: NativeAd?,
-        decideBannerPosition: (suspend (newAdDeteceted: Boolean) -> TemplateView?)?
+        forceToShowPreviousAdOnly: Boolean,
+        decideBannerPosition: (suspend (newAdDeteceted: Boolean) -> Unit)?,
     ): NativeAd? {
         return withContext(IO) {
             if (banner) {
-                val ad = getBannerAd() ?: nativeBannerAd
-                Logger.log("Debug 64656 = " + ad?.body)
-                Logger.log("Debug 64656 1 = " + prevoiusBannerAd?.body)
+                val ad = getBannerAd()
                 ad.let {
-                    withContext(Dispatchers.Main) {
+                    withContext(Main) {
                         if (it != null) {
                             var newImpression = false
                             val previousAd = prevoiusBannerAd
@@ -105,18 +91,15 @@ class AdsManagerAdMobImpl(
                                 nativeBannerAd = it
                                 newImpression = true
                             }
-                            decideBannerPosition?.invoke(newImpression)?.let { templateView ->
-                                Logger.log("Debug 64656 2 = " + templateView)
-                                inflateNativeAd(templateView, it, true)
-                            }
+                            decideBannerPosition?.invoke(newImpression)
                         }
                     }
                     it
                 }
             } else {
-                val ad = nativeFullAd ?: getFullAd()
+                val ad = if (forceToShowPreviousAdOnly) nativeFullAd else getFullAd()
                 ad.let {
-                    withContext(Dispatchers.Main) {
+                    withContext(Main) {
                         if (it != null) {
                             if (admobTemplateView != null) {
                                 inflateNativeAd(admobTemplateView, it)
@@ -129,20 +112,30 @@ class AdsManagerAdMobImpl(
         }
     }
 
+
     override suspend fun loadAdmobAdapterItemAd(nativeAdView: NativeAdView, itemRootView: View) {
         val ad = getHomeAd() ?: nativeHomeAd
         ad.let {
             withContext(Main) {
+                itemRootView.findViewById<CardView>(R.id.adsFreeCard).setOnClickListener {
+                    CoroutineScope(IO).launch {
+                        MainActivity.premiumLiveData.send(2)
+                    }
+                }
                 if (it != null) {
-                    nativeAdView.visibility = View.VISIBLE
-                    inflateNativeAdapterItemAd(it, nativeAdView,itemRootView)
+                    nativeAdView.visibility = VISIBLE
+                    inflateNativeAdapterItemAd(it, nativeAdView, itemRootView)
                 }
             }
             it
         }
     }
 
-    private fun inflateNativeAdapterItemAd(nativeAd: NativeAd, nativeView: NativeAdView, itemRootView: View) {
+    private fun inflateNativeAdapterItemAd(
+        nativeAd: NativeAd,
+        nativeView: NativeAdView,
+        itemRootView: View,
+    ) {
         val headline = nativeAd.headline
         val body = nativeAd.body
         val cta = nativeAd.callToAction
@@ -159,26 +152,43 @@ class AdsManagerAdMobImpl(
         callToActionView.visibility = VISIBLE
         ad_notification_view.visibility = VISIBLE
         callToActionViewCard.visibility = VISIBLE
-
+        var secondaryText = ""
 
         val iconView = nativeView.findViewById<View>(R.id.icon) as ImageView
         val mediaView = nativeView.findViewById<View>(R.id.media_view) as MediaView
 
-        nativeAdView.setCallToActionView(callToActionView)
-        nativeAdView.setHeadlineView(primaryView)
-        nativeAdView.setMediaView(mediaView)
-        secondaryView.setVisibility(View.VISIBLE)
-        primaryView.setText(headline)
-        callToActionView.setText(cta)
+        nativeAdView.callToActionView = callToActionView
+        nativeAdView.headlineView = primaryView
+        nativeAdView.mediaView = mediaView
+        secondaryView.visibility = VISIBLE
+        primaryView.text = headline
+        callToActionView.text = cta
 
         if (icon != null) {
-            iconView.setVisibility(View.VISIBLE)
+            iconView.visibility = VISIBLE
             iconView.setImageDrawable(icon.drawable)
         } else {
-            iconView.setVisibility(View.GONE)
+            iconView.visibility = View.GONE
         }
-        tertiaryView.setText(body)
-        nativeAdView.setBodyView(tertiaryView)
+
+        val store = nativeAd.store
+        val advertiser = nativeAd.advertiser
+        if (adHasOnlyStore(nativeAd)) {
+            nativeAdView.storeView = secondaryView
+            if (store != null) {
+                secondaryText = store
+            }
+        } else if (!TextUtils.isEmpty(advertiser)) {
+            nativeAdView.advertiserView = secondaryView
+            if (advertiser != null) {
+                secondaryText = advertiser
+            }
+        } else {
+            secondaryText = ""
+        }
+        secondaryView.text = secondaryText
+        tertiaryView.text = body
+        nativeAdView.bodyView = tertiaryView
         nativeAdView.setNativeAd(nativeAd)
     }
 
@@ -197,7 +207,7 @@ class AdsManagerAdMobImpl(
         val callToActionView = nativeView.findViewById<View>(R.id.cta) as Button
         callToActionView.visibility = VISIBLE
         ad_notification_view.visibility = VISIBLE
-
+        var secondaryText = ""
         val iconView = nativeView.findViewById<View>(R.id.icon) as ImageView
         val mediaView = nativeView.findViewById<View>(R.id.media_view) as MediaView
 
@@ -214,9 +224,32 @@ class AdsManagerAdMobImpl(
         } else {
             iconView.setVisibility(View.GONE)
         }
-        tertiaryView.setText(body)
-        nativeAdView.setBodyView(tertiaryView)
+
+        val store = nativeAd.store
+        val advertiser = nativeAd.advertiser
+        if (adHasOnlyStore(nativeAd)) {
+            nativeAdView.storeView = secondaryView
+            if (store != null) {
+                secondaryText = store
+            }
+        } else if (!TextUtils.isEmpty(advertiser)) {
+            nativeAdView.advertiserView = secondaryView
+            if (advertiser != null) {
+                secondaryText = advertiser
+            }
+        } else {
+            secondaryText = ""
+        }
+        secondaryView.text = secondaryText
+        tertiaryView.text = body
+        nativeAdView.bodyView = tertiaryView
         nativeAdView.setNativeAd(nativeAd)
+    }
+
+    private fun adHasOnlyStore(nativeAd: NativeAd): Boolean {
+        val store = nativeAd.store
+        val advertiser = nativeAd.advertiser
+        return !TextUtils.isEmpty(store) && TextUtils.isEmpty(advertiser)
     }
 
     private fun inflateNativeAd(template: TemplateView, ad: NativeAd, banner: Boolean = false) {
@@ -225,13 +258,6 @@ class AdsManagerAdMobImpl(
                 .build()
         template.setStyles(styles)
         template.setNativeAd(ad)
-        if (banner) {
-//            template.premiumButton.setOnClickListener {
-//                CoroutineScope(IO).launch {
-//                    MainActivity.premiumLiveData.send(2)
-//                }
-//            }
-        }
     }
 
     private suspend fun getBannerAd(): NativeAd? {
@@ -248,19 +274,8 @@ class AdsManagerAdMobImpl(
         return ad ?: nativeBannerAd
     }
 
-    private suspend fun getInterstitialAd(skipTimeLimit: Boolean = false): InterstitialAd? {
-        if ((System.currentTimeMillis() < (lastInterstitialAdLoadedTime + 30000L)
-                    && interstitialAd != null) && !skipTimeLimit
-        ) {
-            Logger.log("Debug 6565656 Ads getInterstitialAd   time less than 2 Min........")
-            Logger.log("Debug admob Ads getInterstitialAd   time less than 2 Min........")
-            return interstitialAd
-        }
-        interstitialAd = null
-        lastInterstitialAdLoadedTime = System.currentTimeMillis()
-        Logger.log("Debug 6565656 Ads getInterstitialAd time more // than 2 Min........")
-        Logger.log("Debug admob Ads getInterstitialAd time more // than 2 Min........")
-
+    private suspend fun getInterstitialAd(): InterstitialAd? {
+        var interstitialAd: InterstitialAd? = null
         val job = Job()
         val adRequest = AdRequest.Builder().build()
         withContext(Main) {
@@ -271,7 +286,6 @@ class AdsManagerAdMobImpl(
                 object : InterstitialAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
                         Logger.log("Debug 6565656 Ads getInterstitialAd  = " + adError.message)
-                        lastInterstitialAdLoadedTime = 0L
                         job.complete()
                     }
 

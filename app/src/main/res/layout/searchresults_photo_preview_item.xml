@@ -109,13 +109,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="@dimen/gnt_default_margin"
-                app:layout_constraintBottom_toTopOf="@+id/body"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/media_view">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-
                     android:layout_width="@dimen/gnt_no_size"
                     android:layout_height="@dimen/gnt_no_size"
                     android:orientation="horizontal"
@@ -129,86 +127,79 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="@dimen/gnt_default_margin"
-                        android:layout_marginLeft="@dimen/gnt_default_margin"
                         android:layout_marginTop="@dimen/gnt_no_margin"
                         android:layout_marginEnd="@dimen/gnt_no_margin"
-                        android:layout_marginRight="@dimen/gnt_no_margin"
                         android:layout_marginBottom="@dimen/gnt_no_margin"
                         android:layout_weight="0"
                         android:scaleType="fitCenter"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintDimensionRatio="H,1:1"
-                        app:layout_constraintEnd_toStartOf="@id/content"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/content"
-                        android:layout_width="@dimen/gnt_no_size"
-                        android:layout_height="@dimen/gnt_no_size"
-                        android:layout_marginLeft="@dimen/gnt_default_margin"
-                        android:orientation="vertical"
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/content"
+                android:layout_width="@dimen/gnt_no_size"
+                android:layout_height="50dp"
+                android:orientation="vertical"
+                android:layout_marginTop="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                ads:layout_constraintStart_toStartOf="parent"
+                ads:layout_constraintTop_toBottomOf="@id/middle">
+                <LinearLayout
+                    android:id="@+id/row_two"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/gnt_no_size"
+                    android:layout_weight="0.5"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    ads:layout_constraintTop_toTopOf="parent"
+                    >
+
+                    <TextView
+                        android:id="@+id/ad_notification_view"
+                        android:layout_width="@dimen/gnt_ad_indicator_width"
+                        android:layout_height="@dimen/gnt_ad_indicator_height"
+                        android:layout_marginStart="@dimen/gnt_no_margin"
+                        android:layout_marginTop="@dimen/gnt_ad_indicator_top_margin"
+                        android:layout_marginEnd="@dimen/gnt_default_margin"
+                        android:background="@drawable/gnt_rounded_corners_shape"
+                        android:gravity="center"
+                        android:text="Ad"
+                        android:textColor="@color/gnt_ad_green"
+                        android:textSize="@dimen/gnt_ad_indicator_text_size"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="@dimen/gnt_no_margin"
+                        android:layout_marginTop="@dimen/gnt_no_margin"
+                        android:layout_marginEnd="@dimen/gnt_no_margin"
+                        android:layout_marginBottom="@dimen/gnt_no_margin"
+                        android:ellipsize="end"
+                        android:gravity="top"
+                        android:maxLines="1"
+                        android:textColor="@color/gnt_gray"
+                        android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/icon"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintStart_toEndOf="@id/ad_notification_view"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-
-                        <LinearLayout
-                            android:id="@+id/row_two"
-                            android:layout_width="match_parent"
-                            android:layout_height="@dimen/gnt_no_size"
-                            android:layout_weight="0.5"
-                            android:orientation="horizontal"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            ads:layout_constraintTop_toTopOf="parent"
-                            >
-
-                            <TextView
-                                android:id="@+id/ad_notification_view"
-                                android:layout_width="@dimen/gnt_ad_indicator_width"
-                                android:layout_height="@dimen/gnt_ad_indicator_height"
-                                android:layout_marginStart="@dimen/gnt_no_margin"
-                                android:layout_marginTop="@dimen/gnt_ad_indicator_top_margin"
-                                android:layout_marginEnd="@dimen/gnt_default_margin"
-                                android:background="@drawable/gnt_rounded_corners_shape"
-                                android:gravity="center"
-                                android:text="Ad"
-                                android:textColor="@color/gnt_ad_green"
-                                android:textSize="@dimen/gnt_ad_indicator_text_size"
-                                android:textStyle="bold"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                android:id="@+id/secondary"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_marginStart="@dimen/gnt_no_margin"
-                                android:layout_marginTop="@dimen/gnt_no_margin"
-                                android:layout_marginEnd="@dimen/gnt_no_margin"
-                                android:layout_marginBottom="@dimen/gnt_no_margin"
-                                android:ellipsize="end"
-                                android:gravity="top"
-                                android:maxLines="1"
-                                android:textColor="@color/gnt_gray"
-                                android:textSize="14sp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@id/ad_notification_view"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                        </LinearLayout>
-
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
@@ -218,7 +209,7 @@
                 android:layout_weight="0.5"
                 android:gravity="left"
                 android:orientation="horizontal"
-                ads:layout_constraintTop_toBottomOf="@id/middle"
+                ads:layout_constraintTop_toBottomOf="@id/content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 
@@ -242,7 +233,7 @@
 
             <TextView
                 android:id="@+id/body"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="2dp"

@@ -203,7 +203,7 @@ class SearchResultPhotosViewModel
         return withContext(IO) {
             photosDao.insertFavouritePhoto(favPhotosEntity =
             FavPhotosEntity(photoInfo.id,
-            photoInfo.previewUrl,photoInfo.uris,photoInfo.isPotrait,
+            photoInfo.previewUrl,photoInfo.uris, width = photoInfo.width, height = photoInfo.height,photoInfo.isPotrait,
             photoInfo.colorCode,photoInfo.description))
         }
     }

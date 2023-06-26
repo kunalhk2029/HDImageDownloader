@@ -13,6 +13,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_centerInParent="true"
+        android:background="@drawable/adbgblack"
         >
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="0dp"
@@ -114,29 +115,6 @@
                 android:layout_marginLeft="@dimen/gnt_no_margin"
                 android:layout_marginRight="@dimen/gnt_default_margin">
             </TextView>
-            <RatingBar
-                android:id="@+id/rating_bar"
-                android:background="@color/gnt_white"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textSize="@dimen/gnt_text_size_small"
-                android:textColor="@color/gnt_gray"
-                android:numStars="5"
-                android:stepSize="0.1"
-                android:lines="1"
-                android:visibility="gone"
-                android:layout_marginTop="@dimen/gnt_no_margin"
-                android:layout_marginBottom="@dimen/gnt_no_margin"
-                android:layout_marginStart="@dimen/gnt_no_margin"
-                android:layout_marginEnd="@dimen/gnt_no_margin"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/ad_notification_view"
-                app:layout_constraintTop_toTopOf="parent">
-
-            </RatingBar>
-
-
             <TextView
                 android:id="@+id/secondary"
                 android:layout_width="wrap_content"

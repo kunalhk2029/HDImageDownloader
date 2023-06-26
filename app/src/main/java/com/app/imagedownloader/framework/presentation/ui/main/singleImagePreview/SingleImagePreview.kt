@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
@@ -28,6 +29,7 @@ import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
+import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.handleAdsOnBackPressed
 import com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.DownloadsPreview
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -83,6 +85,15 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSingleImagePreviewBinding.bind(view)
+
+        val backbtcallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (handleAdsOnBackPressed()) return
+                isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backbtcallback)
 
         if (Build.VERSION.SDK_INT <= 32) {
             model =
@@ -239,7 +250,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
                     )
                 }
             },
-            requireActivity() as MainActivity, 0, false, showBoth = false
+            requireActivity() as MainActivity, 0, false
         )
     }
 

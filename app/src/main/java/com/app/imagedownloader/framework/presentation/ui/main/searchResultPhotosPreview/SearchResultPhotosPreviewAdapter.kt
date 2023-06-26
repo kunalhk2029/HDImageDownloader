@@ -155,6 +155,10 @@ class SearchResultPhotosPreviewAdapter(
                 interaction?.onItemClicked(bindingAdapterPosition, item)
             }
 
+            itemView.setOnLongClickListener {
+                interaction?.onItemLongClicked(bindingAdapterPosition, item)
+                true
+            }
             markFavIcon.setOnClickListener {
                 if (item.isFav) return@setOnClickListener
                 CoroutineScope(Main).launch {
@@ -185,6 +189,7 @@ class SearchResultPhotosPreviewAdapter(
 
     interface Interaction {
         fun onItemClicked(position: Int, item: UnsplashPhotoInfo.photoInfo)
+        fun onItemLongClicked(position: Int, item: UnsplashPhotoInfo.photoInfo)
         suspend fun onMarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo):Long
         suspend fun onUnmarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo):Int
     }
