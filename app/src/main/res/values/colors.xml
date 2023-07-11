@@ -33,5 +33,14 @@
     <color name="orange">#FFA500</color>
     <color name="pin_red">#00AD7C</color>
     <color name="night_screen_background">#202124</color>
+    <color name="night_screen_backfground">#556b2f</color>
+
+<!--    "#000000",-->
+<!--    "#696969",-->
+<!--    "#f08080"-->
+<!--    "#2f4f4f",-->
+<!--    "#556b2f",-->
+<!--    "#696969",-->
+<!--    "#778899"-->
 
 </resources>

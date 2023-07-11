@@ -15,7 +15,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.app.imagedownloader.R
 import com.app.imagedownloader.business.data.cache.model.FavPhotosEntity
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.Photo
+import com.app.imagedownloader.business.domain.model.PhotoSource
 import com.app.imagedownloader.business.interactors.singleImagePreview.ShareMediaOrSetWallpaper
 import com.app.imagedownloader.databinding.FragmentMoreOptionsBottomSheetBinding
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
@@ -75,24 +76,25 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private fun handleButtonClick() {
         binding?.let {
-            val model: UnsplashPhotoInfo.photoInfo = requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
+            val model: Photo = requireArguments().getSerializable("onlinePreviewModel") as Photo
 
             it.ShareCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.uris.hdUrl, false, requireContext())
+                shareMediaOrSetWallpaper(model.urls!!.hdUrl, false, requireContext())
                 requireActivity().onBackPressed()
             }
 
             it.AboutUploaderCard.setOnClickListener {
                 val intent = Intent().apply {
                     action=Intent.ACTION_VIEW
-                    data= Uri.parse("https://unsplash.com/photos/${model.id}")
+                    if (model.photoSource is PhotoSource.UnsplashApi) data= Uri.parse("https://unsplash.com/photos/${model.id}")
+                    if (model.photoSource is PhotoSource.PexelsApi) data= Uri.parse("https://www.pexels.com/photo/${model.id}/")
                 }
                 val chooser = Intent.createChooser(intent,"Select Browser")
                 requireActivity().startActivity(chooser)
                 requireActivity().onBackPressed()
             }
             it.setWallpaperCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.uris.hdUrl, true, requireContext())
+                shareMediaOrSetWallpaper(model.urls!!.hdUrl, true, requireContext())
                 requireActivity().onBackPressed()
             }
 
@@ -100,7 +102,7 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
                 try {
                     val bundle = Bundle().apply {
                         putSerializable("onlinePreviewModel", model)
-                        putString("colorCode", model.colorCode)
+                        putSerializable("colorCode", model.colorCode)
                     }
                     findNavController().navigate(
                         R.id.action_moreOptionsBottomSheet_to_imageDetailsBottomSheet,
@@ -124,14 +126,7 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
                     }
                 } else {
                     lifecycleScope.launch(IO) {
-                        photosDao.insertFavouritePhoto(FavPhotosEntity(model.id,
-                            model.previewUrl,
-                            model.uris,
-                            width=model.width,
-                            height=model.height,
-                            model.isPotrait,
-                            model.colorCode,
-                            model.description)).let {_->
+                        photosDao.insertFavouritePhoto(model.mapToFavPhoto()).let {_->
                             model.isFav=true
                             withContext(Main) {
                                 it.markfavtext.text = getString(R.string.remove_fav)
@@ -143,12 +138,12 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun isFav(photoInfo: UnsplashPhotoInfo.photoInfo): Boolean {
+    private fun isFav(photoInfo: Photo): Boolean {
         return photoInfo.isFav
     }
 
     private fun handleButtonBackgroundColor() {
-        val color = Color.parseColor(requireArguments().getString("colorCode"))
+        val color = requireArguments().getInt("colorCode")
         binding?.let {
             it.sharetext.setTextColor(color)
             it.moredetailstext.setTextColor(color)

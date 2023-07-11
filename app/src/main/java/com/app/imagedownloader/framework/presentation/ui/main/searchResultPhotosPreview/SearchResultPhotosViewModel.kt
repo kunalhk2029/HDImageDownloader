@@ -4,14 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.imagedownloader.business.data.cache.model.FavPhotosEntity
 import com.app.imagedownloader.business.data.cache.model.RecentSearch
-import com.app.imagedownloader.business.domain.core.DataState.DataState
+import com.app.imagedownloader.business.data.network.dto.ApiSourcesInfo
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.Filters.SortByFilter
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
-import com.app.imagedownloader.business.interactors.singleImagePreview.FilterPhotos
-import com.app.imagedownloader.business.interactors.singleImagePreview.GetPhotosFromUnsplashApi
+import com.app.imagedownloader.business.domain.core.DataState.DataState
+import com.app.imagedownloader.business.domain.model.Photo
+import com.app.imagedownloader.business.interactors.searchResults.FilterPhotos
+import com.app.imagedownloader.business.interactors.searchResults.GetPhotos
+import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewStateEvents
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewViewState
@@ -25,7 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchResultPhotosViewModel
 @Inject constructor(
-    private val getPhotosFromUnsplashApi: GetPhotosFromUnsplashApi,
+    private val getPhotos: GetPhotos,
     private val filterPhotos: FilterPhotos,
     private val photosDao: PhotosDao,
 ) : ViewModel() {
@@ -51,10 +52,11 @@ class SearchResultPhotosViewModel
                     resetPagination()
                 }
                 setsearchedKeyword(searchResultPhotosPreviewStateEvents.keyword)
-                getPhotosFromUnsplashApi(
-                    searchResultPhotosPreviewStateEvents.keyword,
-                    if (searchResultPhotosPreviewStateEvents.pageNo == 1) 1 else searchResultPhotosPreviewStateEvents.pageNo + 1,
-                    searchResultPhotosPreviewViewState.value?.searchResultPhotos
+                getPhotos(
+                    keyword = searchResultPhotosPreviewStateEvents.keyword,
+                    apiSourcesInfo = searchResultPhotosPreviewViewState.value?.apiSourcesInfo
+                        ?: ApiSourcesInfo(),
+                    list = searchResultPhotosPreviewViewState.value?.searchResultPhotos
                 ).onEach {
                     _searchResultPhotosPreviewDataState.value = it
                 }.launchIn(viewModelScope)
@@ -102,7 +104,7 @@ class SearchResultPhotosViewModel
         _searchResultPhotosPreviewViewState.value = currentViewState
     }
 
-    private fun updateColorsFilter(list: List<String>) {
+    private fun updateColorsFilter(list: List<Int>) {
         val currentViewState = getHomeViewState()
         currentViewState.colorsFilter = list
         _searchResultPhotosPreviewViewState.value = currentViewState
@@ -114,26 +116,49 @@ class SearchResultPhotosViewModel
         _searchResultPhotosPreviewViewState.value = currentViewState
     }
 
-    fun updateCurrentPage() {
+    private fun updateCurrentPages(apiSourcesInfo: ApiSourcesInfo) {
         val currentViewState = getHomeViewState()
-        val currentPage = currentViewState.currentPage
-        currentViewState.currentPage = currentPage + 1
+        if (apiSourcesInfo.unsplashTotalPhotos != null) {
+            Logger.log("68989898  unsplashCurrentPageNo++")
+            currentViewState.apiSourcesInfo.unsplashCurrentPageNo++
+        }
+        if (apiSourcesInfo.pexelsTotalPhotos != null) {
+            Logger.log("68989898  pexelsCurrentPageNo++")
+            currentViewState.apiSourcesInfo.pexelsCurrentPageNo++
+        }
         _searchResultPhotosPreviewViewState.value = currentViewState
     }
 
-    fun setTotalItems(count: Int) {
+
+    fun setApiSourcesInfo(apiSourcesInfo: ApiSourcesInfo) {
         val currentViewState = getHomeViewState()
-        if (currentViewState.totalPhotosItems == null) currentViewState.totalPhotosItems = count
+        apiSourcesInfo.let {
+            it.unsplashTotalPhotos?.let {
+                Logger.log("68989898 unsplashTotalPhotos = " + it)
+                currentViewState.apiSourcesInfo.unsplashTotalPhotos = it
+            }
+            it.unsplashPages?.let {
+                Logger.log("68989898 unsplashPages = " + it)
+                currentViewState.apiSourcesInfo.unsplashPages = it
+            }
+            it.pexelsTotalPhotos?.let {
+                Logger.log("68989898 pexelsTotalPhotos = " + it)
+                currentViewState.apiSourcesInfo.pexelsTotalPhotos = it
+            }
+            it.pexelsPages?.let {
+                Logger.log("68989898 pexelsPages = " + it)
+                currentViewState.apiSourcesInfo.pexelsPages = it
+            }
+            it.pinterestNextQueryBookMark?.let {
+                Logger.log("68989898 pinterestNextQueryBookMark = " + it)
+                currentViewState.apiSourcesInfo.pinterestNextQueryBookMark = it
+            }
+        }
         _searchResultPhotosPreviewViewState.value = currentViewState
+        updateCurrentPages(apiSourcesInfo)
     }
 
-    fun setTotalPages(count: Int) {
-        val currentViewState = getHomeViewState()
-        if (currentViewState.totalPages == null) currentViewState.totalPages = count
-        _searchResultPhotosPreviewViewState.value = currentViewState
-    }
-
-    fun setSearchResultPhotosList(list: List<UnsplashPhotoInfo.photoInfo>) {
+    fun setSearchResultPhotosList(list: List<Photo>) {
         val currentViewState = getHomeViewState()
         currentViewState.searchResultPhotos = list
         _searchResultPhotosPreviewViewState.value = currentViewState
@@ -163,7 +188,7 @@ class SearchResultPhotosViewModel
         searchResultPhotosPreviewViewState.value?.let { viewState ->
             val colorList = viewState.distinctColorsList.toMutableList()
             viewState.searchResultPhotos?.forEach {
-                if (!colorList.contains(it.colorCode) && it.colorCode != "") {
+                if (!colorList.contains(it.colorCode) && it.colorCode != 0) {
                     colorList.add(it.colorCode)
                 }
             }
@@ -172,7 +197,7 @@ class SearchResultPhotosViewModel
         _searchResultPhotosPreviewViewState.value = currentViewState
     }
 
-    fun setFilteredsearchResultPhotos(list: List<UnsplashPhotoInfo.photoInfo>) {
+    fun setFilteredsearchResultPhotos(list: List<Photo>) {
         val currentViewState = getHomeViewState()
         currentViewState.filteredSearchResultPhotos = list
         _searchResultPhotosPreviewViewState.value = currentViewState
@@ -199,16 +224,14 @@ class SearchResultPhotosViewModel
         }
     }
 
-    suspend fun markPhotoAsFav(photoInfo: UnsplashPhotoInfo.photoInfo): Long {
+    suspend fun markPhotoAsFav(photoInfo: Photo): Long {
         return withContext(IO) {
             photosDao.insertFavouritePhoto(favPhotosEntity =
-            FavPhotosEntity(photoInfo.id,
-            photoInfo.previewUrl,photoInfo.uris, width = photoInfo.width, height = photoInfo.height,photoInfo.isPotrait,
-            photoInfo.colorCode,photoInfo.description))
+            photoInfo.mapToFavPhoto())
         }
     }
 
-    suspend fun unmarkPhotoAsFav(photoInfo: UnsplashPhotoInfo.photoInfo): Int {
+    suspend fun unmarkPhotoAsFav(photoInfo: Photo): Int {
         return withContext(IO) {
             photosDao.deleteFavouritePhoto(photoInfo.id)
         }

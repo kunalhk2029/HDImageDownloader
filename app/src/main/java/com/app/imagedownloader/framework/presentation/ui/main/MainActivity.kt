@@ -22,6 +22,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.app.imagedownloader.R
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.core.DataState.DataState
@@ -42,6 +45,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import javax.inject.Inject
 
 
@@ -59,7 +63,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
 
     @Inject
     lateinit var glideManager: GlideManager
-
 
     @Inject
     lateinit var generalAdsManager: GeneralAdsManager
@@ -119,10 +122,9 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         handleDialogAds()
 
         askForRating()
-
     }
 
-    private  fun handleDialogAds() {
+    private fun handleDialogAds() {
         lifecycleScope.launch {
             showFullScreenAds.receiveAsFlow().collectLatest { jobList ->
                 generalAdsManager.handleNativeFull(
@@ -139,6 +141,7 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             }
         }
     }
+
     private fun handleStoragePermission() {
         if (!isreadallowed()) {
             requestreadperm()
@@ -273,14 +276,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
     }
 
     private fun handleNavDrawerClick() {
-//        handleDrawerHeader()
-//        binding?.topAppBar?.setNavigationOnClickListener {
-//            if (viewModel.showBottomTooltip()) return@setNavigationOnClickListener
-//            if (navController.currentDestination?.id == R.id.autodownloadtiles) navController.navigate(
-//                R.id.action_autodownloadtiles_to_bottomMenu
-//            )
-//            else onBackPressed()
-//        }
     }
 
     override fun setToolbarTitleText(title: String) {

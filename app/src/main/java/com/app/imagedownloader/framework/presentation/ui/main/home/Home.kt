@@ -135,9 +135,8 @@ class Home : Fragment(R.layout.fragment_home) {
                 photosDao.insertRecentSearchQuery(RecentSearch(it))
             }
             searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.searchPhotos(
-                it,
-                searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.currentPage
-                    ?: 1))
+                it
+            ))
         }.launchIn(lifecycleScope)
     }
 
@@ -156,9 +155,8 @@ class Home : Fragment(R.layout.fragment_home) {
                     chip.chipBackgroundColor =
                         ContextCompat.getColorStateList(requireContext(), R.color.blue)
                     searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.searchPhotos(
-                        chip.text.toString(),
-                        searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.currentPage
-                            ?: 1))
+                        chip.text.toString()
+                    ))
                 }
             }
         }
@@ -179,9 +177,8 @@ class Home : Fragment(R.layout.fragment_home) {
                     chip.chipBackgroundColor =
                         ContextCompat.getColorStateList(requireContext(), R.color.blue)
                     searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.searchPhotos(
-                        chip.text.toString(),
-                        searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.currentPage
-                            ?: 1))
+                        chip.text.toString()
+                    ))
                 }
             }
         }

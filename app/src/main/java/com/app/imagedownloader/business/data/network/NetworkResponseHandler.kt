@@ -3,7 +3,6 @@ package com.app.imagedownloader.business.domain.NetworkBoundResource
 import com.app.imagedownloader.business.data.network.ApiResponses.InstagramApiResult.ApiResult
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.framework.Utils.Logger
-import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,7 +10,7 @@ import kotlinx.coroutines.withContext
 
 abstract class NetworkResponseHandler<ViewStateType, ResponseObject>(
     val customStateOnInit: Boolean = false,
-    customState: (() -> DataState<ViewStateType>?)? = null
+    customState: (() -> DataState<ViewStateType>?)? = null,
 ) {
 
     private lateinit var apiResult: ApiResult<ResponseObject>
@@ -33,7 +32,12 @@ abstract class NetworkResponseHandler<ViewStateType, ResponseObject>(
             when (apiResult) {
                 is ApiResult.Success -> {
                     Logger.log("659595  abstracy........ = 445")
-                    emit(createSuccessDataState(apiResult as ApiResult.Success<ResponseObject>))
+                    lateinit var successDataState: DataState<ViewStateType>
+                    withContext(Dispatchers.Default) {
+                        successDataState =
+                            createSuccessDataState(apiResult as ApiResult.Success<ResponseObject>)
+                    }
+                    emit(successDataState)
                 }
                 is ApiResult.Error -> {
                     Logger.log("659595  abstracy........ =4 ")

@@ -1,5 +1,7 @@
 package com.app.imagedownloader.business.data.network.Volley.VolleyNetworkHandler
 
+import com.android.volley.Request
+import com.android.volley.Request.Method
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -18,8 +20,9 @@ abstract class NetworkRequestHandler<ResponseObject>(
     val map: HashMap<String, String>? = null,
     val fireConversionMethodOnError: Boolean = false,
     val scope: CoroutineScope = CoroutineScope(IO),
-    var stringRequest: Boolean = false
-) {
+    val jsonObject: JSONObject?=null,
+    val method: Int=Request.Method.GET,
+    ) {
 
     private lateinit var apiResult: ApiResult<ResponseObject>
 
@@ -30,7 +33,7 @@ abstract class NetworkRequestHandler<ResponseObject>(
         if (requestQueue != null) {
             Logger.log("659595  abstracy........ = 44fffff = "+url)
             val request = object : JsonObjectRequest(
-                Method.GET, url,null,
+                method, url,jsonObject,
                 Response.Listener {
                     Logger.log("659595  abstracy........ = 44fffff  5 = "+it)
                     scope.launch {

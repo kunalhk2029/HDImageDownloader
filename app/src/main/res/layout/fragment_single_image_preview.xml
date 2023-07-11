@@ -16,11 +16,9 @@
     <com.app.imagedownloader.framework.presentation.ui.components.ScalingImageView
         android:id="@+id/imagePreview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="1dp"
+        android:layout_height="match_parent"
         android:scaleType="centerInside"
-        app:layout_constraintBottom_toTopOf="@id/descriptionCard"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -142,7 +140,7 @@
                 android:src="@drawable/ic_baseline_insert_photo_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/pin_red" />
+                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -161,7 +159,7 @@
                 android:src="@drawable/ic_baseline_delete_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/pin_red" />
+              />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -171,7 +169,6 @@
             android:backgroundTint="#0000ffff"
             android:gravity="center"
             android:text="@string/delete"
-            android:textColor="@color/pin_red"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline90"
@@ -184,7 +181,6 @@
             android:backgroundTint="#0000ffff"
             android:gravity="center"
             android:text="@string/share"
-            android:textColor="@color/pin_red"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline133"
@@ -194,16 +190,15 @@
             android:id="@+id/exoviewingalltext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/pin_red"
             android:gravity="center"
             android:text="@string/view_in_gallery"
-            android:textColor="@color/pin_red"
             android:textSize="12sp"
+            android:backgroundTint="#0000ffff"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline144"
             app:layout_constraintStart_toStartOf="@id/guideline133"
-            app:layout_constraintTop_toBottomOf="@id/exoshare" />
+            />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline90"

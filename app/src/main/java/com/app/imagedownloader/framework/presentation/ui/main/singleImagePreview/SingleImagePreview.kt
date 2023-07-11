@@ -23,7 +23,7 @@ import com.app.imagedownloader.R
 import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.changeStatusAndNavigationBarColor
 import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.setDefaultBarColor
 import com.app.imagedownloader.Utils.VibrateExtension
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.databinding.FragmentSingleImagePreviewBinding
 import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
@@ -54,9 +54,9 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     @Inject
     lateinit var generalAdsManager: GeneralAdsManager
 
-    var model: UnsplashPhotoInfo.photoInfo? = null
+    var model:Photo? = null
     var offlinePhotoUri: String? = null
-    var offlinePhotoColorCode: String? = null
+    var offlinePhotoColorCode: Int? = null
     var binding: FragmentSingleImagePreviewBinding? = null
 
     companion object {
@@ -77,7 +77,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     override fun onResume() {
         super.onResume()
         model?.let {
-            changeStatusAndNavigationBarColor(Color.parseColor(it.colorCode))
+            changeStatusAndNavigationBarColor(it.colorCode)
         }
         uiCommunicationListener.hideToolbar()
     }
@@ -98,18 +98,18 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
         if (Build.VERSION.SDK_INT <= 32) {
             model =
                 requireArguments().getSerializable("onlinePreviewModel")?.let {
-                    it as UnsplashPhotoInfo.photoInfo
+                    it as Photo
                 }
         } else {
             model = requireArguments().getSerializable(
                 "onlinePreviewModel",
-                UnsplashPhotoInfo.photoInfo::class.java
+                Photo::class.java
             )
         }
 
         if (model != null) showOnlineImageUi() else {
             offlinePhotoUri = requireArguments().getString("offlinePhotoUri")
-            offlinePhotoColorCode = requireArguments().getString("offlinePhotoColorCode")
+            offlinePhotoColorCode = requireArguments().getInt("offlinePhotoColorCode")
             showOfflineImageUi()
         }
         loadImage()
@@ -126,7 +126,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     private fun showMoreOptionsDialog() {
         val bundle = Bundle().apply {
             putSerializable("onlinePreviewModel", model)
-            putString("colorCode", model!!.colorCode)
+            putInt("colorCode", model!!.colorCode)
         }
         findNavController().navigate(
             R.id.action_singleImagePreview_to_moreOptionsBottomSheet,
@@ -137,7 +137,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     private fun showDownloadOptionsDialog() {
         val bundle = Bundle().apply {
             putSerializable("onlinePreviewModel", model)
-            putString("colorCode", model!!.colorCode)
+            putInt("colorCode", model!!.colorCode)
         }
         findNavController().navigate(
             R.id.action_singleImagePreview_to_downloadOptionsBottomSheet,
@@ -148,12 +148,15 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     private fun handleOfflineImageUiClick() {
         binding?.let {
             it.delete.setOnClickListener {
+                vibrate.vibrate()
                 handleDeletion()
             }
             it.share.setOnClickListener {
+                vibrate.vibrate()
                 handleShare()
             }
             it.viewingallery.setOnClickListener {
+                vibrate.vibrate()
                 handleViewImageInGallery()
             }
         }
@@ -243,7 +246,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
                     it.progressBar.visibility = View.VISIBLE
                     glideManager.setImageFromUrl(
                         it.imagePreview,
-                        model?.uris?.regularUrl ?: offlinePhotoUri,
+                        model?.urls?.regularUrl ?: offlinePhotoUri,
                         glideSuccessUnit = {
                             kotlin.run { it.progressBar.visibility = View.GONE }
                         }
@@ -257,15 +260,9 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     private fun showOfflineImageUi() {
         handleOfflineImageUiClick()
         binding?.let {
-            val color = Color.parseColor(offlinePhotoColorCode)
+            val color =offlinePhotoColorCode
             it.offlineImageActionsView.visibility = View.VISIBLE
-            changeStatusAndNavigationBarColor(color)
-            it.viewingalleryimageview.drawable.overrideColor(color)
-            it.shareimageview.drawable.overrideColor(color)
-            it.deleteimageview.drawable.overrideColor(color)
-            it.exosharetext.setTextColor(color)
-            it.exoviewingalltext.setTextColor(color)
-            it.exodeletetext.setTextColor(color)
+            color?.let { it1 -> changeStatusAndNavigationBarColor(it1) }
         }
     }
 
@@ -273,18 +270,18 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
         handleOnlineImageUiClick()
         binding?.let {
             it.onlinePreviewActionsView.visibility = View.VISIBLE
-            it.downloadBtView.setBackgroundColor(Color.parseColor(model!!.colorCode))
-            it.MoreActionsBtView.setBackgroundColor(Color.parseColor(model!!.colorCode))
-            it.descriptionView.setBackgroundColor(Color.parseColor(model!!.colorCode))
-            it.yg.setBackgroundColor(Color.parseColor(model!!.colorCode))
-            changeStatusAndNavigationBarColor(Color.parseColor(model!!.colorCode))
+            it.downloadBtView.setBackgroundColor(model!!.colorCode)
+            it.MoreActionsBtView.setBackgroundColor(model!!.colorCode)
+            it.descriptionView.setBackgroundColor(model!!.colorCode)
+            it.yg.setBackgroundColor(model!!.colorCode)
+            changeStatusAndNavigationBarColor(model!!.colorCode)
             ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)
-                ?.overrideColor(Color.parseColor(model!!.colorCode))
-            if (!isDark(Color.parseColor(model!!.colorCode))) it.downloadtextview.setTextColor(Color.parseColor(
+                ?.overrideColor(model!!.colorCode)
+            if (!isDark(model!!.colorCode)) it.downloadtextview.setTextColor(Color.parseColor(
                 "#111111"))
-            if (!isDark(Color.parseColor(model!!.colorCode))) it.moreActionstextview.setTextColor(
+            if (!isDark(model!!.colorCode)) it.moreActionstextview.setTextColor(
                 Color.parseColor("#111111"))
-            if (!isDark(Color.parseColor(model!!.colorCode))) it.descriptiontextview.setTextColor(
+            if (!isDark(model!!.colorCode)) it.descriptiontextview.setTextColor(
                 Color.parseColor("#111111"))
             model!!.description?.let {
                 binding?.descriptiontextview?.text = it

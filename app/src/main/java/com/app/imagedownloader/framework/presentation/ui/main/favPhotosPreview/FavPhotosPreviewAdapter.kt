@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.app.imagedownloader.R
 import com.app.imagedownloader.business.domain.model.FavPhotos
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
 import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -108,6 +107,7 @@ class FavPhotosPreviewAdapter(
                 CoroutineScope(Dispatchers.Main).launch {
                     generalAdsManager.showNativeAdapterItemAd(adView,itemView).let {
                         adspaceholder.visibility=View.GONE
+                        if (it) adsFreeCard.visibility=View.GONE
                     }
                 }
                 return@with
@@ -130,7 +130,7 @@ class FavPhotosPreviewAdapter(
 
             description.visibility = View.GONE
             item.description?.let {
-                val color = Color.parseColor(item.colorCode)
+                val color = item.colorCode
                 description.setBackgroundColor(color)
                 description.text = it
                 if (!isDark(color))

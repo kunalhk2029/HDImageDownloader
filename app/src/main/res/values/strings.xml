@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">HD+ Image Downloader</string>
-
+    <string name="app_name">Pixel Perfect Saver</string>
     <string name="criticalupdate">Critical Update</string>
     <string name="mandatoryupdatewarning">\"Mandatory update is required to continue using the app.This update contains bug fixes to the core functionalities of the app. \"</string>
     <string name="playbackerror">Playback Error…</string>

@@ -1,15 +1,15 @@
 package com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.app.imagedownloader.R
 import com.app.imagedownloader.business.domain.model.FavPhotos
+import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.databinding.FragmentFavPhotosPreviewBinding
 import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
@@ -28,7 +28,7 @@ class FavPhotosPreview : Fragment(R.layout.fragment_fav_photos_preview),
     @Inject
     lateinit var glideManager: GlideManager
 
-    var binding:FragmentFavPhotosPreviewBinding?=null
+    var binding: FragmentFavPhotosPreviewBinding? = null
     lateinit var adapter: FavPhotosPreviewAdapter
 
     private val viewModel by viewModels<FavPhotosPreviewViewModel>()
@@ -38,7 +38,6 @@ class FavPhotosPreview : Fragment(R.layout.fragment_fav_photos_preview),
         binding = FragmentFavPhotosPreviewBinding.bind(view)
 
         initFavPhotosAdapter()
-        initRecyclerView()
         subscribeObservers()
     }
 
@@ -49,7 +48,7 @@ class FavPhotosPreview : Fragment(R.layout.fragment_fav_photos_preview),
             }
 
             it?.let {
-                if (it.loading)   binding?.progressbar?.visibility = View.VISIBLE
+                if (it.loading) binding?.progressbar?.visibility = View.VISIBLE
 
 //                if (!it.loading && it.data?.peekContent()?.list!=null)
 //                    uiCommunicationListener.showBannerAdOnLoadingFinished(null,true)
@@ -65,31 +64,32 @@ class FavPhotosPreview : Fragment(R.layout.fragment_fav_photos_preview),
         viewModel.favPhotosPreviewViewState.observe(viewLifecycleOwner) {
             it.list?.let {
                 binding?.progressbar?.visibility = View.GONE
-                Logger.log("67564 = "+it)
+                Logger.log("67564 = " + it)
                 adapter.submitList(it)
             }
         }
     }
 
-    private fun initFavPhotosAdapter(){
-        adapter =FavPhotosPreviewAdapter(this, glideManager = glideManager, generalAdsManager = generalAdsManager)
+    private fun initFavPhotosAdapter() {
+        adapter = FavPhotosPreviewAdapter(this,
+            glideManager = glideManager,
+            generalAdsManager = generalAdsManager)
         binding?.recyclerView?.let {
-            it.layoutManager= StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
-            it.adapter=adapter
+            it.layoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
+            it.adapter = adapter
         }
     }
-    private fun initRecyclerView(){
-        binding?.recyclerView?.let {
-            it.layoutManager= StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
-            it.adapter=adapter
-        }
-    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        binding=null
+        binding = null
     }
 
     override fun onItemSelected(position: Int, item: FavPhotos) {
-
+        val bundle = Bundle().apply {
+            putSerializable("onlinePreviewModel", item.mapToPhoto())
+        }
+        findNavController().navigate(R.id.action_favPhotosPreview_to_singleImagePreview,
+            bundle)
     }
 }

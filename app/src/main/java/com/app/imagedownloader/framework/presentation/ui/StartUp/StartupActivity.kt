@@ -24,8 +24,8 @@ class StartupActivity : AppCompatActivity() {
 
     @Inject
     lateinit var sharedPrefRepository: SharedPrefRepository
-    var startupimg: ImageView? = null
-    var opened = false
+    private var startupimg: ImageView? = null
+    private var opened = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_startup)
@@ -42,18 +42,21 @@ class StartupActivity : AppCompatActivity() {
             } else {
                 CoroutineScope(Main).launch {
                     startupimg?.let {
-                        glideManager.setImageFromUrl(it, R.drawable.ic_layer_1)
-                    }
-                    delay(1200L)
-                    launch {
-                        val intent =
-                            Intent(
-                                this@StartupActivity,
-                                MainActivity::class.java
-                            )
-                        startActivity(intent)
-                        opened = true
-                        finish()
+                        glideManager.setImageFromUrl(it, R.drawable.artboard_1,glideSuccessUnit = {
+                            CoroutineScope(Main).launch {
+                            delay(1200L)
+                                val intent =
+                                    Intent(
+                                        this@StartupActivity,
+                                        MainActivity::class.java
+                                    )
+                                startActivity(intent)
+                                opened = true
+                                finish()
+                            }
+                            kotlin.run {
+                            }
+                        })
                     }
                 }
             }

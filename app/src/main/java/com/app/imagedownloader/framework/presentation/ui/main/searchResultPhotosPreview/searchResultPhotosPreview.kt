@@ -2,6 +2,7 @@ package com.app.imagedownloader.framework.presentation.ui.main.searchResultPhoto
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -29,7 +30,7 @@ import com.app.imagedownloader.R
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.Filters.SortByFilter
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.databinding.FragmentSearchResultPhotosPreviewBinding
 import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
@@ -86,6 +87,11 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.search_result_preview_menu, menu)
+        if (getAppTheme() == 1) {
+            val filter = menu.findItem(R.id.showFilterDialog)
+            filter.icon = (ContextCompat.getDrawable(requireContext(),
+                R.drawable.ic_baseline_filter_alt_24white))
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -227,7 +233,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.distinctColorsList
 
         colorList?.forEachIndexed { index, s ->
-            if (s != "") {
+            if (s!=0) {
                 val chip = Chip(requireContext())
                 chip.id = index
                 chip.layoutParams = if (index % 2 == 0) filtertemplatechip.layoutParams else
@@ -235,14 +241,14 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                 chip.isCheckable = true
                 chip.checkedIcon =
                     ContextCompat.getDrawable(requireContext(), R.drawable.chip_check)
-                chip.checkedIconTint = if (isDark(Color.parseColor(s)))
+                chip.checkedIconTint = if (isDark(s))
                     ColorStateList.valueOf(Color.parseColor("#ffffff"))
                 else
                     ColorStateList.valueOf(Color.parseColor("#121212"))
                 chip.chipBackgroundColor =
-                    ColorStateList.valueOf(Color.parseColor(s))
+                    ColorStateList.valueOf(s)
                 if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter?.contains(
-                        Color.parseColor(s).toString()) == true
+                        s) == true
                 ) {
                     chip.isChecked = true
                 }
@@ -336,15 +342,15 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             it.data?.getContentIfNotHandled()?.let {
                 if (!dataState.loading) {
                     searchResultPhotosViewModel.PAGINATION_EXECUTING = false
-                    searchResultPhotosViewModel.updateCurrentPage()
                 }
 
                 it.searchResultPhotos?.let {
                     searchResultPhotosViewModel.setSearchResultPhotosList(it)
                 }
 
-                it.totalPages?.let { it1 -> searchResultPhotosViewModel.setTotalPages(it1) }
-                it.totalPhotosItems?.let { it1 -> searchResultPhotosViewModel.setTotalItems(it1) }
+                it.apiSourcesInfo.let {
+                    searchResultPhotosViewModel.setApiSourcesInfo(it)
+                }
             }
 
             it.message?.let {
@@ -361,7 +367,29 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         }
 
         searchResultPhotosViewModel.searchResultPhotosPreviewViewState.observe(viewLifecycleOwner) {
+
+            it.apiSourcesInfo.let {
+                it.unsplashTotalPhotos?.let {
+                    Logger.log("68989898 view unsplashTotalPhotos = "+it)
+                }
+                it.unsplashPages?.let {
+                    Logger.log("68989898 view unsplashPages = "+it)
+                }
+                it.pexelsTotalPhotos?.let {
+                    Logger.log("68989898 view pexelsTotalPhotos = "+it)
+                }
+                it.pexelsPages?.let {
+                    Logger.log("68989898 view pexelsPages = "+it)
+                }
+                it.pinterestNextQueryBookMark?.let {
+                    Logger.log("68989898 view pinterestNextQueryBookMark = "+it)
+                }
+            }
+
             it.filteredSearchResultPhotos?.let {
+                it.forEach {
+                    Logger.log("68989898  source = "+it.photoSource.uiValue)
+                }
                 adapter.submitList(it)
             }
         }
@@ -379,7 +407,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             }
             searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(
                 selectedColor.map {
-                    it.toString()
+                    it
                 }))
         }
     }
@@ -427,23 +455,29 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                             layout.findFirstCompletelyVisibleItemPositions(IntArray(2)).first()
                         Logger.log("88985959  684  8= " + firstitempos)
                         val itemcount = layout.childCount
-                        val totalitemsinlist = it.searchResultPhotos?.size ?: (20 * it.currentPage)
-                        val loadcondition =
-                            (firstitempos + itemcount >= totalitemsinlist) && (it.currentPage < it.totalPages!!)
-                                    && !searchResultPhotosViewModel.PAGINATION_EXECUTING
 
-                        Logger.log("88985959 Firstitempos: " + firstitempos)
-                        Logger.log("88985959 : Itemcountcurrent" + itemcount)
-                        Logger.log("88985959 Inlist: " + totalitemsinlist)
-                        Logger.log("88985959 PAGENO  : " + it.currentPage)
-                        Logger.log("478948484 : " + loadcondition)
+                        var allApiReachedTheirMaximumPage=true
+
+                        val executeUnsplashApiRequest =
+                            it.apiSourcesInfo.unsplashCurrentPageNo < (it.apiSourcesInfo.unsplashPages ?: 2)
+                        val executePexelsApiRequest =
+                            it.apiSourcesInfo.pexelsCurrentPageNo < (it.apiSourcesInfo.pexelsPages ?: 2)
+
+                        if (executePexelsApiRequest||executeUnsplashApiRequest){
+                            allApiReachedTheirMaximumPage=false
+                        }
+                        val loadcondition =
+                            !searchResultPhotosViewModel.PAGINATION_EXECUTING &&
+                                    ((firstitempos + itemcount) >= it.filteredSearchResultPhotos!!.size)
+                                    && !allApiReachedTheirMaximumPage
+
+                        Logger.log("848945984984 paginating = : " + loadcondition)
                         if (loadcondition) {
                             searchResultPhotosViewModel.PAGINATION_EXECUTING = true
                             showPaginationProgressbar()
                             searchResultPhotosViewModel.onEvent(
                                 searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.searchPhotos(
                                     searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value!!.searchedKeyword!!,
-                                    searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value!!.currentPage
                                 )
                             )
                         }
@@ -468,13 +502,25 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         }
     }
 
+    private fun getAppTheme(): Int {
+        var theme = 1
+        val nightModeFlags = requireActivity().resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK
+        when (nightModeFlags) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                theme = 0
+            }
+        }
+        return theme
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         binding?.recyclerView?.adapter = null
         binding = null
     }
 
-    override fun onItemClicked(position: Int, item: UnsplashPhotoInfo.photoInfo) {
+    override fun onItemClicked(position: Int, item: Photo) {
         val bundle = Bundle().apply {
             putSerializable("onlinePreviewModel", item)
         }
@@ -484,18 +530,18 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         )
     }
 
-    override suspend fun onMarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo): Long {
+    override suspend fun onMarkFavClicked(position: Int, item: Photo): Long {
         return searchResultPhotosViewModel.markPhotoAsFav(item)
     }
 
-    override suspend fun onUnmarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo): Int {
+    override suspend fun onUnmarkFavClicked(position: Int, item: Photo): Int {
         return searchResultPhotosViewModel.unmarkPhotoAsFav(item)
     }
 
-    override fun onItemLongClicked(position: Int, item: UnsplashPhotoInfo.photoInfo) {
+    override fun onItemLongClicked(position: Int, item: Photo) {
         val bundle = Bundle().apply {
             putSerializable("onlinePreviewModel", item)
-            putString("colorCode", item.colorCode)
+            putInt("colorCode", item.colorCode)
         }
         findNavController().navigate(
             R.id.action_searchResultPhotosPreview_to_imageDetailsBottomSheet,

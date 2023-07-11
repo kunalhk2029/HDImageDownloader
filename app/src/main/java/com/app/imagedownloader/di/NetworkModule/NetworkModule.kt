@@ -3,8 +3,8 @@ package com.app.imagedownloader.di.Hilt.GlideModule
 import android.content.Context
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
-import com.app.imagedownloader.business.data.network.abstraction.UnsplashApiService
-import com.app.imagedownloader.business.data.network.implementation.UnsplashApiServiceImpl
+import com.app.imagedownloader.business.data.network.abstraction.PhotosApiService
+import com.app.imagedownloader.business.data.network.implementation.PhotosApiServiceImpl
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
 import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionServiceImpl
@@ -23,8 +23,8 @@ object NetworkModule {
     @Singleton
     fun providePinterestMediaService(
         requestQueue: RequestQueue,jsonObjConversionService: JsonObjConversionService
-    ): UnsplashApiService {
-        return UnsplashApiServiceImpl(requestQueue,jsonObjConversionService)
+    ): PhotosApiService {
+        return PhotosApiServiceImpl(requestQueue,jsonObjConversionService)
     }
 
     @Provides

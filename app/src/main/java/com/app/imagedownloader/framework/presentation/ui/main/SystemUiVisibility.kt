@@ -11,40 +11,44 @@ import com.app.imagedownloader.R
 
 object SystemUiVisibility {
 
-    private var initialNacigationBarCcolor = -1
-
+    private var initialNavigationBarColor = -1
+    private var initialStatusBarColor = -1
 
     fun Fragment.setDefaultBarColor() {
         try {
-            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
-                requireActivity().window,
-                requireActivity().window.decorView
-            )
-            requireActivity().window.statusBarColor =
-                ContextCompat.getColor(requireContext(), R.color.pin_red)
-            requireActivity().window.navigationBarColor = initialNacigationBarCcolor
-
-            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(
-                initialNacigationBarCcolor) == false
-            windowInsetsControllerCompat.isAppearanceLightStatusBars =
-                isDark(ContextCompat.getColor(requireContext(), R.color.pin_red)) == false
+//            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
+//                requireActivity().window,
+//                requireActivity().window.decorView
+//            )
+//            requireActivity().window.statusBarColor =
+//              initialStatusBarColor
+//            requireActivity().window.navigationBarColor = initialNavigationBarColor
+//
+//            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(
+//                initialNavigationBarColor) == false
+//            windowInsetsControllerCompat.isAppearanceLightStatusBars =
+//                isDark(initialStatusBarColor) == false
         } catch (_: Exception) {
         }
     }
 
     fun Fragment.changeStatusAndNavigationBarColor(@ColorInt color: Int) {
         try {
-            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
-                requireActivity().window,
-                requireActivity().window.decorView
-            )
-            if (initialNacigationBarCcolor == -1) initialNacigationBarCcolor =
-                requireActivity().window.navigationBarColor
-            requireActivity().window.statusBarColor = color
-            requireActivity().window.navigationBarColor = color
+//            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
+//                requireActivity().window,
+//                requireActivity().window.decorView
+//            )
+//            if (initialNavigationBarColor == -1) initialNavigationBarColor =
+//                requireActivity().window.navigationBarColor
+//
+//            if (initialStatusBarColor == -1) initialStatusBarColor =
+//                requireActivity().window.statusBarColor
 
-            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(color) == false
-            windowInsetsControllerCompat.isAppearanceLightStatusBars = isDark(color) == false
+//            requireActivity().window.statusBarColor = color
+//            requireActivity().window.navigationBarColor = color
+
+//            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(color) == false
+//            windowInsetsControllerCompat.isAppearanceLightStatusBars = isDark(color) == false
         } catch (_: Exception) {
         }
 
@@ -56,33 +60,6 @@ object SystemUiVisibility {
             return true
         }
         return false
-    }
-
-    fun Fragment.hideStatusBar() {
-        try {
-            WindowInsetsControllerCompat(
-                requireActivity().window,
-                requireActivity().window.decorView
-            ).systemBarsBehavior =
-                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            WindowInsetsControllerCompat(
-                requireActivity().window,
-                requireActivity().window.decorView
-            ).hide(WindowInsetsCompat.Type.statusBars())
-        } catch (e: Exception) {
-
-        }
-    }
-
-    fun Fragment.showStatusBar() {
-        try {
-            WindowInsetsControllerCompat(
-                requireActivity().window,
-                requireActivity().window.decorView
-            ).show(WindowInsetsCompat.Type.statusBars())
-        } catch (e: Exception) {
-
-        }
     }
 
     private fun isDark(@ColorInt color: Int): Boolean {

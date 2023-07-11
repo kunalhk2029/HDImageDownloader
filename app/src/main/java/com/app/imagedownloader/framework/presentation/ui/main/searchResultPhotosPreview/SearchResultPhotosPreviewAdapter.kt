@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.app.imagedownloader.R
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.facebook.shimmer.ShimmerFrameLayout
@@ -29,18 +29,18 @@ class SearchResultPhotosPreviewAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<UnsplashPhotoInfo.photoInfo>() {
+    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Photo>() {
 
         override fun areItemsTheSame(
-            oldItem: UnsplashPhotoInfo.photoInfo,
-            newItem: UnsplashPhotoInfo.photoInfo
+            oldItem: Photo,
+            newItem: Photo
         ): Boolean {
             return oldItem.previewUrl == newItem.previewUrl
         }
 
         override fun areContentsTheSame(
-            oldItem: UnsplashPhotoInfo.photoInfo,
-            newItem: UnsplashPhotoInfo.photoInfo
+            oldItem: Photo,
+            newItem: Photo
         ): Boolean {
             return oldItem.previewUrl == newItem.previewUrl
         }
@@ -73,7 +73,7 @@ class SearchResultPhotosPreviewAdapter(
         return differ.currentList.size
     }
 
-    fun submitList(list: List<UnsplashPhotoInfo.photoInfo>) {
+    fun submitList(list: List<Photo>) {
         differ.submitList(list)
     }
 
@@ -96,7 +96,7 @@ class SearchResultPhotosPreviewAdapter(
         val markFavIcon =itemView.findViewById(R.id.mark_fav_icon) as ImageView
         val unmarkFavIcon =itemView.findViewById(R.id.unmark_fav_icon) as ImageView
 
-        fun bind(item: UnsplashPhotoInfo.photoInfo) = with(itemView) {
+        fun bind(item: Photo) = with(itemView) {
             adView.visibility=View.GONE
             adViewCta.visibility=View.GONE
             adspaceholder.visibility=View.GONE
@@ -111,6 +111,7 @@ class SearchResultPhotosPreviewAdapter(
                 CoroutineScope(Main).launch {
                     generalAdsManager.showNativeAdapterItemAd(adView,itemView).let {
                         adspaceholder.visibility=View.GONE
+                        if (it) adsFreeCard.visibility=View.GONE
                     }
                 }
                 return@with
@@ -140,7 +141,7 @@ class SearchResultPhotosPreviewAdapter(
 
             description.visibility = View.GONE
             item.description?.let {
-                val color = Color.parseColor(item.colorCode)
+                val color = item.colorCode
                 description.setBackgroundColor(color)
                 description.text = it
                 if (!isDark(color))
@@ -188,9 +189,9 @@ class SearchResultPhotosPreviewAdapter(
     }
 
     interface Interaction {
-        fun onItemClicked(position: Int, item: UnsplashPhotoInfo.photoInfo)
-        fun onItemLongClicked(position: Int, item: UnsplashPhotoInfo.photoInfo)
-        suspend fun onMarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo):Long
-        suspend fun onUnmarkFavClicked(position: Int, item: UnsplashPhotoInfo.photoInfo):Int
+        fun onItemClicked(position: Int, item: Photo)
+        fun onItemLongClicked(position: Int, item: Photo)
+        suspend fun onMarkFavClicked(position: Int, item: Photo):Long
+        suspend fun onUnmarkFavClicked(position: Int, item: Photo):Int
     }
 }

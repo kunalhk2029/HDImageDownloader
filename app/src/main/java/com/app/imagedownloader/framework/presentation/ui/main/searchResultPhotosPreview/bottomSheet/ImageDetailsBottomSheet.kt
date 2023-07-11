@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.databinding.FragmentImageDetailsBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -28,8 +28,8 @@ class ImageDetailsBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setImageDetails() {
-        val model: UnsplashPhotoInfo.photoInfo =
-            requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
+        val model: Photo =
+            requireArguments().getSerializable("onlinePreviewModel") as Photo
         binding?.let {
             val size = "Size : ${model.width}x${model.height}"
             val orientation = "Orientation : "+if (model.isPotrait) "Portrait" else "Landscape"
@@ -78,7 +78,7 @@ override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
 
 private fun handleButtonBackgroundColor() {
-    val color = Color.parseColor(requireArguments().getString("colorCode"))
+    val color = requireArguments().getInt("colorCode")
     binding?.let {
         it.sizetext.setTextColor(color)
         it.aboutUploadertext.setTextColor(color)

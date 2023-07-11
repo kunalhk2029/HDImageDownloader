@@ -2,7 +2,8 @@ package com.app.imagedownloader.business.interactors.favPhotos
 
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.FavPhotos
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.PhotoSource
+import com.app.imagedownloader.business.domain.model.Urls
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview.state.FavPhotosPreviewViewState
 import kotlinx.coroutines.Dispatchers.IO
@@ -19,7 +20,7 @@ class GetFavPhotos
         emit(DataState.loading())
 
         val finalList = mutableListOf<FavPhotos>()
-        val adList = FavPhotos("","previewUrl", uris = UnsplashPhotoInfo.urls("","","","",""), 0,0,false,"",null)
+        val adList = FavPhotos("","previewUrl", uris = Urls("","","","",""), 0,0,false,0,null, photoSource = PhotoSource.None)
         withContext(IO){
             finalList.add(adList)
             val  favPhotos = photosDao.getFavouritePhotos().sortedByDescending { it.createdAt }.map { it.mapToFavPhotos() }

@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/downloadedMedia"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.DownloadsPreview"
-        android:label="Downloaded Media"
-        tools:layout="@layout/fragment_downloaded_media" >
+        android:label="Downloads"
+        tools:layout="@layout/fragment_downloaded_media">
         <action
             android:id="@+id/action_downloadedMedia_to_singleImagePreview"
             app:destination="@id/singleImagePreview"
@@ -42,8 +42,8 @@
     <fragment
         android:id="@+id/home"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.home.Home"
-        android:label="Home"
-        tools:layout="@layout/fragment_home" >
+        android:label="Search"
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_searchPhotos"
             app:destination="@id/searchPhotos"
@@ -78,7 +78,12 @@
         <action
             android:id="@+id/action_searchResultPhotosPreview_to_singleImagePreview"
             app:destination="@id/singleImagePreview"
-            app:popUpTo="@id/searchResultPhotosPreview" />
+            app:popUpTo="@id/searchResultPhotosPreview"
+            app:enterAnim="@anim/fromright"
+            app:exitAnim="@anim/toleft"
+            app:popEnterAnim="@anim/fromleft"
+            app:popExitAnim="@anim/toright"
+            />
         <action
             android:id="@+id/action_searchResultPhotosPreview_to_imageDetailsBottomSheet"
             app:destination="@id/imageDetailsBottomSheet"
@@ -121,7 +126,17 @@
         android:id="@+id/favPhotosPreview"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.favPhotosPreview.FavPhotosPreview"
         android:label="Favourites"
-        tools:layout="@layout/fragment_fav_photos_preview" />
+        tools:layout="@layout/fragment_fav_photos_preview" >
+        <action
+            android:id="@+id/action_favPhotosPreview_to_singleImagePreview"
+            app:destination="@id/singleImagePreview"
+            app:popUpTo="@id/favPhotosPreview"
+            app:enterAnim="@anim/fromright"
+            app:exitAnim="@anim/toleft"
+            app:popEnterAnim="@anim/fromleft"
+            app:popExitAnim="@anim/toright"
+            />
+    </fragment>
     <dialog
         android:id="@+id/bottomMenu"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.BottomMenu"

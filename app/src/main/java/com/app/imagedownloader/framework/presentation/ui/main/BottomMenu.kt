@@ -99,7 +99,7 @@ class BottomMenu:BottomSheetDialogFragment() {
                 type = "text/plain"
                 putExtra(
                     Intent.EXTRA_TEXT,
-                    "Hello I would like to recommend this app to you.Please give it a try. It is a very good productivity app that download instagram stories automatically. https://play.google.com/store/apps/details?id=com.app.autoinstastorytale"
+                    "Hello I would like to recommend this Image App to you.Please give it a try. It lets you to download High Quality Images. https://play.google.com/store/apps/details?id=com.app.imagedownloader"
                 )
             }
             val chooser = Intent.createChooser(intent, "Share App")

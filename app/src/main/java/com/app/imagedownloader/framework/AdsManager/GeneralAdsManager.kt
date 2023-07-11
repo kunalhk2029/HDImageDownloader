@@ -190,10 +190,10 @@ class GeneralAdsManager(
 
     suspend fun showNativeAdapterItemAd(
         view: NativeAdView, root: View,
-    ) {
+    ) :Boolean{
 
         if (sharedPrefRepository.get_DisableAdsAndPromo()) {
-            return
+            return true
         }
         if (adsPremiumPlanPurchased == null) {
             initiatingPaymentStatus()
@@ -204,11 +204,11 @@ class GeneralAdsManager(
                 return@let
             }
             view.visibility = View.VISIBLE
-            println("989898  / .......")
             adsManager.loadAdmobAdapterItemAd(view, itemRootView = root)
         } ?: kotlin.run {
             view.visibility = View.GONE
         }
+        return adsPremiumPlanPurchased?:true
     }
 
     suspend fun showNativeHomeScreenAd(
@@ -410,8 +410,8 @@ class GeneralAdsManager(
     }
 
     private suspend fun initiatingPaymentStatus(): Boolean {
-        adsPremiumPlanPurchased = false
-        return false
+        adsPremiumPlanPurchased = true
+        return true
         checkAdsPremiumPlan(context)
         return true
     }

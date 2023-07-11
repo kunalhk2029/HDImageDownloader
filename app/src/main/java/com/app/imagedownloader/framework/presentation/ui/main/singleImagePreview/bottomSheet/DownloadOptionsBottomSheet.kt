@@ -11,7 +11,7 @@ import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
-import com.app.imagedownloader.business.domain.model.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.business.interactors.singleImagePreview.SaveMediaInScopedStorage
 import com.app.imagedownloader.databinding.FragmentDownloadOptionsBottomSheetBinding
 import com.app.imagedownloader.framework.presentation.ui.main.singleImagePreview.SingleImagePreview
@@ -72,21 +72,21 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
             val map = HashMap<String, String>()
 
             val model =
-                requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
+                requireArguments().getSerializable("onlinePreviewModel") as Photo
 
-            val fullHdUrlSize = mediaSize(URL(model.uris.fullHdUrl))
+            val fullHdUrlSize = mediaSize(URL(model.urls?.fullHdUrl))
                 map["fullHdUrl"] = fullHdUrlSize
 
-            val hdUrlSize = mediaSize(URL(model.uris.hdUrl))
+            val hdUrlSize = mediaSize(URL(model.urls?.hdUrl))
                 map["hdUrl"] = hdUrlSize
 
-            val regularUrlSize = mediaSize(URL(model.uris.regularUrl))
+            val regularUrlSize = mediaSize(URL(model.urls?.regularUrl))
                 map["regularUrl"] = regularUrlSize
 
-            val smallUrlSize = mediaSize(URL(model.uris.smallUrl))
+            val smallUrlSize = mediaSize(URL(model.urls?.smallUrl))
                 map["smallUrl"] = smallUrlSize
 
-            val thumbnailUrlSize = mediaSize(URL(model.uris.thumbnailUrl))
+            val thumbnailUrlSize = mediaSize(URL(model.urls?.thumbnailUrl))
                 map["thumbnailUrl"] = thumbnailUrlSize
 
             map
@@ -120,8 +120,8 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
                 binding?.let {
                     it.progressbar.visibility=View.GONE
                     it.downloadOptions.visibility=View.VISIBLE
-                    val model: UnsplashPhotoInfo.photoInfo =
-                        requireArguments().getSerializable("onlinePreviewModel") as UnsplashPhotoInfo.photoInfo
+                    val model: Photo =
+                        requireArguments().getSerializable("onlinePreviewModel") as Photo
                     it.fullhdtext.text = it.fullhdtext.text.toString() + sizeMap["fullHdUrl"]
                     it.hdtext.text = it.hdtext.text.toString() + sizeMap["hdUrl"]
                     it.normaltext.text = it.normaltext.text.toString() + sizeMap["regularUrl"]
@@ -130,7 +130,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
                         it.thumbnailtext.text.toString() + sizeMap["thumbnailUrl"]
 
                     it.fullHdCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.uris.fullHdUrl,
+                        saveMediaInScopedStorage(url = model.urls!!.fullHdUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
@@ -141,7 +141,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
                     }
 
                     it.hdCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.uris.hdUrl,
+                        saveMediaInScopedStorage(url = model.urls!!.hdUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
@@ -152,7 +152,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
 
                     }
                     it.NormalCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.uris.regularUrl,
+                        saveMediaInScopedStorage(url = model.urls!!.regularUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
@@ -163,7 +163,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
 
                     }
                     it.mediumCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.uris.smallUrl,
+                        saveMediaInScopedStorage(url = model.urls!!.smallUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
@@ -174,7 +174,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
 
                     }
                     it.thumnailCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.uris.thumbnailUrl,
+                        saveMediaInScopedStorage(url = model.urls!!.thumbnailUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
@@ -189,7 +189,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun handleButtonBackgroundColor() {
-        val color = Color.parseColor(requireArguments().getString("colorCode"))
+        val color = requireArguments().getInt("colorCode")
         binding?.let {
             it.fullhdtext.setTextColor(color)
             it.hdtext.setTextColor(color)

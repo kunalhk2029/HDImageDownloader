@@ -37,9 +37,9 @@ class SaveMediaInScopedStorage
     private val contentResolver: ContentResolver, private val context: Context,
     private val generalAdsManager: GeneralAdsManager,
 ) {
-    operator fun invoke(url: String, contextt: Context,colorCode: String ,playclicked: () -> Unit) {
+    operator fun invoke(url: String, contextt: Context,colorCode: Int ,playclicked: () -> Unit) {
         download(
-            url, context = contextt, playclicked,colorCode.substring(1)
+            url, context = contextt, playclicked,colorCode
         )
     }
 
@@ -64,7 +64,7 @@ class SaveMediaInScopedStorage
         uri: String,
         context: Context,
         playclicked: () -> Unit = {},
-        colorCode: String
+        colorCode: Int
     ) {
 
         downloadJob = Job()
