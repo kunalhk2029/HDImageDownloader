@@ -215,8 +215,6 @@ class GeneralAdsManager(
         view: NativeAdView,
     ) {
 
-        println("989898  / .....55..")
-
         if (sharedPrefRepository.get_DisableAdsAndPromo()) {
             return
         }
@@ -229,7 +227,6 @@ class GeneralAdsManager(
                 return@let
             }
             view.visibility = View.VISIBLE
-            println("989898  / .......")
             adsManager.loadAdmobHomeScreenAd(view)
         } ?: kotlin.run {
             view.visibility = View.GONE

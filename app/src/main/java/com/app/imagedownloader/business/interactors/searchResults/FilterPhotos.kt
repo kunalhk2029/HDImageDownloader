@@ -1,9 +1,9 @@
 package com.app.imagedownloader.business.interactors.searchResults
 
-import android.graphics.Color
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.Filters.SortByFilter
 import com.app.imagedownloader.business.domain.model.Photo
+import com.app.imagedownloader.business.domain.model.PhotoOrienationType
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,13 +34,27 @@ class FilterPhotos
 
         when (orientationFilter) {
             is OrientationFilter.All -> {
-                filteredList = filteredList.filter { it.isPotrait || !it.isPotrait }.toMutableList()
+                filteredList = filteredList.filter {
+                    it.orienationType == PhotoOrienationType.Potrait
+                            || it.orienationType == PhotoOrienationType.Square
+                            || it.orienationType == PhotoOrienationType.Landscape
+
+                }.toMutableList()
             }
             is OrientationFilter.Potrait -> {
-                filteredList = filteredList.filter { it.isPotrait }.toMutableList()
+                filteredList = filteredList.filter {
+                    it.orienationType == PhotoOrienationType.Potrait
+                }.toMutableList()
+            }
+            is OrientationFilter.Square -> {
+                filteredList = filteredList.filter {
+                    it.orienationType == PhotoOrienationType.Square
+                }.toMutableList()
             }
             is OrientationFilter.Landscape -> {
-                filteredList = filteredList.filter { !it.isPotrait }.toMutableList()
+                filteredList = filteredList.filter {
+                    it.orienationType == PhotoOrienationType.Landscape
+                }.toMutableList()
             }
         }
 
@@ -66,8 +80,6 @@ class FilterPhotos
                 })
             }
         }
-
         return colorsFilterList.distinct()
     }
-
 }

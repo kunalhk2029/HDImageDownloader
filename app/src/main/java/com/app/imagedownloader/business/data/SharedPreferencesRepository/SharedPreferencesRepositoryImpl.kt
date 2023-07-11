@@ -18,11 +18,9 @@ class SharedPreferencesRepositoryImpl(private val pref: SharedPreferences) : Sha
     override fun setRatingParams(boolean: Boolean) {
         var isSetThreeTimes = pref.getInt("isSetThreeTimes", 0)
         if (isSetThreeTimes > 3 && boolean) return
-        Logger.log("848984894894 setRatingParams = " + isSetThreeTimes)
         isSetThreeTimes++
         pref.edit().apply {
-            if (boolean == false) {
-                Logger.log("848984894894 set_SHOW_RATING = 0")
+            if (!boolean) {
                 putInt("isSetThreeTimes", 0)
             } else {
                 putInt("isSetThreeTimes", isSetThreeTimes)

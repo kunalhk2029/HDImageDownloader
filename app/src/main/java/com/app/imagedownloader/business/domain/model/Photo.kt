@@ -8,7 +8,7 @@ data class Photo(
     var urls: Urls,
     var width: Int,
     var height: Int,
-    var isPotrait: Boolean,
+    var orienationType: PhotoOrienationType,
     var colorCode: Int,
     var description: String?,
     val tags_preview: List<String>?,
@@ -17,14 +17,13 @@ data class Photo(
     var isFav: Boolean = false,
     var photoSource: PhotoSource,
 ) : java.io.Serializable{
-
     fun mapToFavPhoto(): FavPhotosEntity {
        return FavPhotosEntity(id,
             previewUrl,
             urls,
             width=width,
             height=height,
-            isPotrait,
+           orienationType.uiValue,
             colorCode,
             description, photoSource = photoSource.uiValue)
     }

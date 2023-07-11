@@ -180,6 +180,17 @@
                 </com.google.android.material.chip.ChipGroup>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+            <ProgressBar
+                android:id="@+id/progressbar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                android:indeterminateTint="@color/pin_red"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/filter_colors_option"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>

@@ -2,6 +2,7 @@ package com.app.imagedownloader.business.interactors.favPhotos
 
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.FavPhotos
+import com.app.imagedownloader.business.domain.model.PhotoOrienationType
 import com.app.imagedownloader.business.domain.model.PhotoSource
 import com.app.imagedownloader.business.domain.model.Urls
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
@@ -20,7 +21,7 @@ class GetFavPhotos
         emit(DataState.loading())
 
         val finalList = mutableListOf<FavPhotos>()
-        val adList = FavPhotos("","previewUrl", uris = Urls("","","","",""), 0,0,false,0,null, photoSource = PhotoSource.None)
+        val adList = FavPhotos("","previewUrl", uris = Urls("","","","",""), 0,0,PhotoOrienationType.Potrait,0,null, photoSource = PhotoSource.None)
         withContext(IO){
             finalList.add(adList)
             val  favPhotos = photosDao.getFavouritePhotos().sortedByDescending { it.createdAt }.map { it.mapToFavPhotos() }

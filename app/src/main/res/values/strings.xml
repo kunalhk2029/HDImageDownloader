@@ -117,6 +117,7 @@
     <string name="light_theme">Light Theme</string>
     <string name="systemdefault">System Default</string>
     <string name="bottomMenuHeading">Explore Millions Of HD Images</string>
+    <string name="clear_filter_message">Clear Tags And Color filter for loading new photos</string>
 
 
 </resources>

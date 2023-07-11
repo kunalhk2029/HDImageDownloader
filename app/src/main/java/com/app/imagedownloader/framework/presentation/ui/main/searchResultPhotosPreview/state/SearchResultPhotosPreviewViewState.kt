@@ -12,6 +12,7 @@ data class SearchResultPhotosPreviewViewState(
     var filteredSearchResultPhotos: List<Photo>?=null,
     var sortFilter:SortByFilter = SortByFilter.Relevance,
     var orientationFilter:OrientationFilter = OrientationFilter.All,
+    var orientationFilterWithTagOrColorCombination:OrientationFilter? = null,
     var tagFilter :List<String> = listOf(),
     var colorsFilter :List<Int> = listOf(),
     var distinctTagsList :List<String> = listOf("None"),

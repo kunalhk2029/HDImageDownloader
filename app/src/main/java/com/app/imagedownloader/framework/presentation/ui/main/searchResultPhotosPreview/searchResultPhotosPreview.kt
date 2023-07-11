@@ -9,11 +9,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
+import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
@@ -21,6 +18,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.allViews
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -40,6 +38,8 @@ import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotos
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -108,7 +108,8 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         val previousSortFilter =
             searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.sortFilter
         val previousOrientationFilter =
-            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter
+            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilterWithTagOrColorCombination
+                ?: searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter
         val previousTagsFilter =
             searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.tagFilter
         val previousColorsFilter =
@@ -158,35 +159,37 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             ArrayAdapter(requireContext(), R.layout.spinner_item, listOf(
                 OrientationFilter.All.uiValue,
                 OrientationFilter.Potrait.uiValue,
-                OrientationFilter.Landscape.uiValue
+                OrientationFilter.Landscape.uiValue,
+                OrientationFilter.Square.uiValue
             ))
         orientationSpinner.adapter = orientationSpinneradapter
 
         val selectedOrientatationSpinnerPosistion =
-            if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter is OrientationFilter.Potrait) 1
-            else if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.orientationFilter is OrientationFilter.Landscape) 2
+            if (previousOrientationFilter is OrientationFilter.Potrait) 1
+            else if (previousOrientationFilter is OrientationFilter.Landscape) 2
+            else if (previousOrientationFilter is OrientationFilter.Square) 3
             else 0
 
+        var newOrientationFilter: OrientationFilter? = null
         orientationSpinner.setSelection(selectedOrientatationSpinnerPosistion)
         orientationSpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 if (System.currentTimeMillis() >= dialogCreationTime + 1000L) vibrateExtension.vibrate()
-                searchResultPhotosViewModel.onEvent(
-                    searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
-                        orientationFilter = when (p2) {
-                            0 -> {
-                                OrientationFilter.All
-                            }
-                            1 -> {
-                                OrientationFilter.Potrait
-                            }
-                            2 -> {
-                                OrientationFilter.Landscape
-                            }
-                            else -> OrientationFilter.All
-                        }
-                    )
-                )
+                newOrientationFilter = when (p2) {
+                    0 -> {
+                        OrientationFilter.All
+                    }
+                    1 -> {
+                        OrientationFilter.Potrait
+                    }
+                    2 -> {
+                        OrientationFilter.Landscape
+                    }
+                    3 -> {
+                        OrientationFilter.Square
+                    }
+                    else -> OrientationFilter.All
+                }
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -226,37 +229,47 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             }
         }
 
-        val filterColorChipGroup = filterDialog.findViewById<ChipGroup>(R.id.chipGroup)
-        val filtertemplatechip = filterDialog.findViewById<Chip>(R.id.templateChip)
-        val filtertemplatechip2 = filterDialog.findViewById<Chip>(R.id.templateChip2)
-        val colorList =
-            searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.distinctColorsList
+        lifecycleScope.launch {
+            delay(1000L)
+            val progressbar = filterDialog.findViewById<ProgressBar>(R.id.progressbar)
+            val filterColorChipGroup = filterDialog.findViewById<ChipGroup>(R.id.chipGroup)
+            val filtertemplatechip = filterDialog.findViewById<Chip>(R.id.templateChip)
+            val filtertemplatechip2 = filterDialog.findViewById<Chip>(R.id.templateChip2)
 
-        colorList?.forEachIndexed { index, s ->
-            if (s!=0) {
-                val chip = Chip(requireContext())
-                chip.id = index
-                chip.layoutParams = if (index % 2 == 0) filtertemplatechip.layoutParams else
-                    filtertemplatechip2.layoutParams
-                chip.isCheckable = true
-                chip.checkedIcon =
-                    ContextCompat.getDrawable(requireContext(), R.drawable.chip_check)
-                chip.checkedIconTint = if (isDark(s))
-                    ColorStateList.valueOf(Color.parseColor("#ffffff"))
-                else
-                    ColorStateList.valueOf(Color.parseColor("#121212"))
-                chip.chipBackgroundColor =
-                    ColorStateList.valueOf(s)
-                if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter?.contains(
-                        s) == true
-                ) {
-                    chip.isChecked = true
+            filterColorChipGroup.visibility = View.GONE
+
+            val colorList =
+                searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.distinctColorsList
+
+            colorList?.forEachIndexed { index, s ->
+                if (s != 0) {
+                    val chip = Chip(requireContext())
+                    chip.id = index
+                    chip.layoutParams = if (index % 2 == 0) filtertemplatechip.layoutParams else
+                        filtertemplatechip2.layoutParams
+                    chip.isCheckable = true
+                    chip.checkedIcon =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.chip_check)
+                    chip.checkedIconTint = if (isDark(s))
+                        ColorStateList.valueOf(Color.parseColor("#ffffff"))
+                    else
+                        ColorStateList.valueOf(Color.parseColor("#121212"))
+                    chip.chipBackgroundColor =
+                        ColorStateList.valueOf(s)
+                    if (searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.colorsFilter?.contains(
+                            s) == true
+                    ) {
+                        chip.isChecked = true
+                    }
+                    filterColorChipGroup.addView(chip)
                 }
-                filterColorChipGroup.addView(chip)
             }
+
+            filterColorChipGroup.visibility = View.VISIBLE
+            progressbar.visibility = View.GONE
+            handleFilterDialogColorChipGroupClick(filterColorChipGroup)
         }
 
-        handleFilterDialogColorChipGroupClick(filterColorChipGroup)
 
         filterDialog.findViewById<Button>(R.id.cancel_filter).setOnClickListener {
             previousSortFilter?.let {
@@ -287,6 +300,10 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         filterDialog.findViewById<Button>(R.id.apply_filter).setOnClickListener {
             filterDialog.dismiss()
             vibrateExtension.vibrate()
+            if (newOrientationFilter != null) {
+                searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
+                    newOrientationFilter!!))
+            }
             searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.FilterPhotos)
         }
     }
@@ -326,7 +343,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             override fun handleOnBackPressed() {
                 searchResultPhotosViewModel.resetPagination()
                 isEnabled = false
-                requireActivity().onBackPressed()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
@@ -338,6 +355,8 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             val it = dataState
             it.loading.let {
                 if (!it) hidePaginationProgressbar()
+                else showPaginationProgressbar()
+
             }
             it.data?.getContentIfNotHandled()?.let {
                 if (!dataState.loading) {
@@ -368,27 +387,33 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
         searchResultPhotosViewModel.searchResultPhotosPreviewViewState.observe(viewLifecycleOwner) {
 
+            val isTagOrColorFilterApplied = it.colorsFilter.isNotEmpty() ||
+                    it.tagFilter.isNotEmpty()
+
+            if (isTagOrColorFilterApplied) binding?.clearFilterMessage?.visibility = View.VISIBLE
+            else binding?.clearFilterMessage?.visibility = View.GONE
+
             it.apiSourcesInfo.let {
                 it.unsplashTotalPhotos?.let {
-                    Logger.log("68989898 view unsplashTotalPhotos = "+it)
+                    Logger.log("68989898 view unsplashTotalPhotos = " + it)
                 }
                 it.unsplashPages?.let {
-                    Logger.log("68989898 view unsplashPages = "+it)
+                    Logger.log("68989898 view unsplashPages = " + it)
                 }
                 it.pexelsTotalPhotos?.let {
-                    Logger.log("68989898 view pexelsTotalPhotos = "+it)
+                    Logger.log("68989898 view pexelsTotalPhotos = " + it)
                 }
                 it.pexelsPages?.let {
-                    Logger.log("68989898 view pexelsPages = "+it)
+                    Logger.log("68989898 view pexelsPages = " + it)
                 }
                 it.pinterestNextQueryBookMark?.let {
-                    Logger.log("68989898 view pinterestNextQueryBookMark = "+it)
+                    Logger.log("68989898 view pinterestNextQueryBookMark = " + it)
                 }
             }
 
             it.filteredSearchResultPhotos?.let {
                 it.forEach {
-                    Logger.log("68989898  source = "+it.photoSource.uiValue)
+                    Logger.log("68989898  source = " + it.photoSource.uiValue)
                 }
                 adapter.submitList(it)
             }
@@ -456,20 +481,26 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                         Logger.log("88985959  684  8= " + firstitempos)
                         val itemcount = layout.childCount
 
-                        var allApiReachedTheirMaximumPage=true
+                        var allApiReachedTheirMaximumPage = true
 
                         val executeUnsplashApiRequest =
-                            it.apiSourcesInfo.unsplashCurrentPageNo < (it.apiSourcesInfo.unsplashPages ?: 2)
+                            it.apiSourcesInfo.unsplashCurrentPageNo < (it.apiSourcesInfo.unsplashPages
+                                ?: 2)
                         val executePexelsApiRequest =
-                            it.apiSourcesInfo.pexelsCurrentPageNo < (it.apiSourcesInfo.pexelsPages ?: 2)
+                            it.apiSourcesInfo.pexelsCurrentPageNo < (it.apiSourcesInfo.pexelsPages
+                                ?: 2)
 
-                        if (executePexelsApiRequest||executeUnsplashApiRequest){
-                            allApiReachedTheirMaximumPage=false
+                        if (executePexelsApiRequest || executeUnsplashApiRequest) {
+                            allApiReachedTheirMaximumPage = false
                         }
+
+                        val IsTagOrColorFilterApplied = it.colorsFilter.isNotEmpty() ||
+                                it.tagFilter.isNotEmpty()
+
                         val loadcondition =
-                            !searchResultPhotosViewModel.PAGINATION_EXECUTING &&
+                            (!searchResultPhotosViewModel.PAGINATION_EXECUTING &&
                                     ((firstitempos + itemcount) >= it.filteredSearchResultPhotos!!.size)
-                                    && !allApiReachedTheirMaximumPage
+                                    && !allApiReachedTheirMaximumPage) && !IsTagOrColorFilterApplied
 
                         Logger.log("848945984984 paginating = : " + loadcondition)
                         if (loadcondition) {
@@ -477,7 +508,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                             showPaginationProgressbar()
                             searchResultPhotosViewModel.onEvent(
                                 searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.searchPhotos(
-                                    searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value!!.searchedKeyword!!,
+                                    searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value!!.searchedKeyword!!
                                 )
                             )
                         }

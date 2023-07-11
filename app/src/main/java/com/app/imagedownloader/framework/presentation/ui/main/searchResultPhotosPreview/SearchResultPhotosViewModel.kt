@@ -43,7 +43,6 @@ class SearchResultPhotosViewModel
 
     var PAGINATION_EXECUTING = false
 
-
     fun onEvent(searchResultPhotosPreviewStateEvents: SearchResultPhotosPreviewStateEvents) {
         when (searchResultPhotosPreviewStateEvents) {
 
@@ -52,14 +51,7 @@ class SearchResultPhotosViewModel
                     resetPagination()
                 }
                 setsearchedKeyword(searchResultPhotosPreviewStateEvents.keyword)
-                getPhotos(
-                    keyword = searchResultPhotosPreviewStateEvents.keyword,
-                    apiSourcesInfo = searchResultPhotosPreviewViewState.value?.apiSourcesInfo
-                        ?: ApiSourcesInfo(),
-                    list = searchResultPhotosPreviewViewState.value?.searchResultPhotos
-                ).onEach {
-                    _searchResultPhotosPreviewDataState.value = it
-                }.launchIn(viewModelScope)
+                getPhotos(searchResultPhotosPreviewStateEvents.keyword)
             }
 
             is SearchResultPhotosPreviewStateEvents.updateSortByFilter -> {
@@ -80,9 +72,28 @@ class SearchResultPhotosViewModel
         }
     }
 
-    fun resetPagination() {
+    private fun getPhotos(keyword: String) {
+        getPhotos(
+            keyword = keyword,
+            apiSourcesInfo = searchResultPhotosPreviewViewState.value?.apiSourcesInfo
+                ?: ApiSourcesInfo(),
+            list = searchResultPhotosPreviewViewState.value?.searchResultPhotos,
+            orientationFilter = searchResultPhotosPreviewViewState.value?.orientationFilter
+                ?: OrientationFilter.All
+        ).onEach {
+            _searchResultPhotosPreviewDataState.value = it
+        }.launchIn(viewModelScope)
+    }
+
+    fun resetPagination(orientationFilter: OrientationFilter? = null,keyword: String?=null) {
         _searchResultPhotosPreviewDataState.value = DataState()
-        _searchResultPhotosPreviewViewState.value = SearchResultPhotosPreviewViewState()
+        val newState = SearchResultPhotosPreviewViewState()
+        if (orientationFilter != null) {
+            _searchResultPhotosPreviewDataState.value=DataState.loading()
+            newState.orientationFilter = orientationFilter
+            newState.searchedKeyword = keyword
+        }
+        _searchResultPhotosPreviewViewState.value = newState
         PAGINATION_EXECUTING = false
     }
 
@@ -100,8 +111,17 @@ class SearchResultPhotosViewModel
 
     private fun updateOrientationFilter(orientationFilter: OrientationFilter) {
         val currentViewState = getHomeViewState()
-        currentViewState.orientationFilter = orientationFilter
-        _searchResultPhotosPreviewViewState.value = currentViewState
+        val prevOrient = currentViewState.orientationFilter
+        if (prevOrient != orientationFilter&&currentViewState.tagFilter.isNullOrEmpty()
+            &&currentViewState.colorsFilter.isNullOrEmpty()
+        ) {
+            val searchedKeyword = currentViewState.searchedKeyword
+            resetPagination(orientationFilter,searchedKeyword)
+            getPhotos(searchedKeyword!!)
+        }else{
+            currentViewState.orientationFilterWithTagOrColorCombination=orientationFilter
+            _searchResultPhotosPreviewViewState.value=currentViewState
+        }
     }
 
     private fun updateColorsFilter(list: List<Int>) {
@@ -211,7 +231,7 @@ class SearchResultPhotosViewModel
         searchResultPhotosPreviewViewState.value?.let { viewState ->
             filterPhotos.execute(list = viewState.searchResultPhotos ?: listOf(),
                 sortByFilter = viewState.sortFilter,
-                orientationFilter = viewState.orientationFilter, tagFilter = viewState.tagFilter,
+                orientationFilter = viewState.orientationFilterWithTagOrColorCombination?:viewState.orientationFilter, tagFilter = viewState.tagFilter,
                 colorsFilter = viewState.colorsFilter).let {
                 setFilteredsearchResultPhotos(it)
             }

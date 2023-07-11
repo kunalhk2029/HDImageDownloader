@@ -5,9 +5,11 @@ import com.app.imagedownloader.business.data.network.ApiResponses.InstagramApiRe
 import com.app.imagedownloader.business.data.network.abstraction.PhotosApiService
 import com.app.imagedownloader.business.data.network.dto.AllApiData
 import com.app.imagedownloader.business.data.network.dto.ApiSourcesInfo
+import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.NetworkBoundResource.NetworkResponseHandler
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.Photo
+import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewViewState
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.Job
@@ -24,22 +26,27 @@ class GetPhotos @Inject constructor(private val photosApiService: PhotosApiServi
         keyword: String,
         apiSourcesInfo: ApiSourcesInfo,
         list: List<Photo>?,
+        orientationFilter: OrientationFilter,
     ): Flow<DataState<SearchResultPhotosPreviewViewState>> {
+        Logger.log("9494984 GetPhotos  =" + orientationFilter)
+
         return object : NetworkResponseHandler<SearchResultPhotosPreviewViewState, AllApiData?>() {
             override suspend fun doNetworkCall(): ApiResult<AllApiData?> {
-                return photosApiService.getPhotos(keyword, apiSourcesInfo)
+                return photosApiService.getPhotos(keyword, apiSourcesInfo, orientationFilter)
             }
 
             override fun createSuccessDataState(apiResult: ApiResult.Success<AllApiData?>): DataState<SearchResultPhotosPreviewViewState> {
                 return DataState.success(
                     apiResult.data?.let {
-                        val unsplashList =it.unsplashPhotoInfo?.photos_list?.toMutableList()
-                        val pexelsList =it.pexelsPhotoInfo?.photos_list?.toMutableList()
-                        val pinterestList =it.pinterestMediaInfo?.photos_list?.toMutableList()
-                        val newPhotoList :MutableList<Photo> = (list ?: listOf()).toMutableList()
-                        while (unsplashList?.isNotEmpty()==true
-                            ||pexelsList?.isNotEmpty()==true
-                            ||pinterestList?.isNotEmpty()==true){
+                        val prevList = list ?: listOf()
+                        val unsplashList = it.unsplashPhotoInfo?.photos_list?.toMutableList()
+                        val pexelsList = it.pexelsPhotoInfo?.photos_list?.toMutableList()
+                        val pinterestList = it.pinterestMediaInfo?.photos_list?.toMutableList()
+                        val newPhotoList: MutableList<Photo> = prevList.toMutableList()
+                        while (unsplashList?.isNotEmpty() == true
+                            || pexelsList?.isNotEmpty() == true
+                            || pinterestList?.isNotEmpty() == true
+                        ) {
                             val unsplashFirstPhoto = unsplashList?.firstOrNull()
                             val pexelsFirstPhoto = pexelsList?.firstOrNull()
                             val pinterestFirstPhoto = pinterestList?.firstOrNull()
@@ -56,7 +63,7 @@ class GetPhotos @Inject constructor(private val photosApiService: PhotosApiServi
 
                             pinterestFirstPhoto?.let {
                                 pinterestList.remove(it)
-                                it.colorCode=Color.parseColor("#00ff00")
+                                it.colorCode = Color.parseColor("#00ff00")
                                 newPhotoList.add(it)
                             }
                         }

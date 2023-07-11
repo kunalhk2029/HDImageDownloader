@@ -73,7 +73,6 @@
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:visibility="gone"
                 app:drawableStartCompat="@drawable/ic_baseline_attach_money_24"
                 app:layout_constraintTop_toBottomOf="@id/spacer" />
 
@@ -85,7 +84,6 @@
                 android:drawablePadding="5dp"
                 android:gravity="center_vertical"
                 android:padding="8dp"
-                android:visibility="gone"
                 android:background="@drawable/textviewbgdialog"
                 android:text="@string/rate_amp_review_app"
                 android:textColor="@color/white"
@@ -107,7 +105,6 @@
                 android:textColor="@color/white"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:visibility="gone"
                 app:drawableStartCompat="@drawable/ic_baseline_help_24"
                 app:layout_constraintTop_toBottomOf="@id/settingsmenu" />
 

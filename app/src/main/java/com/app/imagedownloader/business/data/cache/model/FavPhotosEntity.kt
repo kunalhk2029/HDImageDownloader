@@ -2,10 +2,7 @@ package com.app.imagedownloader.business.data.cache.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.app.imagedownloader.business.domain.model.FavPhotos
-import com.app.imagedownloader.business.domain.model.PhotoSource
-import com.app.imagedownloader.business.domain.model.Urls
-import com.app.imagedownloader.business.domain.model.getPhotoSource
+import com.app.imagedownloader.business.domain.model.*
 
 
 @Entity(tableName = "fav_photos_entity")
@@ -15,7 +12,7 @@ data class FavPhotosEntity(
     var uris: Urls,
     val width: Int,
     val height: Int,
-    var isPotrait: Boolean,
+    var orienationType: String,
     var colorCode: Int,
     var description: String?,
     val createdAt: Long = System.currentTimeMillis(),
@@ -23,7 +20,7 @@ data class FavPhotosEntity(
 ) {
     fun mapToFavPhotos(): FavPhotos {
         return FavPhotos(
-            id, previewUrl, uris, width = width, height = height, isPotrait, colorCode, description,
+            id, previewUrl, uris, width = width, height = height, getPhotoOrienationType(orienationType), colorCode, description,
         photoSource = getPhotoSource(photoSource))
     }
 }

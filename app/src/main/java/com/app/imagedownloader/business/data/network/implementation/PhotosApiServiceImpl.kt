@@ -8,6 +8,7 @@ import com.app.imagedownloader.business.data.network.dto.AllApiData
 import com.app.imagedownloader.business.data.network.dto.ApiSourcesInfo
 import com.app.imagedownloader.business.data.network.dto.PinterestMediaInfo
 import com.app.imagedownloader.business.data.network.dto.UnsplashPhotoInfo
+import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.model.PexelsPhotoInfo
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
@@ -49,6 +50,7 @@ constructor(
     override suspend fun getPhotos(
         keyword: String,
         apiSourcesInfo: ApiSourcesInfo,
+        orientationFilter: OrientationFilter,
     ): ApiResult<AllApiData?> {
         var unsplashPhotoInfo: UnsplashPhotoInfo? = null
         var pexelsPhotoInfo: PexelsPhotoInfo? = null
@@ -59,15 +61,23 @@ constructor(
         val executePexelsApiRequest =
             apiSourcesInfo.pexelsCurrentPageNo < (apiSourcesInfo.pexelsPages ?: 2)
 
-        var allApiReachedTheirMaximumPages=true
+        var allApiReachedTheirMaximumPages = true
+
+        val unsplashUrl =
+            if (orientationFilter is OrientationFilter.All)
+            "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol"
+        else
+        "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol&orientation=${orientationFilter.unsplashApiQueryValue}"
+
+
+        val pexelsUrl =
+            "https://www.pexels.com/en-us/api/v3/search/photos?page=${apiSourcesInfo.pexelsCurrentPageNo}&per_page=24&query=$keyword&orientation=${orientationFilter.pexelsApiQueryValue}&size=all&color=all&seo_tags=true"
+
+
         val source_url = "/search/pins/?rs=ac&len=2&q=$keyword&eq=nature&etslf=5783"
         val pinterestDataFeild =
             "{\"options\":{\"article\":\"\",\"appliedProductFilters\":\"---\",\"price_max\":null,\"price_min\":null,\"query\":\"$keyword\",\"scope\":\"pins\",\"auto_correction_disabled\":\"\",\"top_pin_id\":\"\",\"filters\":\"\",\"bookmarks\":[\"${apiSourcesInfo.pinterestNextQueryBookMark}\"]},\"context\":{}}"
-        val unsplashUrl =
-            "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol"
-        val pexelsUrl =
-            "https://www.pexels.com/en-us/api/v3/search/photos?page=${apiSourcesInfo.pexelsCurrentPageNo}&per_page=24&query=$keyword&orientation=all&size=all&color=all&seo_tags=true"
-        val pinterestUrl =
+          val pinterestUrl =
             if (apiSourcesInfo.pinterestNextQueryBookMark != null)
                 "https://in.pinterest.com/resource/BaseSearchResource/get/"
             else
@@ -78,7 +88,7 @@ constructor(
 
         var unsplashApiResult: ApiResult<UnsplashPhotoInfo?>? = null
         if (executeUnsplashApiRequest) {
-            allApiReachedTheirMaximumPages=false
+            allApiReachedTheirMaximumPages = false
             unsplashApiResult = object :
                 NetworkRequestHandler<UnsplashPhotoInfo?>(unsplashUrl, requestQueue, unsplashMap) {
                 override suspend fun doJsonObjectConversion(jsonObject: JSONObject?): UnsplashPhotoInfo? {
@@ -93,7 +103,7 @@ constructor(
 
         var pexelsApiResult: ApiResult<PexelsPhotoInfo?>? = null
         if (executePexelsApiRequest) {
-            allApiReachedTheirMaximumPages=false
+            allApiReachedTheirMaximumPages = false
             pexelsApiResult =
                 object :
                     NetworkRequestHandler<PexelsPhotoInfo?>(pexelsUrl, requestQueue, pexelsMap) {

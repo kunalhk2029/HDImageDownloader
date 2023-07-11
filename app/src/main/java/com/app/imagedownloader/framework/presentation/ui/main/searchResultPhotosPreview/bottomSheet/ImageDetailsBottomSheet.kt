@@ -32,7 +32,7 @@ class ImageDetailsBottomSheet : BottomSheetDialogFragment() {
             requireArguments().getSerializable("onlinePreviewModel") as Photo
         binding?.let {
             val size = "Size : ${model.width}x${model.height}"
-            val orientation = "Orientation : "+if (model.isPotrait) "Portrait" else "Landscape"
+            val orientation = "Orientation : ${model.orienationType.uiValue }"
             var finalTag="Tags : "
             var tags = ""
             model.tags_preview?.let {list->

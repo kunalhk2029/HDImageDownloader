@@ -3,10 +3,7 @@ package com.app.instastorytale.business.data.network.Volley.JsonObjConversion
 import android.graphics.Color
 import com.app.imagedownloader.business.data.network.dto.PinterestMediaInfo
 import com.app.imagedownloader.business.data.network.dto.UnsplashPhotoInfo
-import com.app.imagedownloader.business.domain.model.PexelsPhotoInfo
-import com.app.imagedownloader.business.domain.model.Photo
-import com.app.imagedownloader.business.domain.model.PhotoSource
-import com.app.imagedownloader.business.domain.model.Urls
+import com.app.imagedownloader.business.domain.model.*
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
 import com.google.gson.JsonObject
@@ -41,7 +38,7 @@ class JsonObjConversionServiceImpl(
         val total = jsonObject.getString("total").toInt()
 
         list.add(Photo(id = "", previewUrl = "previewUrl", Urls("", "", "", "", ""),
-            0, 0, false, 0, null, null, 0, 0L, photoSource = PhotoSource.None))
+            0, 0,  PhotoOrienationType.Potrait,0, null, null, 0, 0L, photoSource = PhotoSource.None))
 
         for (index in 0 until resultArray.length()) {
             try {
@@ -60,7 +57,7 @@ class JsonObjConversionServiceImpl(
                 val width = jsonObjectt.getString("width").toInt()
                 val likes = jsonObjectt.getString("likes").toInt()
                 val updatedAt = jsonObjectt.getString("updated_at")
-                val isPotrait = height > width
+                val orienationType =getPhotoOrienationType(height, width)
                 val urlJsonObj = jsonObjectt.getJSONObject("urls")
                 val rawUri = urlJsonObj.getString("raw")
                 val fullUri = urlJsonObj.getString("full")
@@ -98,7 +95,7 @@ class JsonObjConversionServiceImpl(
                     urls,
                     width = width,
                     height = height,
-                    isPotrait,
+                    orienationType,
                     colorCode = Color.parseColor(color),
                     description = description,
                     tags_preview_list,
@@ -145,7 +142,7 @@ class JsonObjConversionServiceImpl(
                 val width = jsonObjectt.getString("width").toInt()
                 val updated_at = jsonObjectt.getString("updated_at")
                 val likes = 0
-                val isPotrait = height > width
+                val orienationType =getPhotoOrienationType(height, width)
                 val urlJsonObj = jsonObjectt.getJSONObject("image")
                 val rawUri = urlJsonObj.getString("download_link")
                 val fullUri = urlJsonObj.getString("download")
@@ -183,7 +180,7 @@ class JsonObjConversionServiceImpl(
                     urls,
                     width = width,
                     height = height,
-                    isPotrait,
+                    orienationType,
                     colorCode =
                     try {
                         Color.parseColor(color)
@@ -235,7 +232,7 @@ class JsonObjConversionServiceImpl(
 
                 val width = size170x.getString("width").toInt()
                 val height = size170x.getString("height").toInt()
-                val isPotrait = height > width
+                val orienationType =getPhotoOrienationType(height, width)
 
                 val urls = Urls(
                     fullHdUrl = rawUri,
@@ -250,7 +247,7 @@ class JsonObjConversionServiceImpl(
                     urls,
                     width = width,
                     height = height,
-                    isPotrait,
+                    orienationType,
                     colorCode = Color.parseColor(dominant_color),
                     description = grid_title,
                     null,
