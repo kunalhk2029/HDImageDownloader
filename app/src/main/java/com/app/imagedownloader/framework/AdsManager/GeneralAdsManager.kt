@@ -373,8 +373,6 @@ class GeneralAdsManager(
                 isAdsFreePlanPurchased()
             }
             if (adsPremiumPlanPurchased == true || adsPremiumPlanPurchased == null) {
-                Logger.log("84618941869169818 155............")
-                Logger.log("84618941869169818   /// 2............")
                 afterInterstitialShown?.invoke()
                 execute(executeFun)
                 return@launch
