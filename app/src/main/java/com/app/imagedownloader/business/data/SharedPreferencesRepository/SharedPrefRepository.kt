@@ -47,4 +47,8 @@ interface SharedPrefRepository {
     fun get_DisableAdsAndPromo(): Boolean
 
     fun set_DisableAdsAndPromo(boolean: Boolean)
+
+    fun get_FirstTimeOpened(): Boolean
+
+    fun set_FirstTimeOpened(boolean: Boolean)
 }

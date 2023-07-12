@@ -16,39 +16,39 @@ object SystemUiVisibility {
 
     fun Fragment.setDefaultBarColor() {
         try {
-//            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
-//                requireActivity().window,
-//                requireActivity().window.decorView
-//            )
-//            requireActivity().window.statusBarColor =
-//              initialStatusBarColor
-//            requireActivity().window.navigationBarColor = initialNavigationBarColor
-//
-//            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(
-//                initialNavigationBarColor) == false
-//            windowInsetsControllerCompat.isAppearanceLightStatusBars =
-//                isDark(initialStatusBarColor) == false
+            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
+                requireActivity().window,
+                requireActivity().window.decorView
+            )
+            requireActivity().window.statusBarColor =
+              initialStatusBarColor
+            requireActivity().window.navigationBarColor = initialNavigationBarColor
+
+            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(
+                initialNavigationBarColor) == false
+            windowInsetsControllerCompat.isAppearanceLightStatusBars =
+                isDark(initialStatusBarColor) == false
         } catch (_: Exception) {
         }
     }
 
     fun Fragment.changeStatusAndNavigationBarColor(@ColorInt color: Int) {
         try {
-//            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
-//                requireActivity().window,
-//                requireActivity().window.decorView
-//            )
-//            if (initialNavigationBarColor == -1) initialNavigationBarColor =
-//                requireActivity().window.navigationBarColor
-//
-//            if (initialStatusBarColor == -1) initialStatusBarColor =
-//                requireActivity().window.statusBarColor
+            val windowInsetsControllerCompat=WindowInsetsControllerCompat(
+                requireActivity().window,
+                requireActivity().window.decorView
+            )
+            if (initialNavigationBarColor == -1) initialNavigationBarColor =
+                requireActivity().window.navigationBarColor
 
-//            requireActivity().window.statusBarColor = color
-//            requireActivity().window.navigationBarColor = color
+            if (initialStatusBarColor == -1) initialStatusBarColor =
+                requireActivity().window.statusBarColor
 
-//            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(color) == false
-//            windowInsetsControllerCompat.isAppearanceLightStatusBars = isDark(color) == false
+            requireActivity().window.statusBarColor = color
+            requireActivity().window.navigationBarColor = color
+
+            windowInsetsControllerCompat.isAppearanceLightNavigationBars = isDark(color) == false
+            windowInsetsControllerCompat.isAppearanceLightStatusBars = isDark(color) == false
         } catch (_: Exception) {
         }
 

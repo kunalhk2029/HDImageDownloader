@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/dullblack"
     tools:context=".framework.presentation.ui.main.singleImagePreview.SingleImagePreview">
 
     <LinearLayout
@@ -169,6 +170,7 @@
             android:backgroundTint="#0000ffff"
             android:gravity="center"
             android:text="@string/delete"
+            android:textColor="@color/white"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline90"
@@ -181,6 +183,7 @@
             android:backgroundTint="#0000ffff"
             android:gravity="center"
             android:text="@string/share"
+            android:textColor="@color/white"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/guideline133"
@@ -193,6 +196,7 @@
             android:gravity="center"
             android:text="@string/view_in_gallery"
             android:textSize="12sp"
+            android:textColor="@color/white"
             android:backgroundTint="#0000ffff"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"

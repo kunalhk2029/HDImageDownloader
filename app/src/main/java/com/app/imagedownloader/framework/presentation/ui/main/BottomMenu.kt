@@ -14,10 +14,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.app.imagedownloader.R
+import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity.Companion.premiumLiveData
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.launch
 
 class BottomMenu:BottomSheetDialogFragment() {
@@ -69,6 +71,15 @@ class BottomMenu:BottomSheetDialogFragment() {
                 data= Uri.parse("https://play.google.com/store/apps/developer?id=kunalhk2029")
             }
             startActivity(intent)
+            FirebaseCrashlytics.getInstance().log("Explore Worlds Best App")
+            try {
+                throw Exception("Message : Clicked Explore Worlds Best App button")
+            } catch (e: Exception) {
+                e.message?.let {
+                    Logger.log("Debug logger = $it")
+                    FirebaseCrashlytics.getInstance().recordException(e)
+                }
+            }
         }
         requireView().findViewById<TextView>(R.id.helpmenu).setOnClickListener {
             findNavController().navigate(

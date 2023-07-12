@@ -119,6 +119,7 @@
     <string name="systemdefault">System Default</string>
     <string name="bottomMenuHeading">Explore Millions Of Full HD+ Images</string>
     <string name="clear_filter_message">Clear Tags And Color filter for loading new photos</string>
+    <string name="alternate_delete_option">You can long press on photos to delete them</string>
 
 
 </resources>

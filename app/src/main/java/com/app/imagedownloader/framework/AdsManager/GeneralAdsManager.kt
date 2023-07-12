@@ -319,6 +319,7 @@ class GeneralAdsManager(
         }
     }
 
+    private var intervalCounter = 0
     fun handleNativeFull(
         executeFun: () -> Unit,
         activity: MainActivity,
@@ -326,8 +327,20 @@ class GeneralAdsManager(
         showToolbar: Boolean = true,
         instantlyshowNativeInterstitialAdProgressBar: Boolean = true,
         afterInterstitialShown: (() -> Unit)? = null,
+        showInIntervals: Boolean = false,
     ) {
         if (activityPausedByInterstitialAd) return
+
+        if (showInIntervals) {
+            if (intervalCounter >= 3) intervalCounter = 1
+            if (intervalCounter != 1) {
+                afterInterstitialShown?.invoke()
+                execute(executeFun)
+                return
+            }
+            intervalCounter++
+        }
+
         CoroutineScope(Main).launch {
             if (adsPremiumPlanPurchased == null) {
                 checkAdsPremiumPlan()

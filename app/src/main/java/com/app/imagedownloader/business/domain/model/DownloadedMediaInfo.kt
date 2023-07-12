@@ -7,4 +7,4 @@ data class DownloadedMediaInfo(
     val name: String,
     val created_at: Int?,
     val colorCode: String
-)
+):java.io.Serializable

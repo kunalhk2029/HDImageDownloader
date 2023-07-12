@@ -14,6 +14,10 @@
             android:id="@+id/action_downloadedMedia_to_singleImagePreview"
             app:destination="@id/singleImagePreview"
             app:popUpTo="@id/downloadedMedia" />
+        <action
+            android:id="@+id/action_downloadedMedia_to_deleteDialog"
+            app:destination="@id/deleteDialog"
+            app:popUpTo="@id/downloadedMedia" />
     </fragment>
     <fragment
         android:id="@+id/settings"
@@ -145,4 +149,9 @@
         android:id="@+id/imageDetailsBottomSheet"
         android:name="com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.bottomSheet.ImageDetailsBottomSheet"
         android:label="ImageDetailsBottomSheet" />
+    <dialog
+        android:id="@+id/deleteDialog"
+        android:name="com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.dialog.DeleteDialog"
+        android:label="fragment_delete_dialog"
+        tools:layout="@layout/fragment_delete_dialog" />
 </navigation>

@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import com.app.imagedownloader.Utils.Constants.Constants.FCM_COMMON_SUBSCRIBED
 import com.app.imagedownloader.Utils.Constants.Constants.ON_BOARDING
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.DISABLE_ADS_PROMO
+import com.app.imagedownloader.Utils.Constants.SettingsConstants.FIRST_TIME_OPENED
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_DIALOG_NOTSHOW_AGAIN
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_DIALOG_NOT_NOW
 import com.app.imagedownloader.Utils.Constants.SettingsConstants.RATING_DIALOG_NOT_NOW_TIME
@@ -142,5 +143,16 @@ class SharedPreferencesRepositoryImpl(private val pref: SharedPreferences) : Sha
 
     override fun getTheme(): Int {
         return pref.getInt(THEME, 2)
+    }
+
+    override fun get_FirstTimeOpened(): Boolean {
+        return pref.getBoolean(FIRST_TIME_OPENED, true)
+    }
+
+    override fun set_FirstTimeOpened(boolean: Boolean) {
+        pref.edit().apply {
+            putBoolean(FIRST_TIME_OPENED, boolean)
+            apply()
+        }
     }
 }

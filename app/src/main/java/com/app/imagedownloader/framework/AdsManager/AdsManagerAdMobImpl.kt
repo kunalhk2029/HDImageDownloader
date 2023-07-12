@@ -264,12 +264,10 @@ class AdsManagerAdMobImpl(
         if (System.currentTimeMillis() < (lastBannerAdLoadedTime + 60000L)
             && nativeBannerAd != null
         ) {
-            Logger.log("Debug admob Ads getBannerAd   time less than 1 Min........")
             return nativeBannerAd
         }
         lastBannerAdLoadedTime = System.currentTimeMillis()
-        Logger.log("Debug admob Ads getBannerAd time more // than 1 Min........")
-        val ad = loadnativeAd("ca-app-pub-1622510493301918/3289764003")
+        val ad = loadnativeAd("ca-app-pub-1622510493301918/9148314124")
         if (ad == null) lastBannerAdLoadedTime = 0L
         return ad ?: nativeBannerAd
     }
@@ -281,7 +279,7 @@ class AdsManagerAdMobImpl(
         withContext(Main) {
             InterstitialAd.load(
                 context,
-                "ca-app-pub-1622510493301918/1914524348",
+                "ca-app-pub-1622510493301918/6781171088",
                 adRequest,
                 object : InterstitialAdLoadCallback() {
                     override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -290,7 +288,6 @@ class AdsManagerAdMobImpl(
                     }
 
                     override fun onAdLoaded(iinterstitialAd: InterstitialAd) {
-                        Logger.log("Debug 6565656 Ads getInterstitialAd  = " + iinterstitialAd)
                         interstitialAd = iinterstitialAd
                         job.complete()
                     }
@@ -306,14 +303,10 @@ class AdsManagerAdMobImpl(
         if (System.currentTimeMillis() < (lastFullAdLoadedTime + 60000L)
             && nativeFullAd != null
         ) {
-            Logger.log("Debug 6565656 Ads getFullAd   time less than 2 Min........")
-            Logger.log("Debug admob Ads getFullAd   time less than 2 Min........")
             return nativeFullAd
         }
         lastFullAdLoadedTime = System.currentTimeMillis()
-        Logger.log("Debug 6565656 Ads getFullAd time more // than 2 Min........")
-        Logger.log("Debug admob Ads getFullAd time more // than 2 Min........")
-        val ad = loadnativeAd("ca-app-pub-1622510493301918/7233326529")
+        val ad = loadnativeAd("ca-app-pub-1622510493301918/2065645427")
         if (ad != null) nativeFullAd = ad else lastFullAdLoadedTime = 0L
         return ad ?: nativeFullAd
     }
@@ -322,12 +315,10 @@ class AdsManagerAdMobImpl(
         if (System.currentTimeMillis() < (lastHomeAdLoadedTime + 60000L)
             && nativeHomeAd != null
         ) {
-            Logger.log("Debug admob Ads getHomeAd   time less than 1 Min........")
             return nativeHomeAd
         }
         lastHomeAdLoadedTime = System.currentTimeMillis()
-        Logger.log("Debug admob Ads getHomeAd time more // than 1 Min........")
-        val ad = loadnativeAd("ca-app-pub-1622510493301918/5920244855")
+        val ad = loadnativeAd("ca-app-pub-1622510493301918/3752199988")
         if (ad != null) nativeHomeAd = ad else lastHomeAdLoadedTime = 0L
         return ad ?: nativeHomeAd
     }
@@ -340,13 +331,11 @@ class AdsManagerAdMobImpl(
                 .forNativeAd { p0 ->
                     ad = p0
                     job.complete()
-                    Logger.log("Debug ADMob  native loaded")
                     return@forNativeAd
                 }.withAdListener(object : AdListener() {
                     override fun onAdFailedToLoad(p0: LoadAdError) {
                         super.onAdFailedToLoad(p0)
                         ad = null
-                        Logger.log("Debug admob AdFailed  = " + p0.message)
                         job.complete()
                     }
                 }).build()

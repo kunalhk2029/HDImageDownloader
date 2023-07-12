@@ -81,6 +81,10 @@ class DownloadedMediaPreviewAdapter(
                 null,
                 null,
                 R.drawable.image_placeholder)
+            itemView.setOnLongClickListener {
+                interaction?.onItemLongClicked(bindingAdapterPosition, item)
+                true
+            }
             itemView.setOnClickListener {
                 interaction?.onItemSelected(bindingAdapterPosition, item)
             }
@@ -89,5 +93,6 @@ class DownloadedMediaPreviewAdapter(
 
     interface Interaction {
         fun onItemSelected(position: Int, item: DownloadedMediaInfo)
+        fun onItemLongClicked(position: Int, item: DownloadedMediaInfo)
     }
 }

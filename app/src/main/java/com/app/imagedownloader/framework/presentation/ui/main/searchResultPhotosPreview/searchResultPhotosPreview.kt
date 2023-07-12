@@ -40,6 +40,7 @@ import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewStateEvents
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -591,5 +592,14 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             R.id.action_searchResultPhotosPreview_to_imageDetailsBottomSheet,
             bundle
         )
+        FirebaseCrashlytics.getInstance().log("Search Results onItemLongClicked")
+        try {
+            throw Exception("Message : Clicked onItemLongClicked in Search Results")
+        } catch (e: Exception) {
+            e.message?.let {
+                Logger.log("Debug logger = $it")
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
     }
 }

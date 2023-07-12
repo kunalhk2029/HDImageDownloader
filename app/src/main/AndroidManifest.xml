@@ -36,11 +36,8 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1622510493301918~9297549403" />
+            android:value="ca-app-pub-1622510493301918~8491452977" />
 
-        <!--        <service-->
-        <!--            android:name="com.app.imagedownloader.framework.presentation.ui.main.LargeMediaFilesDownloadService.LargeMediaDownloadService"-->
-        <!--            android:exported="false" /> &lt;!&ndash; <service &ndash;&gt;-->
 
         <activity
             android:name="com.app.imagedownloader.framework.presentation.ui.main.MainActivity"

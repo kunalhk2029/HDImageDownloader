@@ -48,7 +48,6 @@ object AppModule {
         return pref
     }
 
-
     @Provides
     @Singleton
     fun provideSharedPreferencesRepository(sharedPreferences: SharedPreferences): SharedPrefRepository {

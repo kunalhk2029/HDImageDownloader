@@ -20,8 +20,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.app.imagedownloader.R
-import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.changeStatusAndNavigationBarColor
-import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.setDefaultBarColor
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.databinding.FragmentSingleImagePreviewBinding
@@ -29,7 +27,9 @@ import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
+import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.changeStatusAndNavigationBarColor
 import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.handleAdsOnBackPressed
+import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.setDefaultBarColor
 import com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.DownloadsPreview
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -54,7 +54,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     @Inject
     lateinit var generalAdsManager: GeneralAdsManager
 
-    var model:Photo? = null
+    var model: Photo? = null
     var offlinePhotoUri: String? = null
     var offlinePhotoColorCode: Int? = null
     var binding: FragmentSingleImagePreviewBinding? = null
@@ -70,15 +70,13 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
         try {
             uiCommunicationListener = context as UICommunicationListener
             uiCommunicationListener.hideToolbar()
+            changeStatusAndNavigationBarColor(ContextCompat.getColor(requireContext(),R.color.dullblack))
         } catch (_: java.lang.ClassCastException) {
         }
     }
 
     override fun onResume() {
         super.onResume()
-        model?.let {
-            changeStatusAndNavigationBarColor(it.colorCode)
-        }
         uiCommunicationListener.hideToolbar()
     }
 
@@ -186,7 +184,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
             positiveButton(null, "Delete") {
                 vibrate.vibrate()
                 lifecycleScope.launch {
-                    binding?.progressBar?.visibility=View.VISIBLE
+                    binding?.progressBar?.visibility = View.VISIBLE
                     try {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             withContext(Dispatchers.IO) {
@@ -246,7 +244,8 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
 
     private fun loadImage() {
         generalAdsManager.handleNativeFull(
-            { binding?.let {
+            {
+                binding?.let {
                     it.progressBar.visibility = View.VISIBLE
                     glideManager.setImageFromUrl(
                         it.imagePreview,
@@ -257,16 +256,14 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
                     )
                 }
             },
-            requireActivity() as MainActivity, 0, false
+            requireActivity() as MainActivity, 0, false, showInIntervals = true
         )
     }
 
     private fun showOfflineImageUi() {
         handleOfflineImageUiClick()
         binding?.let {
-            val color =offlinePhotoColorCode
             it.offlineImageActionsView.visibility = View.VISIBLE
-            color?.let { it1 -> changeStatusAndNavigationBarColor(it1) }
         }
     }
 
@@ -278,8 +275,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
             it.MoreActionsBtView.setBackgroundColor(model!!.colorCode)
             it.descriptionView.setBackgroundColor(model!!.colorCode)
             it.yg.setBackgroundColor(model!!.colorCode)
-            changeStatusAndNavigationBarColor(model!!.colorCode)
-             if (!isDark(model!!.colorCode)) it.downloadtextview.setTextColor(Color.parseColor(
+            if (!isDark(model!!.colorCode)) it.downloadtextview.setTextColor(Color.parseColor(
                 "#111111"))
             if (!isDark(model!!.colorCode)) it.moreActionstextview.setTextColor(
                 Color.parseColor("#111111"))

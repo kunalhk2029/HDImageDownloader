@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.afollestad.materialdialogs.MaterialDialog
 import com.app.imagedownloader.R
 import com.app.imagedownloader.business.domain.model.DownloadedMediaInfo
 import com.app.imagedownloader.databinding.FragmentDownloadedMediaBinding
@@ -92,6 +93,7 @@ class DownloadsPreview : Fragment(R.layout.fragment_downloaded_media),
 
         downloadsPreviewViewModel.downloadsPreviewViewState.observe(viewLifecycleOwner) {
             it.list?.let {
+                if (it.isNotEmpty()) showAlternateDeleteOption()
                 binding?.progressBar?.visibility = View.GONE
                 Logger.log("67564 = "+it)
                 adapter.submitList(it)
@@ -99,6 +101,14 @@ class DownloadsPreview : Fragment(R.layout.fragment_downloaded_media),
         }
     }
 
+    private fun showAlternateDeleteOption(){
+        if (downloadsPreviewViewModel.isFirstTimeOpened()){
+            MaterialDialog(requireContext()).show {
+                message(null,getString(R.string.alternate_delete_option))
+                positiveButton(null,getString(R.string.ok))
+            }
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         binding?.recyclerView?.adapter=null
@@ -111,5 +121,12 @@ class DownloadsPreview : Fragment(R.layout.fragment_downloaded_media),
             putString("offlinePhotoColorCode", item.colorCode)
         }
         findNavController().navigate(R.id.action_downloadedMedia_to_singleImagePreview,bundle)
+    }
+
+    override fun onItemLongClicked(position: Int, item: DownloadedMediaInfo) {
+        val bundle = Bundle().apply {
+            putSerializable("model", item)
+        }
+        findNavController().navigate(R.id.action_downloadedMedia_to_deleteDialog,bundle)
     }
 }
