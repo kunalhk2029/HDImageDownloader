@@ -411,8 +411,7 @@ class GeneralAdsManager(
         activity: MainActivity,
         id: Int,
         showToolbar: Boolean = true,
-        instantlyshowNativeInterstitialAdProgressBar: Boolean,
-    ) {
+        instantlyshowNativeInterstitialAdProgressBar: Boolean) {
         activity.binding?.let {
             val job = Job()
             showNativeAd(
@@ -423,7 +422,6 @@ class GeneralAdsManager(
             )
             job.invokeOnCompletion {
                 CoroutineScope(Main).launch {
-                    Logger.log("484989898   /// 5............")
                     execute(executeFun)
                 }
             }
