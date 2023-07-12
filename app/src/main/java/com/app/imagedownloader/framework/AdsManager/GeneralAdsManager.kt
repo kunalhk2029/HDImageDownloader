@@ -386,9 +386,7 @@ class GeneralAdsManager(
                     it.nativeInterstitialAd.adprogressbar.visibility = View.VISIBLE
                 }
             }
-
             adsManager.initNativeFullAd()
-
             showInterstitialAd(
                 executeFun = {
                     afterInterstitialShown?.invoke()
