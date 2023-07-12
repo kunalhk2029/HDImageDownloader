@@ -372,7 +372,6 @@ class GeneralAdsManager(
             if (adsPremiumPlanPurchased == null) {
                 isAdsFreePlanPurchased()
             }
-
             if (adsPremiumPlanPurchased == true || adsPremiumPlanPurchased == null) {
                 Logger.log("84618941869169818 155............")
                 Logger.log("84618941869169818   /// 2............")
