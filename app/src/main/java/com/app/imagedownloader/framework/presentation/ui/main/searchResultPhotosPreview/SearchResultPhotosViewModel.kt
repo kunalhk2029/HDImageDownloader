@@ -139,16 +139,13 @@ class SearchResultPhotosViewModel
     private fun updateCurrentPages(apiSourcesInfo: ApiSourcesInfo) {
         val currentViewState = getHomeViewState()
         if (apiSourcesInfo.unsplashTotalPhotos != null) {
-            Logger.log("68989898  unsplashCurrentPageNo++")
             currentViewState.apiSourcesInfo.unsplashCurrentPageNo++
         }
         if (apiSourcesInfo.pexelsTotalPhotos != null) {
-            Logger.log("68989898  pexelsCurrentPageNo++")
             currentViewState.apiSourcesInfo.pexelsCurrentPageNo++
         }
         _searchResultPhotosPreviewViewState.value = currentViewState
     }
-
 
     fun setApiSourcesInfo(apiSourcesInfo: ApiSourcesInfo) {
         val currentViewState = getHomeViewState()
