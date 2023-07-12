@@ -12,6 +12,10 @@ import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.model.PexelsPhotoInfo
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class PhotosApiServiceImpl
@@ -52,71 +56,81 @@ constructor(
         apiSourcesInfo: ApiSourcesInfo,
         orientationFilter: OrientationFilter,
     ): ApiResult<AllApiData?> {
-        var unsplashPhotoInfo: UnsplashPhotoInfo? = null
-        var pexelsPhotoInfo: PexelsPhotoInfo? = null
-        var pinterestMediaInfo: PinterestMediaInfo? = null
 
-        val executeUnsplashApiRequest =
-            apiSourcesInfo.unsplashCurrentPageNo < (apiSourcesInfo.unsplashPages ?: 2)
-        val executePexelsApiRequest =
-            apiSourcesInfo.pexelsCurrentPageNo < (apiSourcesInfo.pexelsPages ?: 2)
+        return withContext(IO) {
+            var unsplashPhotoInfo: UnsplashPhotoInfo? = null
+            var pexelsPhotoInfo: PexelsPhotoInfo? = null
+            var pinterestMediaInfo: PinterestMediaInfo? = null
 
-        var allApiReachedTheirMaximumPages = true
+            val executeUnsplashApiRequest =
+                apiSourcesInfo.unsplashCurrentPageNo < (apiSourcesInfo.unsplashPages ?: 2)
+            val executePexelsApiRequest =
+                apiSourcesInfo.pexelsCurrentPageNo < (apiSourcesInfo.pexelsPages ?: 2)
 
-        val unsplashUrl =
-            if (orientationFilter is OrientationFilter.All)
-            "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol"
-        else
-        "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol&orientation=${orientationFilter.unsplashApiQueryValue}"
+            var allApiReachedTheirMaximumPages = true
 
-
-        val pexelsUrl =
-            "https://www.pexels.com/en-us/api/v3/search/photos?page=${apiSourcesInfo.pexelsCurrentPageNo}&per_page=24&query=$keyword&orientation=${orientationFilter.pexelsApiQueryValue}&size=all&color=all&seo_tags=true"
+            val unsplashUrl =
+                if (orientationFilter is OrientationFilter.All)
+                    "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol"
+                else
+                    "https://unsplash.com/napi/search/photos?query=$keyword&per_page=20&page=${apiSourcesInfo.unsplashCurrentPageNo}&xp=search-quality-boosting%3Acontrol&orientation=${orientationFilter.unsplashApiQueryValue}"
 
 
-        val source_url = "/search/pins/?rs=ac&len=2&q=$keyword&eq=nature&etslf=5783"
-        val pinterestDataFeild =
-            "{\"options\":{\"article\":\"\",\"appliedProductFilters\":\"---\",\"price_max\":null,\"price_min\":null,\"query\":\"$keyword\",\"scope\":\"pins\",\"auto_correction_disabled\":\"\",\"top_pin_id\":\"\",\"filters\":\"\",\"bookmarks\":[\"${apiSourcesInfo.pinterestNextQueryBookMark}\"]},\"context\":{}}"
-          val pinterestUrl =
-            if (apiSourcesInfo.pinterestNextQueryBookMark != null)
-                "https://in.pinterest.com/resource/BaseSearchResource/get/"
-            else
-                "https://in.pinterest.com/resource/BaseSearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Frs%3Dac%26len%3D2%26q%3Dmountains%26eq%mount%26etslf%3D4954&data=%7B%22options%22%3A%7B%22article%22%3A%22%22%2C%22appliedProductFilters%22%3A%22---%22%2C%22price_max%22%3Anull%2C%22price_min%22%3Anull%2C%22query%22%3A%22$keyword%22%2C%22scope%22%3A%22pins%22%2C%22auto_correction_disabled%22%3A%22%22%2C%22top_pin_id%22%3A%22%22%2C%22filters%22%3A%22%22%7D%2C%22context%22%3A%7B%7D%7D&_=1688850070807"
+            val pexelsUrl =
+                "https://www.pexels.com/en-us/api/v3/search/photos?page=${apiSourcesInfo.pexelsCurrentPageNo}&per_page=24&query=$keyword&orientation=${orientationFilter.pexelsApiQueryValue}&size=all&color=all&seo_tags=true"
 
-        Logger.log("8752877 executeUnsplashApiRequest = : " + executeUnsplashApiRequest)
-        Logger.log("8752877 executePexelsApiRequest = : " + executePexelsApiRequest)
 
-        var unsplashApiResult: ApiResult<UnsplashPhotoInfo?>? = null
-        if (executeUnsplashApiRequest) {
-            allApiReachedTheirMaximumPages = false
-            unsplashApiResult = object :
-                NetworkRequestHandler<UnsplashPhotoInfo?>(unsplashUrl, requestQueue, unsplashMap) {
-                override suspend fun doJsonObjectConversion(jsonObject: JSONObject?): UnsplashPhotoInfo? {
-                    return jsonObject?.let {
-                        jsonObjConversionService.convertJsonObjToListOfUnsplashPhotoInfo(
-                            it
-                        )
-                    }
-                }
-            }.getAsApiResult()
-        }
+            val source_url = "/search/pins/?rs=ac&len=2&q=$keyword&eq=nature&etslf=5783"
+            val pinterestDataFeild =
+                "{\"options\":{\"article\":\"\",\"appliedProductFilters\":\"---\",\"price_max\":null,\"price_min\":null,\"query\":\"$keyword\",\"scope\":\"pins\",\"auto_correction_disabled\":\"\",\"top_pin_id\":\"\",\"filters\":\"\",\"bookmarks\":[\"${apiSourcesInfo.pinterestNextQueryBookMark}\"]},\"context\":{}}"
+            val pinterestUrl =
+                if (apiSourcesInfo.pinterestNextQueryBookMark != null)
+                    "https://in.pinterest.com/resource/BaseSearchResource/get/"
+                else
+                    "https://in.pinterest.com/resource/BaseSearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Frs%3Dac%26len%3D2%26q%3Dmountains%26eq%mount%26etslf%3D4954&data=%7B%22options%22%3A%7B%22article%22%3A%22%22%2C%22appliedProductFilters%22%3A%22---%22%2C%22price_max%22%3Anull%2C%22price_min%22%3Anull%2C%22query%22%3A%22$keyword%22%2C%22scope%22%3A%22pins%22%2C%22auto_correction_disabled%22%3A%22%22%2C%22top_pin_id%22%3A%22%22%2C%22filters%22%3A%22%22%7D%2C%22context%22%3A%7B%7D%7D&_=1688850070807"
 
-        var pexelsApiResult: ApiResult<PexelsPhotoInfo?>? = null
-        if (executePexelsApiRequest) {
-            allApiReachedTheirMaximumPages = false
-            pexelsApiResult =
-                object :
-                    NetworkRequestHandler<PexelsPhotoInfo?>(pexelsUrl, requestQueue, pexelsMap) {
-                    override suspend fun doJsonObjectConversion(jsonObject: JSONObject?): PexelsPhotoInfo? {
-                        return jsonObject?.let {
-                            jsonObjConversionService.convertJsonObjToListOfPexelsPhotoInfo(
-                                it
-                            )
+            Logger.log("848945984984 executeUnsplashApiRequest = : " + executeUnsplashApiRequest)
+            Logger.log("848945984984 executePexelsApiRequest = : " + executePexelsApiRequest)
+            Logger.log("848945984984 apiSourcesInfo = : " + apiSourcesInfo)
+
+            var unsplashApiResult: ApiResult<UnsplashPhotoInfo?>? = null
+            val unsplashApiJob = launch {
+                if (executeUnsplashApiRequest) {
+                    allApiReachedTheirMaximumPages = false
+                    unsplashApiResult = object :
+                        NetworkRequestHandler<UnsplashPhotoInfo?>(unsplashUrl,
+                            requestQueue,
+                            unsplashMap) {
+                        override suspend fun doJsonObjectConversion(jsonObject: JSONObject?): UnsplashPhotoInfo? {
+                            return jsonObject?.let {
+                                jsonObjConversionService.convertJsonObjToListOfUnsplashPhotoInfo(
+                                    it
+                                )
+                            }
                         }
-                    }
-                }.getAsApiResult()
-        }
+                    }.getAsApiResult()
+                }
+            }
 
+            var pexelsApiResult: ApiResult<PexelsPhotoInfo?>? = null
+            val pexelsApiJob = launch {
+                if (executePexelsApiRequest) {
+                    allApiReachedTheirMaximumPages = false
+                    pexelsApiResult =
+                        object :
+                            NetworkRequestHandler<PexelsPhotoInfo?>(pexelsUrl,
+                                requestQueue,
+                                pexelsMap) {
+                            override suspend fun doJsonObjectConversion(jsonObject: JSONObject?): PexelsPhotoInfo? {
+                                return jsonObject?.let {
+                                    jsonObjConversionService.convertJsonObjToListOfPexelsPhotoInfo(
+                                        it
+                                    )
+                                }
+                            }
+                        }.getAsApiResult()
+                }
+            }
 
 //        val pinterestApiResult =
 //            if (apiSourcesInfo.pinterestNextQueryBookMark != null) {
@@ -145,69 +159,38 @@ constructor(
 //                }.getAsApiResult()
 //            }
 
-        var allApiFailed = true
+            while (!pexelsApiJob.isCompleted ||!unsplashApiJob.isCompleted){}
 
-        if (unsplashApiResult is ApiResult.Success) {
-            allApiFailed = false
-            unsplashApiResult.data?.let {
-                unsplashPhotoInfo = it
+            var allApiFailed = true
+
+            if (unsplashApiResult is ApiResult.Success) {
+                allApiFailed = false
+                (unsplashApiResult as ApiResult.Success<UnsplashPhotoInfo?>).data?.let {
+                    unsplashPhotoInfo = it
+                }
             }
-        }
-        if (pexelsApiResult is ApiResult.Success) {
-            allApiFailed = false
-            pexelsApiResult.data?.let {
-                pexelsPhotoInfo = it
+            if (pexelsApiResult is ApiResult.Success) {
+                allApiFailed = false
+                (pexelsApiResult as ApiResult.Success<PexelsPhotoInfo?>).data?.let {
+                    pexelsPhotoInfo = it
+                }
             }
-        }
 //        if (pinterestApiResult is ApiResult.Success) {
 //            allApiFailed = false
 //            pinterestApiResult.data?.let {
 //                pinterestMediaInfo = it
 //            }
 //        }
-        return if (allApiFailed && !allApiReachedTheirMaximumPages)
-            ApiResult.Error("") else ApiResult.Success(
-            AllApiData(
-                unsplashPhotoInfo, pexelsPhotoInfo, pinterestMediaInfo
+            Logger.log("848945984984 unsplashPhotoInfo = : " + unsplashPhotoInfo)
+            Logger.log("848945984984 allApiunFailed = : " + allApiFailed)
+            Logger.log("848945984984 allApiReachedTheirMaximumPages = : " + allApiReachedTheirMaximumPages)
+
+            if (allApiFailed && !allApiReachedTheirMaximumPages)
+                ApiResult.Error("") else ApiResult.Success(
+                AllApiData(
+                    unsplashPhotoInfo, pexelsPhotoInfo, pinterestMediaInfo
+                )
             )
-        )
+        }
     }
-
-
-//    override suspend fun getPhotosFromPinterest(
-//        url: String,
-//        bookMark: String?,
-//    ): ApiResult<Photo?> {
-//        Logger.log("8752877 getPhotosFromPinterest = : " + bookMark)
-//        return if (bookMark != null) {
-//            val urll = "https://in.pinterest.com/resource/BaseSearchResource/get/"
-////            val source_url = "/search/pins/?rs=ac&len=2&q=nature%20photography&eq=nature&etslf=5783"
-//            val source_url = ""
-//            val data =
-//                "{\"options\":{\"article\":\"\",\"appliedProductFilters\":\"---\",\"price_max\":null,\"price_min\":null,\"query\":\"$url\",\"scope\":\"pins\",\"auto_correction_disabled\":\"\",\"top_pin_id\":\"\",\"filters\":\"\",\"bookmarks\":[\"$bookMark\"]},\"context\":{}}"
-//            return RetrofitInstance.api.getPinterestMedia(pinterestMap,
-//                urll, source_url, data
-//            ).let {
-//                it.let { it1 ->
-//                    jsonObjConversionService.convertPinterestResponseJsonObjToListOfUnsplashPhotoInfo(
-//                        it1
-//                    ).let {
-//                        return@let ApiResult.Success(it)
-//                    }
-//                }
-//            }
-//        } else {
-//            val urll =
-//                "https://in.pinterest.com/resource/BaseSearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Frs%3Dac%26len%3D2%26q%3Dmountains%26eq%mount%26etslf%3D4954&data=%7B%22options%22%3A%7B%22article%22%3A%22%22%2C%22appliedProductFilters%22%3A%22---%22%2C%22price_max%22%3Anull%2C%22price_min%22%3Anull%2C%22query%22%3A%22$url%22%2C%22scope%22%3A%22pins%22%2C%22auto_correction_disabled%22%3A%22%22%2C%22top_pin_id%22%3A%22%22%2C%22filters%22%3A%22%22%7D%2C%22context%22%3A%7B%7D%7D&_=1688850070807"
-//            object : NetworkRequestHandler<Photo?>(urll, requestQueue, pinterestMap) {
-//                override suspend fun doJsonObjectConversion(jsonObject: JSONObject?): Photo? {
-//                    return jsonObject?.let {
-//                        jsonObjConversionService.convertPinterestResponseJsonObjToListOfUnsplashPhotoInfo(
-//                            it
-//                        )
-//                    }
-//                }
-//            }.getAsApiResult()
-//        }
-//    }
 }

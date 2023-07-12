@@ -9,11 +9,15 @@ import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.NetworkBoundResource.NetworkResponseHandler
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.business.domain.model.Photo
+import com.app.imagedownloader.business.domain.model.PhotoOrienationType
+import com.app.imagedownloader.business.domain.model.PhotoSource
+import com.app.imagedownloader.business.domain.model.Urls
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.main.searchResultPhotosPreview.state.SearchResultPhotosPreviewViewState
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,10 +43,13 @@ class GetPhotos @Inject constructor(private val photosApiService: PhotosApiServi
                 return DataState.success(
                     apiResult.data?.let {
                         val prevList = list ?: listOf()
+                        val newPhotoList: MutableList<Photo> = prevList.toMutableList()
+                        newPhotoList.add(Photo(id = UUID.randomUUID().toString(), previewUrl = "previewUrl", Urls("", "", "", "", ""),
+                            0, 0,  PhotoOrienationType.Potrait,0, null, null, 0, 0L, photoSource = PhotoSource.None))
+
                         val unsplashList = it.unsplashPhotoInfo?.photos_list?.toMutableList()
                         val pexelsList = it.pexelsPhotoInfo?.photos_list?.toMutableList()
                         val pinterestList = it.pinterestMediaInfo?.photos_list?.toMutableList()
-                        val newPhotoList: MutableList<Photo> = prevList.toMutableList()
                         while (unsplashList?.isNotEmpty() == true
                             || pexelsList?.isNotEmpty() == true
                             || pinterestList?.isNotEmpty() == true

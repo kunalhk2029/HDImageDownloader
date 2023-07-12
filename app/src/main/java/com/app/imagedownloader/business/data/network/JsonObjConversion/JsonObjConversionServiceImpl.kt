@@ -37,9 +37,6 @@ class JsonObjConversionServiceImpl(
         val total_pages = jsonObject.getString("total_pages").toInt()
         val total = jsonObject.getString("total").toInt()
 
-        list.add(Photo(id = "", previewUrl = "previewUrl", Urls("", "", "", "", ""),
-            0, 0,  PhotoOrienationType.Potrait,0, null, null, 0, 0L, photoSource = PhotoSource.None))
-
         for (index in 0 until resultArray.length()) {
             try {
                 val jsonObjectt = resultArray.getJSONObject(index)
@@ -115,9 +112,6 @@ class JsonObjConversionServiceImpl(
 
     override suspend fun convertJsonObjToListOfPexelsPhotoInfo(jsonObject: JSONObject): PexelsPhotoInfo? {
         val list = mutableListOf<Photo>()
-
-        list.add(Photo(id = "", previewUrl = "previewUrl", Urls("", "", "", "", ""),
-            0, 0,  PhotoOrienationType.Potrait,0, null, null, 0, 0L, photoSource = PhotoSource.None))
 
         val paginationInfo = jsonObject.getJSONObject("pagination")
         val total_pages = paginationInfo.getString("total_pages").toInt()

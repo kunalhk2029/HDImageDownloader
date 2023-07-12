@@ -3,19 +3,14 @@ package com.app.imagedownloader.framework.presentation.ui.main.singleImagePrevie
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.*
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
-import com.app.imagedownloader.R
 import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.business.interactors.singleImagePreview.SaveMediaInScopedStorage
 import com.app.imagedownloader.databinding.FragmentDownloadOptionsBottomSheetBinding
@@ -47,7 +42,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding = FragmentDownloadOptionsBottomSheetBinding.inflate(inflater, container, false)
         return binding!!.root
     }
@@ -102,11 +97,11 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
 
             while (
                 !fullHdUrlSizeJob.isCompleted
-                && !hdUrlSizeJob.isCompleted
-                && !regularUrlSizeJob.isCompleted
-                && !smallUrlSizeJob.isCompleted
-                && !thumbnailUrlSizeJob.isCompleted
-            ){
+                || !hdUrlSizeJob.isCompleted
+                || !regularUrlSizeJob.isCompleted
+                || !smallUrlSizeJob.isCompleted
+                || !thumbnailUrlSizeJob.isCompleted
+            ) {
 
             }
 

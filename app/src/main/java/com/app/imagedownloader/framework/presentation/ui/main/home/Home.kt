@@ -151,7 +151,6 @@ class Home : Fragment(R.layout.fragment_home) {
                         it.chipBackgroundColor =
                             ContextCompat.getColorStateList(requireContext(), R.color.pin_red)
                     }
-
                 checkedIds.firstOrNull()?.let {
                     previousSelectedChipId = it
                     val chip = group.findViewById<Chip>(it)
@@ -173,7 +172,6 @@ class Home : Fragment(R.layout.fragment_home) {
                         it.chipBackgroundColor =
                             ContextCompat.getColorStateList(requireContext(), R.color.pin_red)
                     }
-
                 checkedIds.firstOrNull()?.let {
                     previousSelectedRecentChipId = it
                     val chip = group.findViewById<Chip>(it)
@@ -211,6 +209,7 @@ class Home : Fragment(R.layout.fragment_home) {
                     viewLifecycleOwner)
                 binding?.let { binding ->
                     lifecycleScope.launch {
+                        adsManager.intervalCounter=1
                         adsManager.showNativeHomeScreenAd(binding.nativeAdView).let {
                             delay(250L)
                             binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)

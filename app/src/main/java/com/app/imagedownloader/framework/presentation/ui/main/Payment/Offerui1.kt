@@ -7,13 +7,4 @@ import com.app.imagedownloader.framework.presentation.Adapters.OnBoardingStatePa
 import com.app.imagedownloader.R
 import com.app.imagedownloader.framework.presentation.ui.OnBoarding.OnBoardingViewModel
 
-class Offerui1 : Fragment(R.layout.offerui1) {
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
-    override fun onDestroyView() {
-        super.onDestroyView()
-    }
-}
+class Offerui1 : Fragment(R.layout.offerui1) {}

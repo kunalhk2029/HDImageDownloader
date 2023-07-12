@@ -136,6 +136,25 @@ class AdsManagerAdMobImpl(
         nativeView: NativeAdView,
         itemRootView: View,
     ) {
+        val callToActionView = itemRootView.findViewById<View>(R.id.ctabttextview) as TextView
+        val callToActionViewCard = itemRootView.findViewById<View>(R.id.ctaCard) as CardView
+        val adSpaceholder = itemRootView.findViewById<TextView>(R.id.adspaceholder)
+        adSpaceholder.visibility=View.GONE
+        inflateCustomNativeAd(nativeAd,nativeView,null,callToActionView,callToActionViewCard)
+    }
+
+    private fun inflateNativeHomeAd(nativeAd: NativeAd, nativeView: NativeAdView) {
+        val callToActionView = nativeView.findViewById<View>(R.id.cta) as Button
+        inflateCustomNativeAd(nativeAd, nativeView, callToActionView, null,null)
+    }
+
+    private fun inflateCustomNativeAd(
+        nativeAd: NativeAd,
+        nativeView: NativeAdView,
+        callToActionView: Button?,
+        adapterItemCalltoActionView: TextView?,
+        callToActionViewCard:CardView?
+    ) {
         val headline = nativeAd.headline
         val body = nativeAd.body
         val cta = nativeAd.callToAction
@@ -147,82 +166,25 @@ class AdsManagerAdMobImpl(
         val secondaryView = nativeView.findViewById<View>(R.id.secondary) as TextView
         val tertiaryView = nativeView.findViewById<View>(R.id.body) as TextView
 
-        val callToActionView = itemRootView.findViewById<View>(R.id.ctabttextview) as TextView
-        val callToActionViewCard = itemRootView.findViewById<View>(R.id.ctaCard) as CardView
-        callToActionView.visibility = VISIBLE
+        val customCallToActionView = callToActionView ?: adapterItemCalltoActionView
+        customCallToActionView!!.visibility = VISIBLE
         ad_notification_view.visibility = VISIBLE
-        callToActionViewCard.visibility = VISIBLE
         var secondaryText = ""
-
         val iconView = nativeView.findViewById<View>(R.id.icon) as ImageView
         val mediaView = nativeView.findViewById<View>(R.id.media_view) as MediaView
 
-        nativeAdView.callToActionView = callToActionView
+        nativeAdView.callToActionView = customCallToActionView
         nativeAdView.headlineView = primaryView
         nativeAdView.mediaView = mediaView
         secondaryView.visibility = VISIBLE
         primaryView.text = headline
-        callToActionView.text = cta
-
+        customCallToActionView.text = cta
+        callToActionViewCard?.visibility = VISIBLE
         if (icon != null) {
             iconView.visibility = VISIBLE
             iconView.setImageDrawable(icon.drawable)
         } else {
             iconView.visibility = View.GONE
-        }
-
-        val store = nativeAd.store
-        val advertiser = nativeAd.advertiser
-        if (adHasOnlyStore(nativeAd)) {
-            nativeAdView.storeView = secondaryView
-            if (store != null) {
-                secondaryText = store
-            }
-        } else if (!TextUtils.isEmpty(advertiser)) {
-            nativeAdView.advertiserView = secondaryView
-            if (advertiser != null) {
-                secondaryText = advertiser
-            }
-        } else {
-            secondaryText = ""
-        }
-        secondaryView.text = secondaryText
-        tertiaryView.text = body
-        nativeAdView.bodyView = tertiaryView
-        nativeAdView.setNativeAd(nativeAd)
-    }
-
-    private fun inflateNativeHomeAd(nativeAd: NativeAd, nativeView: NativeAdView) {
-        val headline = nativeAd.headline
-        val body = nativeAd.body
-        val cta = nativeAd.callToAction
-        val icon = nativeAd.icon
-        val nativeAdView = nativeView.findViewById<View>(R.id.native_ad_view) as NativeAdView
-        val ad_notification_view =
-            nativeView.findViewById<View>(R.id.ad_notification_view) as TextView
-        val primaryView = nativeView.findViewById<View>(R.id.primary) as TextView
-        val secondaryView = nativeView.findViewById<View>(R.id.secondary) as TextView
-        val tertiaryView = nativeView.findViewById<View>(R.id.body) as TextView
-
-        val callToActionView = nativeView.findViewById<View>(R.id.cta) as Button
-        callToActionView.visibility = VISIBLE
-        ad_notification_view.visibility = VISIBLE
-        var secondaryText = ""
-        val iconView = nativeView.findViewById<View>(R.id.icon) as ImageView
-        val mediaView = nativeView.findViewById<View>(R.id.media_view) as MediaView
-
-        nativeAdView.setCallToActionView(callToActionView)
-        nativeAdView.setHeadlineView(primaryView)
-        nativeAdView.setMediaView(mediaView)
-        secondaryView.setVisibility(View.VISIBLE)
-        primaryView.setText(headline)
-        callToActionView.setText(cta)
-
-        if (icon != null) {
-            iconView.setVisibility(View.VISIBLE)
-            iconView.setImageDrawable(icon.drawable)
-        } else {
-            iconView.setVisibility(View.GONE)
         }
 
         val store = nativeAd.store

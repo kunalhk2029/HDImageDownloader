@@ -37,7 +37,6 @@ class GeneralAdsManager(
     private val premiumFeaturesService: PremiumFeaturesService,
 ) {
 
-
     companion object {
         var bannerAdVisibilityHidden = false
         var adsPremiumPlanPurchased: Boolean? = null
@@ -346,7 +345,6 @@ class GeneralAdsManager(
     }
 
     var intervalCounter = 1
-
     fun handleNativeFull(
         executeFun: () -> Unit,
         activity: MainActivity,

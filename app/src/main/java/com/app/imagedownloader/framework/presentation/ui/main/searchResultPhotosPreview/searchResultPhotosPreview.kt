@@ -84,9 +84,6 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         initRecyclerView()
         subscribeObservers()
         addOnBackpressedCallback()
-        searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.searchedKeyword?.let {
-            uiCommunicationListener.setToolbarTitleText(it)
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -386,6 +383,9 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
 
         searchResultPhotosViewModel.searchResultPhotosPreviewViewState.observe(viewLifecycleOwner) {
 
+            it.searchedKeyword?.let {
+                uiCommunicationListener.setToolbarTitleText(it)
+            }
             val isTagOrColorFilterApplied = it.colorsFilter.isNotEmpty() ||
                     it.tagFilter.isNotEmpty()
 
@@ -477,7 +477,6 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                     searchResultPhotosViewModel.searchResultPhotosPreviewViewState.value?.let {
                         val firstitempos =
                             layout.findFirstCompletelyVisibleItemPositions(IntArray(2)).first()
-                        Logger.log("88985959  684  8= " + firstitempos)
                         val itemcount = layout.childCount
 
                         var allApiReachedTheirMaximumPage = true
@@ -501,8 +500,8 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                                     ((firstitempos + itemcount) >= it.filteredSearchResultPhotos!!.size)
                                     && !allApiReachedTheirMaximumPage) && !IsTagOrColorFilterApplied
 
-                        Logger.log("848945984984 paginating = : " + loadcondition)
                         if (loadcondition) {
+                            Logger.log("848945984984 paginating = : " + loadcondition)
                             searchResultPhotosViewModel.PAGINATION_EXECUTING = true
                             showPaginationProgressbar()
                             searchResultPhotosViewModel.onEvent(

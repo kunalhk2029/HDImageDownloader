@@ -17,20 +17,28 @@ import javax.inject.Singleton
 @Singleton
 class GetFavPhotos
 @Inject constructor(private val photosDao: PhotosDao) {
-     fun execute():Flow<DataState<FavPhotosPreviewViewState>> = flow {
+    fun execute(): Flow<DataState<FavPhotosPreviewViewState>> = flow {
         emit(DataState.loading())
 
         val finalList = mutableListOf<FavPhotos>()
-        val adList = FavPhotos("","previewUrl", uris = Urls("","","","",""), 0,0,PhotoOrienationType.Potrait,0,null, photoSource = PhotoSource.None)
-        withContext(IO){
+        val adList = FavPhotos("",
+            "previewUrl",
+            uris = Urls("", "", "", "", ""),
+            0,
+            0,
+            PhotoOrienationType.Potrait,
+            0,
+            null,
+            photoSource = PhotoSource.None)
+        withContext(IO) {
             finalList.add(adList)
-            val  favPhotos = photosDao.getFavouritePhotos().sortedByDescending { it.createdAt }.map { it.mapToFavPhotos() }
+            val favPhotos = photosDao.getFavouritePhotos().sortedByDescending { it.createdAt }
+                .map { it.mapToFavPhotos() }
             finalList.addAll(favPhotos)
             finalList.add(adList)
         }
-
-         emit(DataState.success(FavPhotosPreviewViewState(
-             finalList
-         )))
+        emit(DataState.success(FavPhotosPreviewViewState(
+            finalList
+        )))
     }
 }

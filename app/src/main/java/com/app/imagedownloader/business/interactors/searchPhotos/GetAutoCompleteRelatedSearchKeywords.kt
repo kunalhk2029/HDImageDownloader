@@ -12,15 +12,12 @@ import javax.inject.Singleton
 @Singleton
 class GetAutoCompleteRelatedSearchKeywords
 @Inject constructor(private val photosApiService: PhotosApiService) {
-
-
     operator fun invoke(keyword: String): Flow<DataState<SearchPhotosViewState>> {
         val url = "https://unsplash.com/nautocomplete/$keyword?xp=search-quality-boosting%3Acontrol"
         return object : NetworkResponseHandler<SearchPhotosViewState, List<String>?>() {
             override suspend fun doNetworkCall(): ApiResult<List<String>?> {
                 return photosApiService.getAutoCompleteRelatedSearchKeywords(url)
             }
-
             override fun createSuccessDataState(apiResult: ApiResult.Success<List<String>?>): DataState<SearchPhotosViewState> {
                 return DataState.success(SearchPhotosViewState(autoCompletedRelatedSearchKeywords = apiResult.data))
             }

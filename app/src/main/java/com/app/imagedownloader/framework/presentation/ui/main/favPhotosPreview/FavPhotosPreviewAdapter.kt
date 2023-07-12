@@ -102,12 +102,11 @@ class FavPhotosPreviewAdapter(
             if (item.previewUrl=="previewUrl"){
                 adspaceholder.visibility=View.VISIBLE
                 descriptionCard.visibility=View.GONE
-                adsFreeCard.visibility=View.VISIBLE
                 preview.visibility=View.GONE
                 CoroutineScope(Dispatchers.Main).launch {
                     generalAdsManager.showNativeAdapterItemAd(adView,itemView).let {
-                        adspaceholder.visibility=View.GONE
                         if (it) adsFreeCard.visibility=View.GONE
+                        else adsFreeCard.visibility=View.VISIBLE
                     }
                 }
                 return@with
