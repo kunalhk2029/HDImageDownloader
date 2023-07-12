@@ -64,9 +64,8 @@ object AppModule {
     @Singleton
     fun provideGeneralAdsManager(
         adsManager: AdsManager, sharedPrefRepository: SharedPrefRepository,
-        premiumFeaturesService: PremiumFeaturesService,
-        @ApplicationContext context: Context
+        premiumFeaturesService: PremiumFeaturesService
     ): GeneralAdsManager {
-        return GeneralAdsManager(adsManager, context, sharedPrefRepository, premiumFeaturesService)
+        return GeneralAdsManager(adsManager, sharedPrefRepository, premiumFeaturesService)
     }
 }

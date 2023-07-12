@@ -33,7 +33,6 @@ import kotlinx.coroutines.Dispatchers.Main
 
 class GeneralAdsManager(
     val adsManager: AdsManager,
-    private val context: Context,
     private val sharedPrefRepository: SharedPrefRepository,
     private val premiumFeaturesService: PremiumFeaturesService,
 ) {
@@ -42,18 +41,18 @@ class GeneralAdsManager(
     companion object {
         var bannerAdVisibilityHidden = false
         var adsPremiumPlanPurchased: Boolean? = null
-        val bannerAdList: HashMap<Int, BannerAdPlaceholder> = HashMap()
+        val bannerAdPlaceHolderList: HashMap<Int, BannerAdPlaceholder> = HashMap()
+        val bannerAdList: HashMap<Int, NativeAd> = HashMap()
     }
 
     var bannerAdPosition = 0
     var mediator: TabLayoutMediator? = null
 
-    private suspend fun checkAdsPremiumPlan(): Boolean? {
+    private suspend fun isAdsFreePlanPurchased(): Boolean? {
         if (adsPremiumPlanPurchased != null) return adsPremiumPlanPurchased
         adsPremiumPlanPurchased = premiumFeaturesService.isAdsFreePlanPurchased()
         return adsPremiumPlanPurchased
     }
-
 
     private fun showNativeAd(
         view: View,
@@ -187,7 +186,6 @@ class GeneralAdsManager(
         }
     }
 
-
     suspend fun showNativeAdapterItemAd(
         view: NativeAdView, root: View,
     ): Boolean {
@@ -196,7 +194,7 @@ class GeneralAdsManager(
             return true
         }
         if (adsPremiumPlanPurchased == null) {
-            checkAdsPremiumPlan()
+            isAdsFreePlanPurchased()
         }
         adsPremiumPlanPurchased?.let {
             if (it) {
@@ -219,7 +217,7 @@ class GeneralAdsManager(
             return
         }
         if (adsPremiumPlanPurchased == null) {
-            checkAdsPremiumPlan()
+            isAdsFreePlanPurchased()
         }
         adsPremiumPlanPurchased?.let {
             if (it) {
@@ -240,12 +238,14 @@ class GeneralAdsManager(
         lifecycle: Lifecycle,
     ) {
 
+        Logger.log("9559595 showNativeBannerAd invoked ")
+
         if (sharedPrefRepository.get_DisableAdsAndPromo()) {
             return
         }
 
         if (adsPremiumPlanPurchased == null) {
-            checkAdsPremiumPlan()
+            isAdsFreePlanPurchased()
         }
         adsPremiumPlanPurchased?.let {
             if (it) {
@@ -272,6 +272,8 @@ class GeneralAdsManager(
                             true
                         ) else null
 
+                    Logger.log("9559595 previousAd =  " + previousAd)
+
                     if (previousAd != null) {
                         adSpace.visibility = View.GONE
                         view.visibility = View.VISIBLE
@@ -284,29 +286,53 @@ class GeneralAdsManager(
                         it
                     } ?: previousAd
 
+                    if (bannerAdVisibilityHidden) return@launch
+                    Logger.log("9559595 bannerAdVisibilityHidden =  " + bannerAdVisibilityHidden)
+                    Logger.log("9559595 isnewAd =  " + isnewAd)
+                    Logger.log("9559595 adData =  " + adData)
                     if (isnewAd) {
+                        if (bannerAdVisibilityHidden) return@launch
                         adSpace.visibility = View.GONE
                         view.visibility = View.VISIBLE
                         if (adData != null) {
                             val newInstanceOfBannerAdPlaceholder =
                                 BannerAdPlaceholder.getBannerPlaceholder(bannerAdPosition)
-                            bannerAdList[bannerAdPosition] = newInstanceOfBannerAdPlaceholder
-                            newInstanceOfBannerAdPlaceholder.ad = adData
+                            bannerAdPlaceHolderList[bannerAdPosition] =
+                                newInstanceOfBannerAdPlaceholder
+                            bannerAdList[bannerAdPosition] = adData
                             mediator?.detach()
                             viewPager2.adapter = null
-                            viewPager2.adapter = ViewPagerAdapter2(manager, lifecycle, bannerAdList)
+                            viewPager2.adapter =
+                                ViewPagerAdapter2(manager, lifecycle, bannerAdPlaceHolderList)
                             delay(250L)
                             viewPager2.currentItem = bannerAdPosition
                             mediator = TabLayoutMediator(tabLayout, viewPager2) { _, _ -> }
                             mediator?.attach()
                             bannerAdPosition++
                         }
+                    } else if (viewPager2.adapter == null && adData != null) {
+                        Logger.log("9559595 newwConsition =  ")
+                        val newInstanceOfBannerAdPlaceholder =
+                            BannerAdPlaceholder.getBannerPlaceholder(bannerAdPosition)
+                        bannerAdPlaceHolderList[bannerAdPosition] = newInstanceOfBannerAdPlaceholder
+                        bannerAdList[bannerAdPosition] = adData
+                        viewPager2.adapter =
+                            ViewPagerAdapter2(manager, lifecycle, bannerAdPlaceHolderList)
+                        delay(250L)
+                        viewPager2.currentItem = bannerAdPosition
+                        mediator = TabLayoutMediator(tabLayout, viewPager2) { _, _ -> }
+                        mediator?.attach()
+                        bannerAdPosition++
                     }
 
                     adData?.let {
+                        Logger.log("9559595 adData =  1...")
+                        Logger.log("9559595 adData =  1. 1 .." + viewPager2.adapter?.itemCount)
+                        if (bannerAdVisibilityHidden) return@launch
                         a?.setExpanded(true)
                         adSpace.visibility = View.GONE
                     } ?: kotlin.run {
+                        if (bannerAdVisibilityHidden) return@launch
                         adSpace.visibility = View.VISIBLE
                         view.visibility = View.GONE
                         adsfreebt.visibility = View.VISIBLE
@@ -319,7 +345,8 @@ class GeneralAdsManager(
         }
     }
 
-    private var intervalCounter = 0
+    var intervalCounter = 1
+
     fun handleNativeFull(
         executeFun: () -> Unit,
         activity: MainActivity,
@@ -332,18 +359,18 @@ class GeneralAdsManager(
         if (activityPausedByInterstitialAd) return
 
         if (showInIntervals) {
-            if (intervalCounter >= 3) intervalCounter = 1
-            if (intervalCounter != 1) {
+            val prevValue=intervalCounter
+            intervalCounter++
+            if (prevValue%3!=0) {
                 afterInterstitialShown?.invoke()
                 execute(executeFun)
                 return
             }
-            intervalCounter++
         }
 
         CoroutineScope(Main).launch {
             if (adsPremiumPlanPurchased == null) {
-                checkAdsPremiumPlan()
+                isAdsFreePlanPurchased()
             }
 
             if (adsPremiumPlanPurchased == true || adsPremiumPlanPurchased == null) {
@@ -353,7 +380,6 @@ class GeneralAdsManager(
                 execute(executeFun)
                 return@launch
             }
-
 
             if (instantlyshowNativeInterstitialAdProgressBar) {
                 activity.binding?.let {

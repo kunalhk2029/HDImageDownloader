@@ -58,6 +58,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     var offlinePhotoUri: String? = null
     var offlinePhotoColorCode: Int? = null
     var binding: FragmentSingleImagePreviewBinding? = null
+    var adLoaded = false
 
     companion object {
         val downloadCompletedPlaybackListener: Channel<Boolean> = Channel()
@@ -70,7 +71,8 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
         try {
             uiCommunicationListener = context as UICommunicationListener
             uiCommunicationListener.hideToolbar()
-            changeStatusAndNavigationBarColor(ContextCompat.getColor(requireContext(),R.color.dullblack))
+            changeStatusAndNavigationBarColor(ContextCompat.getColor(requireContext(),
+                R.color.dullblack))
         } catch (_: java.lang.ClassCastException) {
         }
     }
@@ -243,21 +245,28 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
     }
 
     private fun loadImage() {
-        generalAdsManager.handleNativeFull(
-            {
-                binding?.let {
-                    it.progressBar.visibility = View.VISIBLE
-                    glideManager.setImageFromUrl(
-                        it.imagePreview,
-                        model?.urls?.regularUrl ?: offlinePhotoUri,
-                        glideSuccessUnit = {
-                            kotlin.run { it.progressBar.visibility = View.GONE }
-                        }
-                    )
-                }
-            },
-            requireActivity() as MainActivity, 0, false, showInIntervals = true
-        )
+        binding?.let {
+            val loadImage = {
+                it.progressBar.visibility = View.VISIBLE
+                glideManager.setImageFromUrl(
+                    it.imagePreview,
+                    model?.urls?.regularUrl ?: offlinePhotoUri,
+                    glideSuccessUnit = {
+                        kotlin.run { it.progressBar.visibility = View.GONE }
+                    }
+                )
+            }
+            if (!adLoaded) {
+                generalAdsManager.handleNativeFull({
+                    loadImage.invoke()
+                    adLoaded = true
+                },
+                    requireActivity() as MainActivity, 0, false, showInIntervals = true
+                )
+            } else {
+                loadImage.invoke()
+            }
+        }
     }
 
     private fun showOfflineImageUi() {
