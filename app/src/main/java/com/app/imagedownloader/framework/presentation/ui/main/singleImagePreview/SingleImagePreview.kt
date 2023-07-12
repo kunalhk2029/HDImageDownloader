@@ -128,6 +128,8 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
             putSerializable("onlinePreviewModel", model)
             putInt("colorCode", model!!.colorCode)
         }
+        ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)
+            ?.overrideColor(model!!.colorCode)
         findNavController().navigate(
             R.id.action_singleImagePreview_to_moreOptionsBottomSheet,
             bundle
@@ -139,6 +141,8 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
             putSerializable("onlinePreviewModel", model)
             putInt("colorCode", model!!.colorCode)
         }
+        ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)
+            ?.overrideColor(model!!.colorCode)
         findNavController().navigate(
             R.id.action_singleImagePreview_to_downloadOptionsBottomSheet,
             bundle
@@ -275,9 +279,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
             it.descriptionView.setBackgroundColor(model!!.colorCode)
             it.yg.setBackgroundColor(model!!.colorCode)
             changeStatusAndNavigationBarColor(model!!.colorCode)
-            ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)
-                ?.overrideColor(model!!.colorCode)
-            if (!isDark(model!!.colorCode)) it.downloadtextview.setTextColor(Color.parseColor(
+             if (!isDark(model!!.colorCode)) it.downloadtextview.setTextColor(Color.parseColor(
                 "#111111"))
             if (!isDark(model!!.colorCode)) it.moreActionstextview.setTextColor(
                 Color.parseColor("#111111"))

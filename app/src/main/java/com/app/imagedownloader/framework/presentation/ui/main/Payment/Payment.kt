@@ -1,5 +1,6 @@
 package com.app.imagedownloader.framework.presentation.ui.main.Payment
 
+
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
@@ -14,22 +15,24 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.afollestad.materialdialogs.MaterialDialog
 import com.android.billingclient.api.BillingFlowParams.ProrationMode.IMMEDIATE_WITH_TIME_PRORATION
-import com.app.instastorytale.framework.ViewPagerModifications.HorizontalMarginItemDecoration
 import com.app.imagedownloader.R
-import com.app.imagedownloader.Utils.Constants.Constants
 import com.app.imagedownloader.Utils.PremiumFeaturesService
-import com.app.imagedownloader.Utils.PremiumFeaturesService.productsDetailsList
+import com.app.imagedownloader.Utils.PremiumFeaturesService.Companion.productsDetailsList
 import com.app.imagedownloader.databinding.FragmentOnBoarding8Binding
-import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager.Companion.adsPremiumPlanPurchased
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.Adapters.OnBoardingStatePagerAdapter
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity.Companion.adsInfoLoadingStatus
+import com.app.instastorytale.business.data.PremiumAccess.PremiumPlans
+import com.app.instastorytale.framework.ViewPagerModifications.HorizontalMarginItemDecoration
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.QonversionError
 import com.qonversion.android.sdk.QonversionLaunchCallback
 import com.qonversion.android.sdk.QonversionPermissionsCallback
 import com.qonversion.android.sdk.dto.QLaunchResult
 import com.qonversion.android.sdk.dto.QPermission
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
@@ -39,21 +42,29 @@ import kotlinx.coroutines.withContext
 import java.lang.Math.abs
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
+
+@AndroidEntryPoint
 class Payment : Fragment(R.layout.fragment_on_boarding8) {
     lateinit var adapter: OnBoardingStatePagerAdapter
-    var purchaseChoosenByUser = -1
+    val planPos = 0
+    var purchaseChoosenByUser: PremiumPlans? = null
     var binding: FragmentOnBoarding8Binding? = null
     val scrollstatus: MutableLiveData<Boolean> = MutableLiveData()
     var paymentUnderProcessing = false
+
+    @Inject
+    lateinit var premiumFeaturesService: PremiumFeaturesService
 
     companion object {
         var initFailed = false
         var initQonversionSdk: Channel<Boolean> = Channel()
         fun initQonversionSdk(application: Application) {
-            Qonversion.launch(application,
-                "t4vFwKFcXWj1nkYqHg0VS_J5wukVQFhJ",
+            Qonversion.launch(
+                application,
+                "vHJD1lQL_Gjymt78suvZF0AtBaGfzWZU",
                 false,
                 object : QonversionLaunchCallback {
                     override fun onError(error: QonversionError) {
@@ -73,8 +84,10 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
                         }
                     }
                 })
-            Qonversion.restore(object : QonversionPermissionsCallback {
+                Qonversion.restore(object : QonversionPermissionsCallback {
                 override fun onError(error: QonversionError) {
+                    Logger.log("Debug 8929 e 2 = " + error.additionalMessage)
+                    Logger.log("Debug 8929 e 2 = " + error.description)
                 }
 
                 override fun onSuccess(permissions: Map<String, QPermission>) {
@@ -96,14 +109,15 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
         binding = FragmentOnBoarding8Binding.bind(view)
 
         loadPremiumPlans()
-
         handleClicks()
 
         lifecycleScope.launch(Main) {
+            val currentPlan = premiumFeaturesService.checkUserSubscribedToAnyPlan(
+                true
+            )
+
             showPurchasedUi(
-                currentPlan = PremiumFeaturesService.checkUserSubscribedToAnyPlan(
-                    true, requireContext()
-                ), showToast = false
+                currentPlan = currentPlan, showToast = false
             )
         }
         productsDetailsList.observe(viewLifecycleOwner) {
@@ -118,7 +132,7 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
                 } else {
                     lifecycleScope.launch(IO) {
                         initQonversionSdk.send(true)
-                        PremiumFeaturesService.loadPricing()
+                        premiumFeaturesService.loadPricing()
                     }
                 }
             } ?: kotlin.run {
@@ -140,7 +154,7 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
                         binding.savecard.visibility = View.VISIBLE
                     } else {
                         binding.buybt.text = getString(R.string.selectplan)
-                        purchaseChoosenByUser = -1
+                        purchaseChoosenByUser = null
                         binding.yearlyplan.isEnabled = false
                         binding.monthlyplan.isEnabled = false
                     }
@@ -153,7 +167,19 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
     private fun handleClicks() {
         binding!!.ycard.setOnClickListener {
             if (paymentUnderProcessing) return@setOnClickListener
-            purchaseChoosenByUser = 4
+            when (planPos) {
+                0 -> {
+                    purchaseChoosenByUser = PremiumPlans.UnlockAdsFreeYearly
+                }
+
+                1 -> {
+//                    purchaseChoosenByUser = PremiumPlans.UnlockGoogleDriveAndAdsFreeYearly
+                }
+
+                2 -> {
+//                    purchaseChoosenByUser = PremiumPlans.UnlockGoogleDriveYearly
+                }
+            }
             binding!!.yearlyplan.isEnabled = true
             binding!!.monthlyplan.isEnabled = false
             binding!!.buybt.text = getString(R.string.buyannualplan)
@@ -161,46 +187,61 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
 
         binding!!.mcard.setOnClickListener {
             if (paymentUnderProcessing) return@setOnClickListener
-            purchaseChoosenByUser = 1
+            when (planPos) {
+                0 -> {
+                    purchaseChoosenByUser = PremiumPlans.UnlockAdsFreeMonthly
+                }
+
+                1 -> {
+//                    purchaseChoosenByUser = PremiumPlans.UnlockGoogleDriveAndAdsFreeMonthly
+                }
+
+                2 -> {
+//                    purchaseChoosenByUser = PremiumPlans.UnlockGoogleDriveMonthly
+                }
+            }
             binding!!.yearlyplan.isEnabled = false
             binding!!.monthlyplan.isEnabled = true
             binding!!.buybt.text = getString(R.string.buymonthlyplan)
         }
 
         binding!!.buycard.setOnClickListener {
-            if (purchaseChoosenByUser != -1) {
+            if (purchaseChoosenByUser != null) {
                 paymentUnderProcessing = true
-                adsPremiumPlanPurchased = null
                 showBuyingPb()
                 lifecycleScope.launch(IO) {
                     val existingPremiumPlan =
-                        PremiumFeaturesService.checkUserSubscribedToAnyPlan(true, requireContext())
-                    if (existingPremiumPlan != 0 && existingPremiumPlan != -1) {
+                        premiumFeaturesService.checkUserSubscribedToAnyPlan(true)
+                    if (existingPremiumPlan != PremiumPlans.FreePlan && existingPremiumPlan != PremiumPlans.Error) {
                         if (existingPremiumPlan == purchaseChoosenByUser) {
-                            PremiumFeaturesService.purchasePremiumPlan(
-                                requireActivity(), purchaseChoosenByUser
+                            premiumFeaturesService.purchasePremiumPlan(
+                                requireActivity(), purchaseChoosenByUser!!
                             )
                             withContext(Main) {
                                 hideBuyingPb()
                             }
                         } else {
                             upgrade_downgrade_plan(
-                                oldProductId = PremiumFeaturesService.planId[existingPremiumPlan]!!,
-                                newProductId = PremiumFeaturesService.planId[purchaseChoosenByUser]!!
+                                oldProduct = existingPremiumPlan,
+                                newProduct = purchaseChoosenByUser!!
                             )
                         }
-                    } else if (existingPremiumPlan == -1) {
+                    } else if (existingPremiumPlan == PremiumPlans.Error) {
                         withContext(Main) {
                             Toast.makeText(
-                                requireContext(), "Unknown Error Try Again", Toast.LENGTH_LONG
+                                requireContext(),
+                                "Unknown Error Try Again",
+                                Toast.LENGTH_LONG
                             ).show()
 
                             hideBuyingPb()
                         }
                     } else {
-                        val purchaseStatus = PremiumFeaturesService.purchasePremiumPlan(
-                            requireActivity(), purchaseChoosenByUser
+                        val purchaseStatus = premiumFeaturesService.purchasePremiumPlan(
+                            requireActivity(), purchaseChoosenByUser!!
                         )
+
+                        Logger.log("64899889  5 ........       =  " + purchaseStatus)
 
                         if (purchaseStatus == -5) {
                             withContext(Main) {
@@ -209,7 +250,7 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
                         }
                         if (purchaseStatus == 1) {
                             withContext(Main) {
-                                showPurchasedUi(purchaseChoosenByUser, true)
+                                showPurchasedUi(purchaseChoosenByUser!!, true)
                             }
                         }
                         withContext(Main) {
@@ -235,51 +276,52 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
         binding!!.yearlyplan.isEnabled = false
         binding!!.monthlyplan.isEnabled = false
         binding!!.buybt.text = getString(R.string.selectplan)
-        purchaseChoosenByUser = -1
+        purchaseChoosenByUser = null
         paymentUnderProcessing = false
     }
 
-    private fun upgrade_downgrade_plan(oldProductId: String, newProductId: String) {
-        Qonversion.updatePurchase(requireActivity(),
-            productId = newProductId,
-            oldProductId = oldProductId,
+    private fun upgrade_downgrade_plan(oldProduct: PremiumPlans, newProduct: PremiumPlans) {
+        Qonversion.updatePurchase(
+            requireActivity(),
+            productId = newProduct.playStoreId,
+            oldProductId = oldProduct.playStoreId,
             prorationMode = IMMEDIATE_WITH_TIME_PRORATION,
             object : QonversionPermissionsCallback {
                 override fun onError(error: QonversionError) {
+                    Logger.log("64899889 3 0 0 ........    error =     ")
                     hideBuyingPb()
                 }
 
                 override fun onSuccess(permissions: Map<String, QPermission>) {
-                    if (permissions[newProductId]?.isActive() == true) {
-                        val planId =
-                            PremiumFeaturesService.planId.entries.filter { it.value == newProductId }[0].key
-                        showPurchasedUi(
-                            planId, true
-                        )
-                        hideBuyingPb()
+                    if (permissions[newProduct.playStoreId]?.isActive() == true) {
+                        CoroutineScope(Main).launch {
+                            showPurchasedUi(newProduct, true)
+                            hideBuyingPb()
+                        }
                     }
                 }
             })
     }
 
-    private fun showPurchasedUi(currentPlan: Int, showToast: Boolean = false) {
-        if (currentPlan != -1 && currentPlan != 0) {
-            val purchasedId = currentPlan
-            adsPremiumPlanPurchased = purchasedId == 1 || purchasedId == 4
-            binding?.planstatus?.text =
-                PremiumFeaturesService.map[PremiumFeaturesService.planId[currentPlan]]
+    @SuppressLint("SetTextI18n")
+    private fun showPurchasedUi(currentPlan: PremiumPlans, showToast: Boolean = false) {
+        if (currentPlan != PremiumPlans.Error && currentPlan != PremiumPlans.FreePlan) {
+            binding?.planstatus?.text = "Current Plan : ${currentPlan.uiValue}"
         }
 
         if (showToast) {
             updatePurchaseStatus(
-                PremiumFeaturesService.map[PremiumFeaturesService.planId[currentPlan]]!!
+                currentPlan.uiValue
             )
         }
     }
 
+
     private fun updatePurchaseStatus(planid: String) {
         Toast.makeText(
-            requireContext(), "Purchased ${planid} successfully", Toast.LENGTH_SHORT
+            requireContext(),
+            "Purchased ${planid} successfully",
+            Toast.LENGTH_SHORT
         ).show()
     }
 
@@ -297,9 +339,12 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
     }
 
     private fun loadPremiumPlans() {
-        adapter = OnBoardingStatePagerAdapter(
-            lifecycle, manager = childFragmentManager, listOf(Offerui1())
-        )
+        adapter =
+            OnBoardingStatePagerAdapter(
+                lifecycle,
+                manager = childFragmentManager,
+                listOf(Offerui1())
+            )
         binding?.viewpager2?.adapter = adapter
 
         binding?.viewpager2?.offscreenPageLimit = 1
@@ -320,47 +365,47 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
 // The ItemDecoration gives the current (centered) item horizontal margin so that
 // it doesn't occupy the whole screen width. Without it the items overlap
         val itemDecoration = HorizontalMarginItemDecoration(
-            requireContext(), R.dimen.viewpager_current_item_horizontal_margin
+            requireContext(),
+            R.dimen.viewpager_current_item_horizontal_margin
         )
         binding?.viewpager2?.addItemDecoration(itemDecoration)
+        TabLayoutMediator(binding!!.tablayout, binding!!.viewpager2) { _, _ ->
 
-        binding!!.viewpager2.setCurrentItem(1, false)
-
-        val callback = object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageScrollStateChanged(state: Int) {
-                super.onPageScrollStateChanged(state)
-                if (state == 0) {
-                    scrollstatus.postValue(true)
-                } else {
-                    scrollstatus.postValue(false)
-                }
-            }
-        }
-        binding?.viewpager2?.registerOnPageChangeCallback(callback)
+        }.attach()
     }
 
     @SuppressLint("SetTextI18n")
     private fun setPrices() {
-        val listsize = PremiumFeaturesService.productsDetailsList.value?.keys?.isNotEmpty()
+        val listsize = productsDetailsList.value?.keys?.isNotEmpty()
         if (listsize == true) {
-            binding!!.monthlyplanprice.text =
-                PremiumFeaturesService.productsDetailsList.value?.get(Constants.PLAN_1)?.price + "/Month"
-            binding!!.yearlyplanprice.text =
-                PremiumFeaturesService.productsDetailsList.value?.get(Constants.PLAN_4)?.price?.let {
-                    monthlyPriceFromYearly(
-                        it
-                    )
-                }
+            when (planPos) {
+                0 -> {
+                    val unlockAdsFreeMonthlyPrice =
+                        productsDetailsList.value?.get(PremiumPlans.UnlockAdsFreeMonthly.playStoreId)?.price
+                    val unlockAdsFreeYearlyPrice =
+                        productsDetailsList.value?.get(PremiumPlans.UnlockAdsFreeYearly.playStoreId)?.price
 
-            PremiumFeaturesService.productsDetailsList.value?.get(Constants.PLAN_1)?.price?.let { m ->
-                PremiumFeaturesService.productsDetailsList.value?.get(Constants.PLAN_4)?.price?.let { y ->
-                    binding!!.savecard.visibility = View.VISIBLE
-                    percentageSavedFromYearly(
-                        monthlyPrice = m, yearlyPrice = y
-                    )?.let {
-                        binding!!.savings.text = it
-                    } ?: kotlin.run {
-                        binding!!.savecard.visibility = View.GONE
+                    binding!!.monthlyplanprice.text =
+                        "$unlockAdsFreeMonthlyPrice/Month"
+                    binding!!.yearlyplanprice.text =
+                        unlockAdsFreeYearlyPrice?.let {
+                            monthlyPriceFromYearly(
+                                it
+                            )
+                        }
+
+                    unlockAdsFreeMonthlyPrice?.let { m ->
+                        unlockAdsFreeYearlyPrice?.let { y ->
+                            binding!!.savecard.visibility = View.VISIBLE
+                            percentageSavedFromYearly(
+                                monthlyPrice = m,
+                                yearlyPrice = y
+                            )?.let {
+                                binding!!.savings.text = it
+                            } ?: kotlin.run {
+                                binding!!.savecard.visibility = View.GONE
+                            }
+                        }
                     }
                 }
             }

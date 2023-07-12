@@ -111,12 +111,13 @@
     <string name="add_fav">Add to Favourites</string>
     <string name="share_app">Share App</string>
     <string name="help_and_feedback">Help And feedback</string>
+    <string name="explore_more_apps">Explore World\'s Best Productivity Apps</string>
     <string name="app_theme">App Theme</string>
     <string name="choose_theme">Change Theme</string>
     <string name="dark_theme">Dark Theme</string>
     <string name="light_theme">Light Theme</string>
     <string name="systemdefault">System Default</string>
-    <string name="bottomMenuHeading">Explore Millions Of HD Images</string>
+    <string name="bottomMenuHeading">Explore Millions Of Full HD+ Images</string>
     <string name="clear_filter_message">Clear Tags And Color filter for loading new photos</string>
 
 

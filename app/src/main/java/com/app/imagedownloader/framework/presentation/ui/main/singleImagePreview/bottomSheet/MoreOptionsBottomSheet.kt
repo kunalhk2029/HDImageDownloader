@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -79,7 +80,7 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
             val model: Photo = requireArguments().getSerializable("onlinePreviewModel") as Photo
 
             it.ShareCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.urls!!.hdUrl, false, requireContext())
+                shareMediaOrSetWallpaper(model.urls.hdUrl, false, requireContext())
                 requireActivity().onBackPressed()
             }
 

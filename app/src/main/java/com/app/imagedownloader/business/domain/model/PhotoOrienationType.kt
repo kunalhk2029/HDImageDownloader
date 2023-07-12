@@ -1,8 +1,8 @@
 package com.app.imagedownloader.business.domain.model
 
 
-sealed class PhotoOrienationType(val uiValue: String) {
-    object Potrait : PhotoOrienationType("Potrait")
+sealed class PhotoOrienationType(val uiValue: String) :java.io.Serializable{
+    object Potrait : PhotoOrienationType("Portrait")
     object Landscape : PhotoOrienationType("Landscape")
     object Square : PhotoOrienationType("Square")
 }

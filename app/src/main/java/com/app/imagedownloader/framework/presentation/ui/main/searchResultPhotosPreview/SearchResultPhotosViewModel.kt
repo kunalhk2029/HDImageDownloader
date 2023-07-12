@@ -42,7 +42,7 @@ class SearchResultPhotosViewModel
         _searchResultPhotosPreviewDataState
 
     var PAGINATION_EXECUTING = false
-
+    var scrollToAdBottom=true
     fun onEvent(searchResultPhotosPreviewStateEvents: SearchResultPhotosPreviewStateEvents) {
         when (searchResultPhotosPreviewStateEvents) {
 

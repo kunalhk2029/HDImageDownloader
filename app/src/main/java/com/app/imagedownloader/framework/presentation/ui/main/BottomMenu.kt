@@ -3,6 +3,7 @@ package com.app.imagedownloader.framework.presentation.ui.main
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,29 +30,6 @@ class BottomMenu:BottomSheetDialogFragment() {
         return  inflater.inflate(R.layout.bottom_menu,container,false)
     }
 
-
-    lateinit var uiCommunicationListener: UICommunicationListener
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        setuiCommunicationLiatener(null, context)
-    }
-
-    private fun setuiCommunicationLiatener(
-        uICommunicationListener: UICommunicationListener?,
-        context: Context?
-    ) {
-        if (uICommunicationListener != null) {
-            uiCommunicationListener = uICommunicationListener
-        } else {
-            try {
-                uiCommunicationListener = context as UICommunicationListener
-            } catch (e: ClassCastException) {
-
-            }
-        }
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         try {
@@ -65,14 +43,11 @@ class BottomMenu:BottomSheetDialogFragment() {
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 }
             }
-        } catch (e: Exception) {
-
-        }
+        } catch (e: Exception) { }
         return dialog
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
 
         requireView().findViewById<TextView>(R.id.premiummenu).setOnClickListener {
             lifecycleScope.launch {
@@ -80,10 +55,21 @@ class BottomMenu:BottomSheetDialogFragment() {
             }
         }
 
-        requireView().findViewById<TextView>(R.id.settingsmenu).setOnClickListener {
-            uiCommunicationListener.askForRating(true)
+        requireView().findViewById<TextView>(R.id.rateAppmenu).setOnClickListener {
+            val intent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                   data= Uri.parse("https://play.google.com/store/apps/details?id=com.app.imagedownloader")
+            }
+            startActivity(intent)
         }
 
+        requireView().findViewById<TextView>(R.id.moreAppsmenu).setOnClickListener {
+            val intent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                data= Uri.parse("https://play.google.com/store/apps/developer?id=kunalhk2029")
+            }
+            startActivity(intent)
+        }
         requireView().findViewById<TextView>(R.id.helpmenu).setOnClickListener {
             findNavController().navigate(
                 R.id.feedback,
@@ -99,7 +85,7 @@ class BottomMenu:BottomSheetDialogFragment() {
                 type = "text/plain"
                 putExtra(
                     Intent.EXTRA_TEXT,
-                    "Hello I would like to recommend this Image App to you.Please give it a try. It lets you to download High Quality Images. https://play.google.com/store/apps/details?id=com.app.imagedownloader"
+                    "Hello I would like to recommend this Image App to you.Please give it a try. It lets you to download Millions of High Resolution Images. https://play.google.com/store/apps/details?id=com.app.imagedownloader"
                 )
             }
             val chooser = Intent.createChooser(intent, "Share App")

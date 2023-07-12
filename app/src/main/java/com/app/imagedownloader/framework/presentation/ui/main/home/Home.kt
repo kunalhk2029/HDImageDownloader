@@ -77,7 +77,10 @@ class Home : Fragment(R.layout.fragment_home) {
             binding?.let { binding ->
                 adsManager.showNativeHomeScreenAd(binding.nativeAdView).let {
                     delay(250L)
-                    binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                    if (searchResultPhotosViewModel.scrollToAdBottom) {
+                        searchResultPhotosViewModel.scrollToAdBottom = false
+                        binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                    }
                 }
             }
         }
@@ -198,9 +201,7 @@ class Home : Fragment(R.layout.fragment_home) {
     }
 
     private fun subscribeObservers() {
-
         searchResultPhotosViewModel.searchResultPhotosPreviewDataState.observe(viewLifecycleOwner) {
-
             it.loading.let {
                 if (it) binding?.progressBar?.visibility = View.VISIBLE
             }
@@ -213,7 +214,7 @@ class Home : Fragment(R.layout.fragment_home) {
                         adsManager.showNativeHomeScreenAd(binding.nativeAdView).let {
                             delay(250L)
                             binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
-                            delay(3500L)
+                            delay(1500L)
                             binding.chipGroup.visibility = View.VISIBLE
                             binding.progressBar.visibility = View.GONE
                             try {

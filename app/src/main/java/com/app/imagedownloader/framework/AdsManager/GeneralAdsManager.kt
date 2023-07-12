@@ -28,7 +28,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 
 
@@ -36,6 +35,7 @@ class GeneralAdsManager(
     val adsManager: AdsManager,
     private val context: Context,
     private val sharedPrefRepository: SharedPrefRepository,
+    private val premiumFeaturesService: PremiumFeaturesService,
 ) {
 
 
@@ -48,9 +48,9 @@ class GeneralAdsManager(
     var bannerAdPosition = 0
     var mediator: TabLayoutMediator? = null
 
-    private suspend fun checkAdsPremiumPlan(context: Context): Boolean? {
+    private suspend fun checkAdsPremiumPlan(): Boolean? {
         if (adsPremiumPlanPurchased != null) return adsPremiumPlanPurchased
-        adsPremiumPlanPurchased = PremiumFeaturesService.checkAdsPlanPurchased(context)
+        adsPremiumPlanPurchased = premiumFeaturesService.isAdsFreePlanPurchased()
         return adsPremiumPlanPurchased
     }
 
@@ -190,13 +190,13 @@ class GeneralAdsManager(
 
     suspend fun showNativeAdapterItemAd(
         view: NativeAdView, root: View,
-    ) :Boolean{
+    ): Boolean {
 
         if (sharedPrefRepository.get_DisableAdsAndPromo()) {
             return true
         }
         if (adsPremiumPlanPurchased == null) {
-            initiatingPaymentStatus()
+            checkAdsPremiumPlan()
         }
         adsPremiumPlanPurchased?.let {
             if (it) {
@@ -208,7 +208,7 @@ class GeneralAdsManager(
         } ?: kotlin.run {
             view.visibility = View.GONE
         }
-        return adsPremiumPlanPurchased?:true
+        return adsPremiumPlanPurchased ?: true
     }
 
     suspend fun showNativeHomeScreenAd(
@@ -219,7 +219,7 @@ class GeneralAdsManager(
             return
         }
         if (adsPremiumPlanPurchased == null) {
-            initiatingPaymentStatus()
+            checkAdsPremiumPlan()
         }
         adsPremiumPlanPurchased?.let {
             if (it) {
@@ -245,7 +245,7 @@ class GeneralAdsManager(
         }
 
         if (adsPremiumPlanPurchased == null) {
-            initiatingPaymentStatus()
+            checkAdsPremiumPlan()
         }
         adsPremiumPlanPurchased?.let {
             if (it) {
@@ -330,10 +330,7 @@ class GeneralAdsManager(
         if (activityPausedByInterstitialAd) return
         CoroutineScope(Main).launch {
             if (adsPremiumPlanPurchased == null) {
-                Logger.log("84618941869169818   /// 1............")
-                withContext(IO) {
-                    initiatingPaymentStatus()
-                }
+                checkAdsPremiumPlan()
             }
 
             if (adsPremiumPlanPurchased == true || adsPremiumPlanPurchased == null) {
@@ -404,12 +401,5 @@ class GeneralAdsManager(
             executeFun.invoke()
         } catch (_: Exception) {
         }
-    }
-
-    private suspend fun initiatingPaymentStatus(): Boolean {
-        adsPremiumPlanPurchased = true
-        return true
-        checkAdsPremiumPlan(context)
-        return true
     }
 }

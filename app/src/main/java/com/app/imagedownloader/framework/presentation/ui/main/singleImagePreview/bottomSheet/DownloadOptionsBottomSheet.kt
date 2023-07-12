@@ -3,14 +3,19 @@ package com.app.imagedownloader.framework.presentation.ui.main.singleImagePrevie
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.*
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
+import com.app.imagedownloader.R
 import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.business.interactors.singleImagePreview.SaveMediaInScopedStorage
 import com.app.imagedownloader.databinding.FragmentDownloadOptionsBottomSheetBinding
@@ -74,20 +79,36 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
             val model =
                 requireArguments().getSerializable("onlinePreviewModel") as Photo
 
-            val fullHdUrlSize = mediaSize(URL(model.urls?.fullHdUrl))
+            val fullHdUrlSizeJob = launch {
+                val fullHdUrlSize = mediaSize(URL(model.urls.fullHdUrl))
                 map["fullHdUrl"] = fullHdUrlSize
-
-            val hdUrlSize = mediaSize(URL(model.urls?.hdUrl))
+            }
+            val hdUrlSizeJob = launch {
+                val hdUrlSize = mediaSize(URL(model.urls.hdUrl))
                 map["hdUrl"] = hdUrlSize
-
-            val regularUrlSize = mediaSize(URL(model.urls?.regularUrl))
+            }
+            val regularUrlSizeJob = launch {
+                val regularUrlSize = mediaSize(URL(model.urls.regularUrl))
                 map["regularUrl"] = regularUrlSize
-
-            val smallUrlSize = mediaSize(URL(model.urls?.smallUrl))
+            }
+            val smallUrlSizeJob = launch {
+                val smallUrlSize = mediaSize(URL(model.urls.smallUrl))
                 map["smallUrl"] = smallUrlSize
-
-            val thumbnailUrlSize = mediaSize(URL(model.urls?.thumbnailUrl))
+            }
+            val thumbnailUrlSizeJob = launch {
+                val thumbnailUrlSize = mediaSize(URL(model.urls.thumbnailUrl))
                 map["thumbnailUrl"] = thumbnailUrlSize
+            }
+
+            while (
+                !fullHdUrlSizeJob.isCompleted
+                && !hdUrlSizeJob.isCompleted
+                && !regularUrlSizeJob.isCompleted
+                && !smallUrlSizeJob.isCompleted
+                && !thumbnailUrlSizeJob.isCompleted
+            ){
+
+            }
 
             map
         }
@@ -95,7 +116,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
 
     private fun mediaSize(url: URL): String {
         val connection = url.openConnection() as HttpURLConnection
-        val size =  try {
+        val size = try {
             connection.contentLength
         } catch (e: Exception) {
             null
@@ -103,23 +124,22 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
             connection.disconnect()
         }
 
-       return if (size!=null){
-           val sizeInKb = size / 1024
-           val sizeInMb = sizeInKb / 1024
-           return if (sizeInMb > 0) " : ${sizeInMb}MB" else " : ${sizeInKb}kB"
-        }else{
+        return if (size != null) {
+            val sizeInKb = size / 1024
+            val sizeInMb = sizeInKb / 1024
+            return if (sizeInMb > 0) " : ${sizeInMb}MB" else " : ${sizeInKb}kB"
+        } else {
             ""
-       }
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun handleButtonClick() {
-
         lifecycleScope.launch {
             getDownloadSizeMap().let { sizeMap ->
                 binding?.let {
-                    it.progressbar.visibility=View.GONE
-                    it.downloadOptions.visibility=View.VISIBLE
+                    it.progressbar.visibility = View.GONE
+                    it.downloadOptions.visibility = View.VISIBLE
                     val model: Photo =
                         requireArguments().getSerializable("onlinePreviewModel") as Photo
                     it.fullhdtext.text = it.fullhdtext.text.toString() + sizeMap["fullHdUrl"]
@@ -130,58 +150,55 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
                         it.thumbnailtext.text.toString() + sizeMap["thumbnailUrl"]
 
                     it.fullHdCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.urls!!.fullHdUrl,
+                        saveMediaInScopedStorage(url = model.urls.fullHdUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
                                 SingleImagePreview.downloadCompletedPlaybackListener.send(true)
                             }
                         }
-                        requireActivity().onBackPressed()
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
 
                     it.hdCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.urls!!.hdUrl,
+                        saveMediaInScopedStorage(url = model.urls.hdUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
                                 SingleImagePreview.downloadCompletedPlaybackListener.send(true)
                             }
                         }
-                        requireActivity().onBackPressed()
-
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
                     it.NormalCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.urls!!.regularUrl,
+                        saveMediaInScopedStorage(url = model.urls.regularUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
                                 SingleImagePreview.downloadCompletedPlaybackListener.send(true)
                             }
                         }
-                        requireActivity().onBackPressed()
-
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
                     it.mediumCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.urls!!.smallUrl,
+                        saveMediaInScopedStorage(url = model.urls.smallUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
                                 SingleImagePreview.downloadCompletedPlaybackListener.send(true)
                             }
                         }
-                        requireActivity().onBackPressed()
-
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
                     it.thumnailCard.setOnClickListener {
-                        saveMediaInScopedStorage(url = model.urls!!.thumbnailUrl,
+                        saveMediaInScopedStorage(url = model.urls.thumbnailUrl,
                             requireContext(),
                             model.colorCode) {
                             lifecycleScope.launch {
                                 SingleImagePreview.downloadCompletedPlaybackListener.send(true)
                             }
                         }
-                        requireActivity().onBackPressed()
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
                 }
             }

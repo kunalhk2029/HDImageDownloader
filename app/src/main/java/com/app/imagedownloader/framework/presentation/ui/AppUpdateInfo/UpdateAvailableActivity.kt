@@ -29,7 +29,7 @@ class UpdateAvailableActivity : AppCompatActivity() {
                 val intent = Intent().apply {
                     action = Intent.ACTION_VIEW
                     data =
-                        Uri.parse("https://play.google.com/store/apps/details?id=com.app.instastorytale")
+                        Uri.parse("https://play.google.com/store/apps/details?id=com.app.imagedownloader")
                 }
                 startActivity(intent)
                 onBackPressedDispatcher.onBackPressed()

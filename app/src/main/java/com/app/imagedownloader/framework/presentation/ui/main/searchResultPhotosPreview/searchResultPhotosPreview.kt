@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.graphics.drawable.*
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -230,12 +233,11 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         }
 
         lifecycleScope.launch {
-            delay(1000L)
+            delay(500L)
             val progressbar = filterDialog.findViewById<ProgressBar>(R.id.progressbar)
             val filterColorChipGroup = filterDialog.findViewById<ChipGroup>(R.id.chipGroup)
             val filtertemplatechip = filterDialog.findViewById<Chip>(R.id.templateChip)
             val filtertemplatechip2 = filterDialog.findViewById<Chip>(R.id.templateChip2)
-
             filterColorChipGroup.visibility = View.GONE
 
             val colorList =
@@ -270,7 +272,6 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             handleFilterDialogColorChipGroupClick(filterColorChipGroup)
         }
 
-
         filterDialog.findViewById<Button>(R.id.cancel_filter).setOnClickListener {
             previousSortFilter?.let {
                 searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(
@@ -290,11 +291,8 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                 searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(
                     it))
             }
-
             filterDialog.dismiss()
-
             vibrateExtension.vibrate()
-
         }
 
         filterDialog.findViewById<Button>(R.id.apply_filter).setOnClickListener {
@@ -545,6 +543,20 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
         return theme
     }
 
+    fun Drawable.overrideColor(@ColorInt colorInt: Int) {
+        when (this) {
+            is GradientDrawable -> setColor(colorInt)
+            is ShapeDrawable -> {
+                paint.color = colorInt
+            }
+            is ColorDrawable -> color = colorInt
+
+            is VectorDrawable -> {
+                colorFilter = PorterDuffColorFilter(
+                    colorInt, PorterDuff.Mode.MULTIPLY)
+            }
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         binding?.recyclerView?.adapter = null
@@ -574,6 +586,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             putSerializable("onlinePreviewModel", item)
             putInt("colorCode", item.colorCode)
         }
+        ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)?.overrideColor(item.colorCode)
         findNavController().navigate(
             R.id.action_searchResultPhotosPreview_to_imageDetailsBottomSheet,
             bundle

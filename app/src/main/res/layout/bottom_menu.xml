@@ -77,7 +77,7 @@
                 app:layout_constraintTop_toBottomOf="@id/spacer" />
 
             <TextView
-                android:id="@+id/settingsmenu"
+                android:id="@+id/rateAppmenu"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginStart="12dp"
@@ -93,6 +93,23 @@
                 app:layout_constraintTop_toBottomOf="@id/premiummenu" />
 
             <TextView
+                android:id="@+id/moreAppsmenu"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginStart="12dp"
+                android:drawablePadding="5dp"
+                android:gravity="center_vertical"
+                android:padding="8dp"
+                android:background="@drawable/textviewbgdialog"
+                android:text="@string/explore_more_apps"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:drawableStartCompat="@drawable/ic_baseline_auto_awesome_24"
+                app:layout_constraintTop_toBottomOf="@id/rateAppmenu"
+                app:drawableTint="@color/white" />
+
+            <TextView
                 android:id="@+id/helpmenu"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -106,7 +123,7 @@
                 android:textSize="15sp"
                 android:textStyle="bold"
                 app:drawableStartCompat="@drawable/ic_baseline_help_24"
-                app:layout_constraintTop_toBottomOf="@id/settingsmenu" />
+                app:layout_constraintTop_toBottomOf="@id/moreAppsmenu" />
 
             <TextView
                 android:id="@+id/sharemenu"

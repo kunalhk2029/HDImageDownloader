@@ -16,14 +16,14 @@ data class Photo(
     val updatedAt: Long,
     var isFav: Boolean = false,
     var photoSource: PhotoSource,
-) : java.io.Serializable{
+) : java.io.Serializable {
     fun mapToFavPhoto(): FavPhotosEntity {
-       return FavPhotosEntity(id,
+        return FavPhotosEntity(id,
             previewUrl,
             urls,
-            width=width,
-            height=height,
-           orienationType.uiValue,
+            width = width,
+            height = height,
+            orienationType.uiValue,
             colorCode,
             description, photoSource = photoSource.uiValue)
     }

@@ -1,6 +1,7 @@
 package com.app.imagedownloader.framework.presentation.ui.main
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
@@ -35,11 +36,13 @@ import com.app.imagedownloader.framework.Glide.GlideManager
 import com.app.imagedownloader.framework.InAppUpdatesManager.InAppUpdatesManager
 import com.app.imagedownloader.framework.PlayStoreRatingFlow.PlayStoreRatingFlow
 import com.app.imagedownloader.framework.Utils.Logger
+import com.app.imagedownloader.framework.presentation.ui.AppUpdateInfo.UpdateAvailableActivity
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainViewModel.Companion.appThemeChannel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -122,8 +125,23 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         handleDialogAds()
 
         askForRating()
+
+        checkForUpdates()
     }
 
+    private fun checkForUpdates() {
+        lifecycleScope.launch(IO) {
+            updatesManager.initProductionUpdate()?.let {
+                val int = Intent(this@MainActivity, UpdateAvailableActivity::class.java)
+                int.putExtra("criticalUpdate", it)
+                startActivity(int)
+                if (it) {
+                    finish()
+                }
+            }
+        }
+
+    }
     private fun handleDialogAds() {
         lifecycleScope.launch {
             showFullScreenAds.receiveAsFlow().collectLatest { jobList ->

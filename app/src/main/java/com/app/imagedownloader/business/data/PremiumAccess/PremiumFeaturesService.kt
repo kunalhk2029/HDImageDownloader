@@ -7,6 +7,9 @@ import com.android.billingclient.api.*
 import com.app.imagedownloader.Utils.Constants.Constants
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity.Companion.adsInfoLoadingStatus
+import com.app.instastorytale.business.data.PremiumAccess.PremiumPlans
+import com.app.instastorytale.business.domain.Models.PremiumPlanModel.ProductDetailsInfo
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.JsonParser
 import com.qonversion.android.sdk.Qonversion
 import com.qonversion.android.sdk.QonversionError
@@ -21,39 +24,24 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object PremiumFeaturesService {
 
-    data class ProductDetailsInfo(
-        val id: String,
-        val monthly: Boolean,
-        val price: String,
-        val countryCode: String?
-    )
-
-    val planId = HashMap<Int, String>()
-    val map = HashMap<String, String>()
-
-    init {
-        map[Constants.PLAN_0] = "Free Plan"
-        map[Constants.PLAN_1] = "Monthly Premium Plan"
-        map[Constants.PLAN_4] = "Annual Premium Plan"
-
-        ///////
-
-        planId[0] = Constants.PLAN_0
-        planId[1] = Constants.PLAN_1
-        planId[4] = Constants.PLAN_4
-    }
+@Singleton
+class PremiumFeaturesService
+@Inject constructor(private val context: Context) {
 
     private lateinit var billingClient: BillingClient
-    var productsDetailsList: MutableLiveData<HashMap<String, ProductDetailsInfo>?> =
-        MutableLiveData(
-            HashMap()
-        )
 
+    companion object {
+        var productsDetailsList: MutableLiveData<HashMap<String, ProductDetailsInfo>?> =
+            MutableLiveData(
+                HashMap()
+            )
+    }
 
-    private fun initBillingClient(context: Context) {
+    private fun initBillingClient() {
         val purchasesUpdatedListener =
             PurchasesUpdatedListener { billingResult, purchases ->
                 // To be implemented in a later section.
@@ -85,122 +73,101 @@ object PremiumFeaturesService {
         })
     }
 
-    private suspend fun checkActivePremiumPlanIdByQonversionApi(): Int {
-        var status = -2
-
+    private suspend fun checkActivePremiumPlanIdByQonversionApi(): PremiumPlans {
+        var plan: PremiumPlans? = null
         Qonversion.checkPermissions(object : QonversionPermissionsCallback {
             override fun onError(error: QonversionError) {
-                status = -1
-                Logger.log("Debug 8929 calback 1///  error = " + error.additionalMessage)
-                Logger.log("Debug 8929 calback 1///  error = " + error.description)
+                plan = PremiumPlans.Error
             }
 
             override fun onSuccess(permissions: Map<String, QPermission>) {
-                Logger.log("Debug 8929 cd 202 returned..............   = " + permissions.keys)
-
-                if (permissions[Constants.PLAN_1] != null && permissions[Constants.PLAN_1]?.isActive() == true) {
-                    status = 1
-                    return
-                } else if (permissions[Constants.PLAN_4] != null && permissions[Constants.PLAN_4]?.isActive() == true) {
-                    status = 4
-                    return
-                } else {
-                    status = 0
-                    return
-                }
             }
         })
-        while (status == -2) {
-//             Logger.log("Debug 8929 cd 5 returned..............  ")
+        while (plan == null) {
             delay(1000L)
         }
-
-        return status
+        return plan!!
     }
 
     private suspend fun checkActivePremiumPlanIdByGoogleBillingApi(
         billingClient: BillingClient
-    ): Int {
-        var pid = -2
+    ): PremiumPlans {
+        var plan: PremiumPlans? = null
         withContext(Dispatchers.IO) {
             billingClient.queryPurchasesAsync(
                 BillingClient.SkuType.SUBS
             ) { p0, p1 ->
-                if (p0.responseCode == BillingClient
-                        .BillingResponseCode.OK
-                ) {
+                if (p0.responseCode == BillingClient.BillingResponseCode.OK) {
 
-                    var checkId = 1
-                    var mlist =
-                        p1.filter { JsonParser.parseString(it.originalJson).asJsonObject.get("productId").asString == planId[1] }
+                    val availablePlans = listOf(
+                        PremiumPlans.UnlockAdsFreeMonthly,
+                        PremiumPlans.UnlockAdsFreeYearly)
 
-                    if (mlist.isEmpty()) {
-                        checkId = 4
-                        mlist =
-                            p1.filter { JsonParser.parseString(it.originalJson).asJsonObject.get("productId").asString == planId[4] }
-                    }
-                    if (mlist.isNotEmpty()) {
-                        val purchased =
-                            mlist.get(0).purchaseState == Purchase.PurchaseState.PURCHASED
-                        val ack = mlist.get(0).isAcknowledged
-                        Logger.log("Debug 8929 isAcknowledged = " + ack)
-//                         Logger.log("Debug 8929 isAcknowledged = " + mlist[0].purchaseToken)
-                        if (purchased && ack) {
-                            pid = checkId
-                            return@queryPurchasesAsync
+                    for (availablePlan in availablePlans) {
+                        val planPurchasedInfo = p1.filter {
+                            JsonParser.parseString(it.originalJson).asJsonObject.get("productId").asString ==
+                                    availablePlan.playStoreId
                         }
+
+                        if (planPurchasedInfo.isNotEmpty()) {
+                            verifyPurchasedIsAcknowledged(
+                                planPurchasedInfo,
+                                availablePlan
+                            )?.let {
+                                plan = it
+                            }
+                        }
+                        if (plan != null) break
                     }
-                    pid = 0
+
+                    if (plan == null) {
+                        plan = PremiumPlans.FreePlan
+                    }
                 } else {
-                    pid = -1
+                    logAdStatusFetchError()
+                    plan = PremiumPlans.Error
                 }
             }
         }
-        while (pid == -2) {
+        while (plan == null) {
             delay(1000L)
         }
-        Logger.log("Debug 8929 query purchased return int  =.............. " + pid)
-        return pid
+
+        return plan!!
     }
 
-    suspend fun purchasePremiumPlanByBillingApi(activity: Activity, planid: Int) {
-        // -5 for cancelling by user
-        //            lifecycleScope.launch(IO) {
-//
-//                PremiumFeaturesService.initBillingClient(requireContext())
-//                while (PremiumFeaturesService.billingClient.connectionState == BillingClient.ConnectionState.CONNECTING) {
-//                    delay(500L)
-//                }
-////                     Logger.log("Debug 8929 connection state ............ = "+ billingClient.connectionState)
-//                if (PremiumFeaturesService.billingClient.connectionState == BillingClient.ConnectionState.DISCONNECTED) {
-//                    return@launch
-//                }
-//                val skusetailsParams = SkuDetailsParams.newBuilder()
-//                    .setSkusList(listOf(Constants.PLAN_3))
-//                    .setType(BillingClient.SkuType.SUBS)
-//                    .build()
-//                PremiumFeaturesService.billingClient.querySkuDetailsAsync(skusetailsParams,
-//                    object : SkuDetailsResponseListener {
-//                        override fun onSkuDetailsResponse(
-//                            p0: BillingResult,
-//                            p1: MutableList<SkuDetails>?
-//                        ) {
-//                            if (p1?.isNotEmpty() == true) {
-//                                val billingFlowParams = BillingFlowParams.newBuilder()
-//                                    .setSkuDetails(p1[0]).build()
-//                                PremiumFeaturesService.billingClient.launchBillingFlow(requireActivity(), billingFlowParams)
-//                            }
-//                        }
-//                    })
-//            }
+    private fun verifyPurchasedIsAcknowledged(
+        purchaseList: List<Purchase>,
+        plan: PremiumPlans
+    ): PremiumPlans? {
+        val planId =
+            JsonParser.parseString(purchaseList.first().originalJson).asJsonObject.get("productId").asString
+        if (planId != plan.playStoreId) throw  Exception("Wrong Premium Plan passed in the parameter")
+        val purchased =
+            purchaseList[0].purchaseState == Purchase.PurchaseState.PURCHASED
+        val ack = purchaseList[0].isAcknowledged
+        return if (purchased && ack) plan else null
     }
 
-    suspend fun purchasePremiumPlan(activity: Activity, planid: Int): Int {
+    private fun logAdStatusFetchError() {
+        FirebaseCrashlytics.getInstance()
+            .log("PremiumFeaturesService checkAdsPlanPurchased Error")
+        try {
+            throw Exception("Exception message : PremiumFeaturesService checkAdsPlanPurchased pid = -1")
+        } catch (e: Exception) {
+            e.message?.let {
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
+    }
+
+
+    suspend fun purchasePremiumPlan(activity: Activity, plan: PremiumPlans): Int {
         // -5 for cancelling by user
         var completed = -2
         Qonversion.purchase(
             context = activity,
-            planId[planid]!!,
+            plan.playStoreId,
             object : QonversionPermissionsCallback {
                 override fun onError(error: QonversionError) {
                     completed = -1
@@ -214,7 +181,7 @@ object PremiumFeaturesService {
 
                 override fun onSuccess(permissions: Map<String, QPermission>) {
                     completed = 0
-                    if (permissions[planId[planid]]?.isActive() == true) {
+                    if (permissions[plan.playStoreId]?.isActive() == true) {
                         completed = 1
                     }
                 }
@@ -227,21 +194,20 @@ object PremiumFeaturesService {
 
     suspend fun checkUserSubscribedToAnyPlan(
         checkUsingBillingLibrary: Boolean,
-        context: Context?
-    ): Int {
+    ): PremiumPlans {
 //         Logger.log("Debug 8929 checkUserSubscribedToAnyPlan called.............. 1 ")
-        var status = -2
+        lateinit var plan: PremiumPlans
         withContext(Default) {
             val job = launch {
                 if (checkUsingBillingLibrary) {
-                    initBillingClient(context!!)
+                    initBillingClient()
                     while (billingClient.connectionState == BillingClient.ConnectionState.CONNECTING) {
                         delay(500L)
                     }
                     Logger.log("Debug 8929 billing state =" + billingClient.connectionState)
 
                     if (billingClient.connectionState == BillingClient.ConnectionState.DISCONNECTED) {
-                        status = -1
+                        plan = PremiumPlans.Error
                         return@launch
                     }
                 }
@@ -250,19 +216,20 @@ object PremiumFeaturesService {
             val job1 = launch {
                 if (checkUsingBillingLibrary) {
                     if (billingClient.isReady) {
-                        status = checkActivePremiumPlanIdByGoogleBillingApi(billingClient)
+                        plan = checkActivePremiumPlanIdByGoogleBillingApi(billingClient)
                     } else {
-                        status = -1
+                        logAdStatusFetchError()
+                        plan = PremiumPlans.Error
                     }
                 } else {
-                    status = checkActivePremiumPlanIdByQonversionApi()
+                    plan = checkActivePremiumPlanIdByGoogleBillingApi(billingClient)
                 }
             }
             job1.join()
         }
 //         Logger.log("Debug 8929 checkUserSubscribedToAnyPlan returned.............. 1 ")
 
-        return status
+        return plan
     }
 
     suspend fun loadPricing() {
@@ -278,8 +245,7 @@ object PremiumFeaturesService {
                     override fun onSuccess(offerings: QOfferings) {
                         offerings.availableOfferings.forEach {
                             it.products.forEach {
-                                Logger.log("Debug ghjkliop .................. = " + it.qonversionID)
-
+                                Logger.log("Debug  ghjkliop .................. = " + it.qonversionID)
                                 map[it.qonversionID] = ProductDetailsInfo(
                                     id = it.qonversionID,
                                     monthly = it.duration.toString() == "Monthly",
@@ -297,14 +263,19 @@ object PremiumFeaturesService {
         }
     }
 
-    suspend fun checkAdsPlanPurchased(context: Context): Boolean? {
-        val purchasedId = checkUserSubscribedToAnyPlan(true, context)
-        if (purchasedId == -1) return null
-        else {
-            return (purchasedId == 1
-                    || purchasedId == 4
-                    )
-        }
+
+    suspend fun isAdsFreePlanPurchased(): Boolean? {
+        val purchasedPlan = checkUserSubscribedToAnyPlan(true)
+        return if (
+            purchasedPlan == PremiumPlans.UnlockAdsFreeMonthly ||
+            purchasedPlan == PremiumPlans.UnlockAdsFreeYearly
+        ) true
+        else if (purchasedPlan == PremiumPlans.Error) null
+        else false
+    }
+
+    suspend fun getPurchasedPlan(): PremiumPlans {
+        return checkUserSubscribedToAnyPlan(true)
     }
 }
 

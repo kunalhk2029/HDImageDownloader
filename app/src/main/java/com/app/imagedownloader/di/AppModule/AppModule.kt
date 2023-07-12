@@ -3,7 +3,9 @@ package com.app.imagedownloader.di.Hilt.GlideModule
 import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.work.WorkManager
 import com.app.imagedownloader.Utils.Constants.Constants
+import com.app.imagedownloader.Utils.PremiumFeaturesService
 import com.app.imagedownloader.business.data.SharedPreferencesRepository.SharedPrefRepository
 import com.app.imagedownloader.business.data.SharedPreferencesRepository.SharedPreferencesRepositoryImpl
 import com.app.imagedownloader.framework.AdsManager.AdsManager
@@ -26,6 +28,12 @@ object AppModule {
         return context
     }
 
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+        val workManager = WorkManager.getInstance(context)
+        return workManager
+    }
 
     @Provides
     @Singleton
@@ -57,8 +65,9 @@ object AppModule {
     @Singleton
     fun provideGeneralAdsManager(
         adsManager: AdsManager, sharedPrefRepository: SharedPrefRepository,
+        premiumFeaturesService: PremiumFeaturesService,
         @ApplicationContext context: Context
     ): GeneralAdsManager {
-        return GeneralAdsManager(adsManager, context, sharedPrefRepository)
+        return GeneralAdsManager(adsManager, context, sharedPrefRepository, premiumFeaturesService)
     }
 }
