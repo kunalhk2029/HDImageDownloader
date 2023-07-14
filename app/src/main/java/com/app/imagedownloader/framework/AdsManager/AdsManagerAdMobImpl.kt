@@ -52,7 +52,7 @@ class AdsManagerAdMobImpl(
         ad.let {
             withContext(Main) {
                 if (it != null) {
-                    nativeAdView.visibility = View.VISIBLE
+                    nativeAdView.visibility = VISIBLE
                     inflateNativeHomeAd(it, nativeAdView)
                 }
             }

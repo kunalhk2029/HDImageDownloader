@@ -228,7 +228,6 @@ class GeneralAdsManager(
                 view.visibility = View.GONE
                 return@let
             }
-            view.visibility = View.VISIBLE
             adsManager.loadAdmobHomeScreenAd(view)
         } ?: kotlin.run {
             view.visibility = View.GONE

@@ -1,4 +1,4 @@
-package com.app.instastorytale.business.data.network.Volley.JsonObjConversion
+package com.app.imagedownloader.business.data.network.Volley.JsonObjConversion
 
 import android.graphics.Color
 import com.app.imagedownloader.business.data.network.dto.PinterestMediaInfo

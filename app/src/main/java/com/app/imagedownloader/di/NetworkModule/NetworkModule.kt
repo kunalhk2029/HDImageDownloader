@@ -6,8 +6,8 @@ import com.android.volley.toolbox.Volley
 import com.app.imagedownloader.business.data.network.abstraction.PhotosApiService
 import com.app.imagedownloader.business.data.network.implementation.PhotosApiServiceImpl
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
-import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
-import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionServiceImpl
+import com.app.imagedownloader.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
+import com.app.imagedownloader.business.data.network.Volley.JsonObjConversion.JsonObjConversionServiceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

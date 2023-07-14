@@ -1,4 +1,4 @@
-package com.app.instastorytale.business.data.network.Volley.JsonObjConversion
+package com.app.imagedownloader.business.data.network.Volley.JsonObjConversion
 
 import com.app.imagedownloader.business.data.network.dto.PinterestMediaInfo
 import com.app.imagedownloader.business.data.network.dto.UnsplashPhotoInfo

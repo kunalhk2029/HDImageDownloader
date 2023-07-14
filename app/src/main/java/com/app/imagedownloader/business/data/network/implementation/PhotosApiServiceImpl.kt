@@ -2,6 +2,7 @@ package com.app.imagedownloader.business.data.network.implementation
 
 import com.android.volley.RequestQueue
 import com.app.imagedownloader.business.data.network.ApiResponses.InstagramApiResult.ApiResult
+import com.app.imagedownloader.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
 import com.app.imagedownloader.business.data.network.Volley.VolleyNetworkHandler.NetworkRequestHandler
 import com.app.imagedownloader.business.data.network.abstraction.PhotosApiService
 import com.app.imagedownloader.business.data.network.dto.AllApiData
@@ -11,7 +12,6 @@ import com.app.imagedownloader.business.data.network.dto.UnsplashPhotoInfo
 import com.app.imagedownloader.business.domain.Filters.OrientationFilter
 import com.app.imagedownloader.business.domain.model.PexelsPhotoInfo
 import com.app.imagedownloader.framework.Utils.Logger
-import com.app.instastorytale.business.data.network.Volley.JsonObjConversion.JsonObjConversionService
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -181,7 +181,6 @@ constructor(
 //                pinterestMediaInfo = it
 //            }
 //        }
-            Logger.log("848945984984 unsplashPhotoInfo = : " + unsplashPhotoInfo)
             Logger.log("848945984984 allApiunFailed = : " + allApiFailed)
             Logger.log("848945984984 allApiReachedTheirMaximumPages = : " + allApiReachedTheirMaximumPages)
 
