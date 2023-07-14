@@ -230,6 +230,60 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             }
         }
 
+
+        initFilterDialpgColorChip(filterDialog)
+        filterDialog.findViewById<Button>(R.id.clear_filter).setOnClickListener {
+            searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(
+                SortByFilter.Relevance))
+            searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
+                OrientationFilter.All))
+            searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(
+                listOf()))
+            searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(
+                listOf()))
+
+            filterDialog.dismiss()
+            vibrateExtension.vibrate()
+            searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.FilterPhotos)
+        }
+
+        filterDialog.findViewById<Button>(R.id.cancel_filter).setOnClickListener {
+            previousSortFilter?.let {
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(
+                    it))
+            }
+
+            previousOrientationFilter?.let {
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
+                    it))
+            }
+            previousTagsFilter?.let {
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(
+                    it))
+            }
+
+            previousColorsFilter?.let {
+                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(
+                    it))
+            }
+            filterDialog.dismiss()
+            vibrateExtension.vibrate()
+        }
+
+        filterDialog.findViewById<Button>(R.id.apply_filter).setOnClickListener {
+            filterDialog.dismiss()
+            vibrateExtension.vibrate()
+            if (newOrientationFilter != null) {
+                searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
+                    newOrientationFilter!!))
+            }
+            searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.FilterPhotos)
+        }
+    }
+
+    private fun initFilterDialpgColorChip(
+        filterDialog: MaterialDialog,
+    ) {
         lifecycleScope.launch {
             delay(500L)
             val progressbar = filterDialog.findViewById<ProgressBar>(R.id.progressbar)
@@ -268,39 +322,6 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             filterColorChipGroup.visibility = View.VISIBLE
             progressbar.visibility = View.GONE
             handleFilterDialogColorChipGroupClick(filterColorChipGroup)
-        }
-
-        filterDialog.findViewById<Button>(R.id.cancel_filter).setOnClickListener {
-            previousSortFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(
-                    it))
-            }
-
-            previousOrientationFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
-                    it))
-            }
-            previousTagsFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateTagsFilter(
-                    it))
-            }
-
-            previousColorsFilter?.let {
-                searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateColorsFilter(
-                    it))
-            }
-            filterDialog.dismiss()
-            vibrateExtension.vibrate()
-        }
-
-        filterDialog.findViewById<Button>(R.id.apply_filter).setOnClickListener {
-            filterDialog.dismiss()
-            vibrateExtension.vibrate()
-            if (newOrientationFilter != null) {
-                searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.updateOrientationFilter(
-                    newOrientationFilter!!))
-            }
-            searchResultPhotosViewModel.onEvent(searchResultPhotosPreviewStateEvents = SearchResultPhotosPreviewStateEvents.FilterPhotos)
         }
     }
 
@@ -557,6 +578,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             }
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         binding?.recyclerView?.adapter = null
@@ -586,7 +608,8 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             putSerializable("onlinePreviewModel", item)
             putInt("colorCode", item.colorCode)
         }
-        ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)?.overrideColor(item.colorCode)
+        ContextCompat.getDrawable(requireContext(), R.drawable.bottom_round_corner)
+            ?.overrideColor(item.colorCode)
         findNavController().navigate(
             R.id.action_searchResultPhotosPreview_to_imageDetailsBottomSheet,
             bundle

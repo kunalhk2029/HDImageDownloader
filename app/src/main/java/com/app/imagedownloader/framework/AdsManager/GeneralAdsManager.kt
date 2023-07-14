@@ -1,7 +1,6 @@
 package com.app.imagedownloader.framework.AdsManager
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.CountDownTimer
 import android.view.View
 import android.widget.ImageView
@@ -37,6 +36,11 @@ class GeneralAdsManager(
     private val premiumFeaturesService: PremiumFeaturesService,
 ) {
 
+
+    init {
+        adsManager.initAdsSdk()
+    }
+
     companion object {
         var bannerAdVisibilityHidden = false
         var adsPremiumPlanPurchased: Boolean? = null
@@ -47,7 +51,7 @@ class GeneralAdsManager(
     var bannerAdPosition = 0
     var mediator: TabLayoutMediator? = null
 
-    private suspend fun isAdsFreePlanPurchased(): Boolean? {
+    suspend fun isAdsFreePlanPurchased(): Boolean? {
         if (adsPremiumPlanPurchased != null) return adsPremiumPlanPurchased
         adsPremiumPlanPurchased = premiumFeaturesService.isAdsFreePlanPurchased()
         return adsPremiumPlanPurchased
@@ -186,7 +190,7 @@ class GeneralAdsManager(
     }
 
     suspend fun showNativeAdapterItemAd(
-        view: NativeAdView, root: View,
+        root: View,
     ): Boolean {
 
         if (sharedPrefRepository.get_DisableAdsAndPromo()) {
@@ -195,15 +199,16 @@ class GeneralAdsManager(
         if (adsPremiumPlanPurchased == null) {
             isAdsFreePlanPurchased()
         }
+        val adView = root.findViewById(R.id.native_ad_view) as NativeAdView
         adsPremiumPlanPurchased?.let {
             if (it) {
-                view.visibility = View.GONE
+                adView.visibility = View.GONE
                 return@let
             }
-            view.visibility = View.VISIBLE
-            adsManager.loadAdmobAdapterItemAd(view, itemRootView = root)
+            adView.visibility = View.VISIBLE
+            adsManager.loadAdmobAdapterItemAd(adView, itemRootView = root)
         } ?: kotlin.run {
-            view.visibility = View.GONE
+            adView.visibility = View.GONE
         }
         return adsPremiumPlanPurchased ?: true
     }
@@ -357,9 +362,9 @@ class GeneralAdsManager(
         if (activityPausedByInterstitialAd) return
 
         if (showInIntervals) {
-            val prevValue=intervalCounter
+            val prevValue = intervalCounter
             intervalCounter++
-            if (prevValue%3!=0) {
+            if (prevValue % 3 != 0) {
                 afterInterstitialShown?.invoke()
                 execute(executeFun)
                 return
@@ -409,7 +414,8 @@ class GeneralAdsManager(
         activity: MainActivity,
         id: Int,
         showToolbar: Boolean = true,
-        instantlyshowNativeInterstitialAdProgressBar: Boolean) {
+        instantlyshowNativeInterstitialAdProgressBar: Boolean,
+    ) {
         activity.binding?.let {
             val job = Job()
             showNativeAd(

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pixel Perfect Saver</string>
+    <string name="app_name">Pixel Perfect Images</string>
     <string name="criticalupdate">Critical Update</string>
     <string name="mandatoryupdatewarning">\"Mandatory update is required to continue using the app.This update contains bug fixes to the core functionalities of the app. \"</string>
     <string name="playbackerror">Playback Error…</string>
@@ -66,6 +66,7 @@
     <string name="download_completed">Download Completed…</string>
     <string name="view">View</string>
     <string name="Cancel">Cancel</string>
+    <string name="clear_filter">Clear Filter</string>
 
     <string name="premium_features">Premium Features</string>
     <string name="premium">Premium</string>

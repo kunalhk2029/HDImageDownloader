@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -25,7 +26,7 @@ import kotlinx.coroutines.launch
 class FavPhotosPreviewAdapter(
     private val interaction: Interaction? = null,
     private val glideManager: GlideManager,
-    private val generalAdsManager: GeneralAdsManager
+    private val generalAdsManager: GeneralAdsManager,
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -57,8 +58,7 @@ class FavPhotosPreviewAdapter(
                 parent,
                 false
             ),
-            interaction, glideManager
-        ,generalAdsManager)
+            interaction, glideManager, generalAdsManager)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -82,40 +82,27 @@ class FavPhotosPreviewAdapter(
         itemView: View,
         private val interaction: Interaction?,
         private val glideManager: GlideManager,
-        private val generalAdsManager: GeneralAdsManager
+        private val generalAdsManager: GeneralAdsManager,
     ) : RecyclerView.ViewHolder(itemView) {
 
         val preview = itemView.findViewById<ImageView>(R.id.mediaPreview)
         val description = itemView.findViewById<TextView>(R.id.descriptionHolder)
-        val adspaceholder = itemView.findViewById<TextView>(R.id.adspaceholder)
         val descriptionCard = itemView.findViewById<CardView>(R.id.DescriptionCard)
-        val adsFreeCard = itemView.findViewById<CardView>(R.id.adsFreeCard)
+        val adView = itemView.findViewById<ConstraintLayout>(R.id.adView)
         val shimmer_layout = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer_layout)
-        val adView =itemView.findViewById(R.id.native_ad_view) as NativeAdView
-        val adViewCta =itemView.findViewById(R.id.ctaCard) as CardView
 
         fun bind(item: FavPhotos) = with(itemView) {
-            adView.visibility=View.GONE
-            adViewCta.visibility=View.GONE
-            adspaceholder.visibility=View.GONE
-
-            if (item.previewUrl=="previewUrl"){
-                adspaceholder.visibility=View.VISIBLE
-                descriptionCard.visibility=View.GONE
-                preview.visibility=View.GONE
+            adView.visibility = View.GONE
+            if (item.previewUrl == "previewUrl") {
+                descriptionCard.visibility = View.GONE
+                preview.visibility = View.GONE
                 CoroutineScope(Dispatchers.Main).launch {
-                    generalAdsManager.showNativeAdapterItemAd(adView,itemView).let {
-                        if (it) adsFreeCard.visibility=View.GONE
-                        else adsFreeCard.visibility=View.VISIBLE
-                    }
+                    generalAdsManager.showNativeAdapterItemAd(itemView)
                 }
                 return@with
             }
-
-
-            adsFreeCard.visibility=View.GONE
-            descriptionCard.visibility=View.VISIBLE
-            preview.visibility=View.VISIBLE
+            descriptionCard.visibility = View.VISIBLE
+            preview.visibility = View.VISIBLE
             shimmer_layout.visibility = View.VISIBLE
             glideManager.setImageFromUrlWithPlaceHolder(
                 preview, item.previewUrl, glideSuccessUnit = {
@@ -143,7 +130,6 @@ class FavPhotosPreviewAdapter(
             itemView.setOnClickListener {
                 interaction?.onItemSelected(bindingAdapterPosition, item)
             }
-
         }
 
         fun isDark(@ColorInt color: Int): Boolean {

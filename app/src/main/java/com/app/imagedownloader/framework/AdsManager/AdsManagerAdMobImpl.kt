@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.app.imagedownloader.R
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
@@ -97,7 +98,7 @@ class AdsManagerAdMobImpl(
                     it
                 }
             } else {
-                val ad = if (forceToShowPreviousAdOnly) nativeFullAd else getFullAd()
+                val ad = if (forceToShowPreviousAdOnly) nativeFullAd?:getFullAd() else getFullAd()
                 ad.let {
                     withContext(Main) {
                         if (it != null) {
@@ -122,9 +123,16 @@ class AdsManagerAdMobImpl(
                         MainActivity.premiumLiveData.send(2)
                     }
                 }
+                val adView = itemRootView.findViewById<ConstraintLayout>(R.id.adView)
+                val adsFreeCard = itemRootView.findViewById<CardView>(R.id.adsFreeCard)
+                adView.visibility = VISIBLE
+                adsFreeCard.visibility = VISIBLE
                 if (it != null) {
                     nativeAdView.visibility = VISIBLE
                     inflateNativeAdapterItemAd(it, nativeAdView, itemRootView)
+                }else{
+                    val adspaceholder = itemRootView.findViewById<TextView>(R.id.adspaceholder)
+                    adspaceholder.visibility = VISIBLE
                 }
             }
             it
@@ -139,13 +147,14 @@ class AdsManagerAdMobImpl(
         val callToActionView = itemRootView.findViewById<View>(R.id.ctabttextview) as TextView
         val callToActionViewCard = itemRootView.findViewById<View>(R.id.ctaCard) as CardView
         val adSpaceholder = itemRootView.findViewById<TextView>(R.id.adspaceholder)
-        adSpaceholder.visibility=View.GONE
-        inflateCustomNativeAd(nativeAd,nativeView,null,callToActionView,callToActionViewCard)
+        adSpaceholder.visibility = View.GONE
+        nativeView.visibility = VISIBLE
+        inflateCustomNativeAd(nativeAd, nativeView, null, callToActionView, callToActionViewCard)
     }
 
     private fun inflateNativeHomeAd(nativeAd: NativeAd, nativeView: NativeAdView) {
         val callToActionView = nativeView.findViewById<View>(R.id.cta) as Button
-        inflateCustomNativeAd(nativeAd, nativeView, callToActionView, null,null)
+        inflateCustomNativeAd(nativeAd, nativeView, callToActionView, null, null)
     }
 
     private fun inflateCustomNativeAd(
@@ -153,7 +162,7 @@ class AdsManagerAdMobImpl(
         nativeView: NativeAdView,
         callToActionView: Button?,
         adapterItemCalltoActionView: TextView?,
-        callToActionViewCard:CardView?
+        callToActionViewCard: CardView?,
     ) {
         val headline = nativeAd.headline
         val body = nativeAd.body
@@ -298,6 +307,7 @@ class AdsManagerAdMobImpl(
                     override fun onAdFailedToLoad(p0: LoadAdError) {
                         super.onAdFailedToLoad(p0)
                         ad = null
+                        Logger.log("578587857 = "+p0)
                         job.complete()
                     }
                 }).build()

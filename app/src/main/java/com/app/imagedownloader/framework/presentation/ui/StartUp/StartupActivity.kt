@@ -1,9 +1,11 @@
 package com.app.imagedownloader.framework.presentation.ui.StartUp
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.app.imagedownloader.R
 import com.app.imagedownloader.business.data.SharedPreferencesRepository.SharedPrefRepository
 import com.app.imagedownloader.framework.Glide.GlideManager
@@ -41,6 +43,15 @@ class StartupActivity : AppCompatActivity() {
                 finish()
             } else {
                 CoroutineScope(Main).launch {
+                    sharedPrefRepository.getTheme().run {
+                        if (this == 0) {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        } else if (this == 1) {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        } else {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                        }
+                    }
                     startupimg?.let {
                         glideManager.setImageFromUrl(it, R.drawable.artboard_1,glideSuccessUnit = {
                             CoroutineScope(Main).launch {

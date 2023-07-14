@@ -80,7 +80,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
     companion object {
         var premiumLiveData: Channel<Int> = Channel()
         var adsInfoLoadingStatus: MutableSharedFlow<Boolean> = MutableSharedFlow()
-        var showInterstitialAd: Channel<List<(() -> Job)>?> = Channel()
         var showFullScreenAds: Channel<List<() -> Job>> = Channel()
     }
 
@@ -119,8 +118,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         handleCustomBottomNavClick()
 
         handleStoragePermission()
-
-        handleAdsOnDownloadCompletion()
 
         handleDialogAds()
 
@@ -163,19 +160,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
     private fun handleStoragePermission() {
         if (!isreadallowed()) {
             requestreadperm()
-        }
-    }
-
-    private fun handleAdsOnDownloadCompletion() {
-        lifecycleScope.launch {
-            showInterstitialAd.receiveAsFlow().collectLatest { job ->
-                generalAdsManager.handleNativeFull(
-                    { job?.first()?.invoke() },
-                    this@MainActivity, 0, false, afterInterstitialShown = {
-                        job?.last()?.invoke()
-                    }
-                )
-            }
         }
     }
 

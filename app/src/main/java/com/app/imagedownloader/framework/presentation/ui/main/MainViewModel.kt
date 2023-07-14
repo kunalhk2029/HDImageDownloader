@@ -67,6 +67,6 @@ class MainViewModel
 
     override fun onCleared() {
         super.onCleared()
-        enqueueGlideCacheClearWorker()
+//        enqueueGlideCacheClearWorker()
     }
 }

@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -87,32 +88,22 @@ class SearchResultPhotosPreviewAdapter(
 
         val preview = itemView.findViewById<ImageView>(R.id.mediaPreview)
         val description = itemView.findViewById<TextView>(R.id.descriptionHolder)
-        val adspaceholder = itemView.findViewById<TextView>(R.id.adspaceholder)
         val descriptionCard = itemView.findViewById<CardView>(R.id.DescriptionCard)
-        val adsFreeCard = itemView.findViewById<CardView>(R.id.adsFreeCard)
         val shimmer_layout = itemView.findViewById<ShimmerFrameLayout>(R.id.shimmer_layout)
-        val adView =itemView.findViewById(R.id.native_ad_view) as NativeAdView
-        val adViewCta =itemView.findViewById(R.id.ctaCard) as CardView
         val markFavIcon =itemView.findViewById(R.id.mark_fav_icon) as ImageView
         val unmarkFavIcon =itemView.findViewById(R.id.unmark_fav_icon) as ImageView
+        val adView = itemView.findViewById<ConstraintLayout>(R.id.adView)
 
         fun bind(item: Photo) = with(itemView) {
             adView.visibility=View.GONE
-            adViewCta.visibility=View.GONE
-            adspaceholder.visibility=View.GONE
             markFavIcon.visibility=View.GONE
             unmarkFavIcon.visibility=View.GONE
 
             if (item.previewUrl=="previewUrl"){
-                adspaceholder.visibility=View.VISIBLE
                 descriptionCard.visibility=View.GONE
-                adsFreeCard.visibility=View.VISIBLE
                 preview.visibility=View.GONE
                 CoroutineScope(Main).launch {
-                    generalAdsManager.showNativeAdapterItemAd(adView,itemView).let {
-                        adspaceholder.visibility=View.GONE
-                        if (it) adsFreeCard.visibility=View.GONE
-                    }
+                    generalAdsManager.showNativeAdapterItemAd(itemView)
                 }
                 return@with
             }
@@ -124,7 +115,6 @@ class SearchResultPhotosPreviewAdapter(
                 unmarkFavIcon.visibility=View.GONE
                 markFavIcon.visibility=View.VISIBLE
             }
-            adsFreeCard.visibility=View.GONE
             descriptionCard.visibility=View.VISIBLE
             preview.visibility=View.VISIBLE
             shimmer_layout.visibility = View.VISIBLE

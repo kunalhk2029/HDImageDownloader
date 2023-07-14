@@ -50,6 +50,7 @@
                     android:id="@+id/sortBySpinner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     app:layout_constraintBottom_toBottomOf="@id/sortby"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
@@ -85,6 +86,7 @@
                     android:id="@+id/orientationSpinner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     app:layout_constraintBottom_toBottomOf="@id/orientation"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline1"
@@ -120,6 +122,7 @@
                     android:id="@+id/tagSpinner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
                     app:layout_constraintBottom_toBottomOf="@id/tag"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline2"
@@ -200,7 +203,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.9" />
+        app:layout_constraintGuide_percent="0.82" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="2dp"
@@ -212,11 +215,11 @@
 
     <Button
         android:id="@+id/apply_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
         android:backgroundTint="#202124"
         android:text="@string/filter_dilaog_apply"
+        app:layout_constraintStart_toEndOf="@id/cancel_filter"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -226,17 +229,29 @@
 
     <Button
         android:id="@+id/cancel_filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="15dp"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
         android:backgroundTint="#202124"
         android:text="@string/Cancel"
         android:textColor="@color/white"
         android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/apply_filter"
         android:layout_marginEnd="15dp"
         app:layout_constraintTop_toBottomOf="@id/spacer"
         />
-
+    <Button
+        android:id="@+id/clear_filter"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:backgroundTint="#202124"
+        android:text="@string/clear_filter"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="15dp"
+        app:layout_constraintTop_toBottomOf="@id/cancel_filter"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

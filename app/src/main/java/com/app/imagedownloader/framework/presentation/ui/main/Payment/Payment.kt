@@ -19,6 +19,7 @@ import com.app.imagedownloader.R
 import com.app.imagedownloader.Utils.PremiumFeaturesService
 import com.app.imagedownloader.Utils.PremiumFeaturesService.Companion.productsDetailsList
 import com.app.imagedownloader.databinding.FragmentOnBoarding8Binding
+import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.Adapters.OnBoardingStatePagerAdapter
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity.Companion.adsInfoLoadingStatus
@@ -57,6 +58,9 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
 
     @Inject
     lateinit var premiumFeaturesService: PremiumFeaturesService
+
+    @Inject
+    lateinit var generalAdsManager: GeneralAdsManager
 
     companion object {
         var initFailed = false
@@ -101,6 +105,11 @@ class Payment : Fragment(R.layout.fragment_on_boarding8) {
         if (initFailed) {
             productsDetailsList.value = HashMap()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        generalAdsManager.activityPausedByInterstitialAd=false
     }
 
     @SuppressLint("SetTextI18n")
