@@ -204,10 +204,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                 ?: listOf())
         tagSpinner.adapter = tagSpinneradapter
 
-
         addTagFilterChips(tagChipGroup, false, null)
-
-        handleFilterDialogTagChipGroupClick(tagChipGroup)
 
         tagSpinner?.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -230,8 +227,10 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             }
         }
 
+        handleFilterDialogTagChipGroupClick(tagChipGroup)
 
         initFilterDialpgColorChip(filterDialog)
+
         filterDialog.findViewById<Button>(R.id.clear_filter).setOnClickListener {
             searchResultPhotosViewModel.onEvent(SearchResultPhotosPreviewStateEvents.updateSortByFilter(
                 SortByFilter.Relevance))
@@ -407,8 +406,8 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
             it.searchedKeyword?.let {
                 uiCommunicationListener.setToolbarTitleText(it)
             }
-            val isTagOrColorFilterApplied = it.colorsFilter.isNotEmpty() ||
-                    it.tagFilter.isNotEmpty()
+            val isTagOrColorFilterApplied = it.colorsFilter.isNotEmpty()
+                    || it.tagFilter.isNotEmpty() || it.sortFilter != SortByFilter.Relevance
 
             if (isTagOrColorFilterApplied) binding?.clearFilterMessage?.visibility = View.VISIBLE
             else binding?.clearFilterMessage?.visibility = View.GONE
@@ -513,8 +512,9 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                             allApiReachedTheirMaximumPage = false
                         }
 
-                        val IsTagOrColorFilterApplied = it.colorsFilter.isNotEmpty() ||
-                                it.tagFilter.isNotEmpty()
+                        val IsTagOrColorFilterApplied = it.colorsFilter.isNotEmpty()
+                                || it.tagFilter.isNotEmpty()
+                                || it.sortFilter != SortByFilter.Relevance
 
                         val loadcondition =
                             (!searchResultPhotosViewModel.PAGINATION_EXECUTING &&
@@ -522,7 +522,7 @@ class searchResultPhotosPreview : Fragment(R.layout.fragment_search_result_photo
                                     && !allApiReachedTheirMaximumPage) && !IsTagOrColorFilterApplied
 
                         if (loadcondition) {
-                            Logger.log("848945984984 paginating = : " + loadcondition)
+                            Logger.log("848945984984 paginating : ")
                             searchResultPhotosViewModel.PAGINATION_EXECUTING = true
                             showPaginationProgressbar()
                             searchResultPhotosViewModel.onEvent(
