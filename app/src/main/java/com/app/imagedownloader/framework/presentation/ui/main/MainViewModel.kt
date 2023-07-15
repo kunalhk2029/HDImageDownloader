@@ -64,9 +64,4 @@ class MainViewModel
             .build()
         workManager.enqueue(req)
     }
-
-    override fun onCleared() {
-        super.onCleared()
-//        enqueueGlideCacheClearWorker()
-    }
 }

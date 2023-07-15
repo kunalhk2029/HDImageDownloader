@@ -579,8 +579,7 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
                 isAppearanceLightNavigationBars
             windowInsetsControllerCompat.isAppearanceLightStatusBars =
                 isAppearanceLightNavigationBars
-        } catch (_: Exception) {
-        }
+        } catch (_: Exception) { }
     }
 
     @SuppressLint("RestrictedApi")
