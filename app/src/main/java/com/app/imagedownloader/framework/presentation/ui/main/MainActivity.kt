@@ -505,7 +505,8 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
 
 
                 val disableBannerAd =
-                    destination.id != R.id.downloadedMedia
+                    destination.id != R.id.downloadedMedia&&
+                    destination.id != R.id.deleteDialog
 
                 if (disableBannerAd) {
                     hideBannerAd()
@@ -598,7 +599,6 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
     private fun handlePopBackstack(id: Int): Boolean {
         val f = navController.backQueue.size
         if (f >= 3 || navController.currentDestination?.id == id) {
-            Logger.log("Debug 5665656t = t = true")
             return true
         }
         return false
