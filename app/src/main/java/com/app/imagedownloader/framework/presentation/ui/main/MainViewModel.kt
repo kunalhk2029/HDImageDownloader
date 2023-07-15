@@ -47,14 +47,6 @@ class MainViewModel
         }
     }
 
-    fun set_FCM_COMMON_SUBSCRIBED(boolean: Boolean) {
-        sharedPrefRepository.set_FCM_COMMON_SUBSCRIBED(boolean)
-    }
-
-    fun get_FCM_COMMON_SUBSCRIBED(): Boolean {
-        return sharedPrefRepository.get_FCM_COMMON_SUBSCRIBED()
-    }
-
     fun getAppTheme(): Int {
         return sharedPrefRepository.getTheme()
     }
