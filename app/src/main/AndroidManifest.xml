@@ -50,6 +50,10 @@
             android:exported="false"
             android:launchMode="singleTask" />
 
+        <activity
+            android:name="com.app.imagedownloader.framework.presentation.ui.AppUpdateInfo.UpdateAvailableActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.app.imagedownloader.fileprovider"

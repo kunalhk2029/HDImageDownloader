@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Pixel Perfect Images</string>
     <string name="criticalupdate">Critical Update</string>
-    <string name="mandatoryupdatewarning">\"Mandatory update is required to continue using the app.This update contains bug fixes to the core functionalities of the app. \"</string>
+    <string name="mandatoryupdatewarning">Mandatory update is required to continue using the app.This update contains bug fixes to the core functionalities of the app.</string>
     <string name="playbackerror">Playback Error…</string>
     <string name="delete">Delete</string>
     <string name="not_nowrt">Not Now 😔</string>
