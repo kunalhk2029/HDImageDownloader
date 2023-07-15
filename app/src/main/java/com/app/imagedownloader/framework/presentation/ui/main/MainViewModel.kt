@@ -58,10 +58,4 @@ class MainViewModel
     fun getAppTheme(): Int {
         return sharedPrefRepository.getTheme()
     }
-
-    private fun enqueueGlideCacheClearWorker() {
-        val req = OneTimeWorkRequestBuilder<DeleteGlideCacheWorker>()
-            .build()
-        workManager.enqueue(req)
-    }
 }
