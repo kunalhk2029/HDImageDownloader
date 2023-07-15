@@ -2,6 +2,8 @@ package com.app.imagedownloader.framework.presentation.ui.main.settings
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -120,7 +122,11 @@ class  Settings : Fragment(R.layout.fragment_settings) {
         }
 
         binding?.ratingsettings?.setOnClickListener {
-            uiCommunicationListener.askForRating(true)
+            val intent = Intent().apply {
+                action = Intent.ACTION_VIEW
+                data= Uri.parse("https://play.google.com/store/apps/details?id=com.app.imagedownloader")
+            }
+            startActivity(intent)
         }
 
         binding?.themesettings?.setOnClickListener {
