@@ -146,11 +146,9 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
             showFullScreenAds.receiveAsFlow().collectLatest { jobList ->
                 generalAdsManager.handleNativeFull(
                     { jobList.first().invoke() },
-                    this@MainActivity, 0, true, afterInterstitialShown = {
+                    this@MainActivity, 0, false, afterInterstitialShown = {
                         if ((jobList.size) > 1) {
                             jobList.last().invoke()
-                        } else {
-                            Logger.log("4894894 showFullScreenAds = " + jobList.size)
                         }
                     },
                     instantlyshowNativeInterstitialAdProgressBar = false

@@ -124,6 +124,8 @@
     <string name="alternate_delete_option">You can long press on photos to delete them</string>
     <string name="enterheight">Enter Height Of Image</string>
     <string name="heighterror">Value must be between 10 and %1$s </string>
+    <string name="downloaded_directory">Download Directory</string>
+    <string name="download_directroy_info">Pictures/Pixel Perfect Images</string>
 
 
 </resources>

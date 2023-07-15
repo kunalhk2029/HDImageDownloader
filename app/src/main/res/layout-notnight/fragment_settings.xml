@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0.8dp"
                 android:background="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/hapticsettings">
+                app:layout_constraintTop_toBottomOf="@id/imagelocation">
 
                 <TextView
                     android:id="@+id/h9"
@@ -265,6 +265,44 @@
                     app:layout_constraintTop_toTopOf="@id/b10" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/imagelocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0.8dp"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/hapticsettings">
+
+                <TextView
+                    android:id="@+id/h5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:text="@string/downloaded_directory"
+                    android:textColor="@color/pin_red"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="25dp"
+                    android:background="@drawable/settingstouch"
+                    android:drawablePadding="10dp"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:text="@string/download_directroy_info"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:id="@+id/b5"
+                    app:drawableStartCompat="@drawable/ic_baseline_sd_storage_24"
+                    app:drawableTint="@color/pin_red"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/h5" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
