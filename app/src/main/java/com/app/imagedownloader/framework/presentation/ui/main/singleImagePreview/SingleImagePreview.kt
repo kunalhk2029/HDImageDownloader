@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -188,21 +187,12 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
                 lifecycleScope.launch {
                     binding?.progressBar?.visibility = View.VISIBLE
                     try {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            withContext(Dispatchers.IO) {
-                                requireContext().contentResolver.delete(
-                                    Uri.parse(offlinePhotoUri),
-                                    null,
-                                    null
-                                )
-                            }
-
-                        } else {
-                            withContext(Dispatchers.IO) {
-                                val file =
-                                    File(Uri.parse(offlinePhotoUri).path!!)
-                                file.delete()
-                            }
+                        withContext(Dispatchers.IO) {
+                            requireContext().contentResolver.delete(
+                                Uri.parse(offlinePhotoUri),
+                                null,
+                                null
+                            )
                         }
                         Toast.makeText(
                             requireContext(),
@@ -210,7 +200,7 @@ class SingleImagePreview : Fragment(R.layout.fragment_single_image_preview) {
                             Toast.LENGTH_SHORT
                         ).show()
                         DownloadsPreview.photoDeletionListener.send(true)
-                        requireActivity().onBackPressed()
+                        requireActivity().onBackPressedDispatcher.onBackPressed()
                     } catch (_: Exception) {
                     }
                 }

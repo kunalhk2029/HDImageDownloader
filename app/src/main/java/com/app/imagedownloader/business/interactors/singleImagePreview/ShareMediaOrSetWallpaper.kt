@@ -4,6 +4,7 @@ import android.app.WallpaperManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.TextView
 import androidx.core.content.FileProvider
@@ -27,6 +28,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
+
 
 @Singleton
 class ShareMediaOrSetWallpaper
@@ -102,12 +104,21 @@ class ShareMediaOrSetWallpaper
                         if (setWallpaper) {
                             val manager =
                                 context.getSystemService(Context.WALLPAPER_SERVICE) as WallpaperManager
-                            manager.getCropAndSetWallpaperIntent(
-                                getFileProviderUriFromFileUri(
-                                    File(fileForSharing?.path)
+                            try {
+                                manager.getCropAndSetWallpaperIntent(
+                                    getFileProviderUriFromFileUri(
+                                        File(fileForSharing?.path)
+                                    )
+                                ).let {
+                                    contextt.startActivity(it)
+                                }
+                            } catch (e: Exception) {
+                                val bitmap = BitmapFactory.decodeStream(
+                                    contentResolver.openInputStream(getFileProviderUriFromFileUri(
+                                        File(fileForSharing?.path)
+                                    ))
                                 )
-                            ).let {
-                                contextt.startActivity(it)
+                                manager.setBitmap(bitmap)
                             }
                             fileForSharing!!.path?.let { it1 -> enqueueWorker(it1) }
                         } else {
@@ -137,7 +148,6 @@ class ShareMediaOrSetWallpaper
     private suspend fun shareFromStreamingUrl(
         g: Call<ResponseBody>?,
         name: String,
-        multiplemode: Boolean = false,
         ipss: InputStream? = null,
     ) {
         g?.enqueue(object : retrofit2.Callback<ResponseBody> {
@@ -147,7 +157,7 @@ class ShareMediaOrSetWallpaper
             ) {
                 if (response.isSuccessful) {
                     val ips = response.body()?.byteStream()
-                    saveInStorageForSharing(name, ips, multiplemode)
+                    saveInStorageForSharing(name, ips)
                 } else {
                     sharingJob.cancel("Error")
                 }
@@ -157,7 +167,7 @@ class ShareMediaOrSetWallpaper
                 sharingJob.cancel("Error")
             }
         }) ?: kotlin.run {
-            saveInStorageForSharing(name, ipss, multiplemode)
+            saveInStorageForSharing(name, ipss)
         }
     }
 
@@ -178,7 +188,7 @@ class ShareMediaOrSetWallpaper
         )
     }
 
-    private fun saveInStorageForSharing(name: String, ips: InputStream?, multiplemode: Boolean) {
+    private fun saveInStorageForSharing(name: String, ips: InputStream?) {
         val tempfile = File(
             makeInternalFileDir(),
             name
@@ -192,10 +202,8 @@ class ShareMediaOrSetWallpaper
             if (ips != null) {
                 CoroutineScope(IO).launch {
                     storeMediaByParts(os, ips)
-                    if (!multiplemode) {
-                        fileForSharing = Uri.fromFile(tempfile)
-                        sharingJob.complete()
-                    }
+                    fileForSharing = Uri.fromFile(tempfile)
+                    sharingJob.complete()
                 }
             } else {
                 sharingJob.cancel("Error")

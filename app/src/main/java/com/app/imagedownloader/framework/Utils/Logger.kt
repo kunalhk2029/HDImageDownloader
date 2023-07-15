@@ -7,7 +7,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 object Logger {
 
     fun log(content: String) {
-//        println(content)
+        println(content)
     }
 
     fun debugToast(length: Boolean = false, context: Context, content: String) {

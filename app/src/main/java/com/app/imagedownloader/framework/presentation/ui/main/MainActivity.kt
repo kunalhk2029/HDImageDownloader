@@ -27,6 +27,7 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.app.imagedownloader.R
+import com.app.imagedownloader.Utils.PremiumFeaturesService
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.databinding.ActivityMainBinding
@@ -124,6 +125,7 @@ class MainActivity : AppCompatActivity(), UICommunicationListener {
         askForRating()
 
         checkForUpdates()
+
     }
 
     private fun checkForUpdates() {

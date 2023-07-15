@@ -258,6 +258,7 @@ class SaveMediaInScopedStorage
                         name
 
                     )
+                uri = Uri.fromFile(fileSavePath)
                 val fos =
                     FileOutputStream(fileSavePath)
 

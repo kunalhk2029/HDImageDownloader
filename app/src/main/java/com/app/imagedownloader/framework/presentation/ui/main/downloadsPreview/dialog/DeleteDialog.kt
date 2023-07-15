@@ -1,18 +1,12 @@
 package com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.dialog
 
 import android.app.Dialog
-import android.graphics.Color
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.annotation.ColorInt
-import androidx.core.graphics.ColorUtils
 import com.app.imagedownloader.business.domain.model.DownloadedMediaInfo
-import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.databinding.FragmentDeleteDialogBinding
 import com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.DownloadsPreview.Companion.photoDeletionListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -23,7 +17,6 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 
 @AndroidEntryPoint
@@ -64,30 +57,24 @@ class DeleteDialog : BottomSheetDialogFragment() {
 
     private fun handleButtonClick() {
         binding?.let {
-            val model: DownloadedMediaInfo = requireArguments().getSerializable("model") as DownloadedMediaInfo
+            val model: DownloadedMediaInfo =
+                requireArguments().getSerializable("model") as DownloadedMediaInfo
 
             it.deletePhotoCard.setOnClickListener {
                 CoroutineScope(IO).launch {
-                    withContext(Main)   {
-                        it.visibility=View.GONE
-                        binding?.progressbar?.visibility=View.VISIBLE
+                    withContext(Main) {
+                        it.visibility = View.GONE
+                        binding?.progressbar?.visibility = View.VISIBLE
                     }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        requireContext().contentResolver.delete(
-                            model.uri,
-                            null,
-                            null
-                        )
-                    } else {
-                        val file =
-                            File(model.uri.path)
-                        file.delete()
-                    }
+                    requireContext().contentResolver.delete(
+                        model.uri,
+                        null,
+                        null
+                    )
                     launch {
                         photoDeletionListener.send(true)
                     }
-                    withContext(Main){
+                    withContext(Main) {
                         requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
                 }
