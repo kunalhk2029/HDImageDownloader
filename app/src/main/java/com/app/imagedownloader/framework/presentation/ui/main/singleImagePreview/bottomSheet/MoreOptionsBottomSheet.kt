@@ -21,6 +21,7 @@ import com.app.imagedownloader.business.domain.model.PhotoSource
 import com.app.imagedownloader.business.interactors.singleImagePreview.ShareMediaOrSetWallpaper
 import com.app.imagedownloader.databinding.FragmentMoreOptionsBottomSheetBinding
 import com.app.imagedownloader.framework.dataSource.cache.PhotosDao
+import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -80,8 +81,8 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
             val model: Photo = requireArguments().getSerializable("onlinePreviewModel") as Photo
 
             it.ShareCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.urls.hdUrl, false, requireContext())
-                requireActivity().onBackPressed()
+                shareMediaOrSetWallpaper(model.urls.hdUrl, false, requireContext(),requireActivity() as MainActivity)
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
 
             it.AboutUploaderCard.setOnClickListener {
@@ -92,11 +93,11 @@ class MoreOptionsBottomSheet : BottomSheetDialogFragment() {
                 }
                 val chooser = Intent.createChooser(intent,"Select Browser")
                 requireActivity().startActivity(chooser)
-                requireActivity().onBackPressed()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
             it.setWallpaperCard.setOnClickListener {
-                shareMediaOrSetWallpaper(model.urls!!.hdUrl, true, requireContext())
-                requireActivity().onBackPressed()
+                shareMediaOrSetWallpaper(model.urls.hdUrl, true, requireContext(),requireActivity() as MainActivity)
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
 
             it.MoreDetailsCard.setOnClickListener {

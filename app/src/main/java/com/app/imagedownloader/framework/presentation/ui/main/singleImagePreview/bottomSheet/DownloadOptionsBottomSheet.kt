@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,12 @@ import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.lifecycleScope
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.setActionButtonEnabled
+import com.afollestad.materialdialogs.input.getInputField
+import com.afollestad.materialdialogs.input.input
+import com.app.imagedownloader.R
 import com.app.imagedownloader.business.domain.model.Photo
 import com.app.imagedownloader.business.interactors.singleImagePreview.SaveMediaInScopedStorage
 import com.app.imagedownloader.databinding.FragmentDownloadOptionsBottomSheetBinding
@@ -154,7 +161,6 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
                         }
                         requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
-
                     it.hdCard.setOnClickListener {
                         saveMediaInScopedStorage(url = model.urls.hdUrl,
                             requireContext(),
@@ -195,6 +201,40 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
                         }
                         requireActivity().onBackPressedDispatcher.onBackPressed()
                     }
+                    it.customSizeCard.setOnClickListener {
+                        MaterialDialog(requireContext()).show {
+                            title(null, getString(R.string.enterheight))
+                            var height = 0
+                            input(
+                                inputType = InputType.TYPE_CLASS_NUMBER,
+                                waitForPositiveButton = false
+                            ) { materialDialog, charSequence ->
+                                val inputFeild = materialDialog.getInputField()
+                                var isValid = false
+                                try {
+                                    height = charSequence.toString().toInt()
+                                    isValid = height > 10
+                                } catch (e: Exception) {
+                                }
+                                inputFeild.error =
+                                    if (isValid) null else getString(R.string.heighterror,
+                                        model.height.toString())
+                                materialDialog.setActionButtonEnabled(WhichButton.POSITIVE, isValid)
+                            }
+                            positiveButton(null, getString(R.string.ok)) {
+                                val url = "${model.urls.fullHdUrl}&h=$height"
+                                saveMediaInScopedStorage(url = url,
+                                    requireContext(),
+                                    model.colorCode) {
+                                    lifecycleScope.launch {
+                                        SingleImagePreview.downloadCompletedPlaybackListener.send(
+                                            true)
+                                    }
+                                }
+                                requireActivity().onBackPressedDispatcher.onBackPressed()
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -203,6 +243,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
     private fun handleButtonBackgroundColor() {
         val color = requireArguments().getInt("colorCode")
         binding?.let {
+            it.customSizetext.setTextColor(color)
             it.fullhdtext.setTextColor(color)
             it.hdtext.setTextColor(color)
             it.normaltext.setTextColor(color)
@@ -211,6 +252,7 @@ class DownloadOptionsBottomSheet : BottomSheetDialogFragment() {
             it.thumbnailtext.setTextColor(color)
             val colorr = if (isDark(color))
                 Color.parseColor("#ffffff") else Color.parseColor("#121212")
+            it.customSizeCardBtView.setBackgroundColor(colorr)
             it.fullHdCardBtView.setBackgroundColor(colorr)
             it.hdCardBtView.setBackgroundColor(colorr)
             it.mediumBtView.setBackgroundColor(colorr)

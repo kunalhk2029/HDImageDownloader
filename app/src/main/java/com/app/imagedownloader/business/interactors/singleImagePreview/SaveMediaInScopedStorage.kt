@@ -261,7 +261,6 @@ class SaveMediaInScopedStorage
                 uri = Uri.fromFile(fileSavePath)
                 val fos =
                     FileOutputStream(fileSavePath)
-
                 storeMediaByParts(fos, ips)
                 MediaScannerConnection.scanFile(
                     context,

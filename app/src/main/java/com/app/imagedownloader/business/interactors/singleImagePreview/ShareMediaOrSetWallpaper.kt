@@ -15,8 +15,10 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.app.imagedownloader.R
 import com.app.imagedownloader.Utils.Constants.StorageDirectoryConstants.MEDIA_FILE_SHARING_DIRECTORY
 import com.app.imagedownloader.business.data.network.retrofit.RetrofitInstance
+import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.WorkManagers.WorkerDeleteShared
+import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import okhttp3.ResponseBody
@@ -35,17 +37,18 @@ class ShareMediaOrSetWallpaper
 @Inject constructor(
     private val contentResolver: ContentResolver,
     private val context: Context,
+    private val generalAdsManager: GeneralAdsManager
 ) {
 
     private val workManager = WorkManager.getInstance(context)
     private var sharingJob: CompletableJob = Job()
     private var fileForSharing: Uri? = null
 
-    operator fun invoke(uri: String, setWallpaper: Boolean, contextt: Context) {
-        shareAndSetWallpaper(uri, setWallpaper, contextt)
+    operator fun invoke(uri: String, setWallpaper: Boolean, contextt: Context,activity: MainActivity) {
+        shareAndSetWallpaper(uri, setWallpaper, contextt,activity)
     }
 
-    private fun shareAndSetWallpaper(uri: String, setWallpaper: Boolean, contextt: Context) {
+    private fun shareAndSetWallpaper(uri: String, setWallpaper: Boolean, contextt: Context,activity: MainActivity) {
         sharingJob.cancel()
         sharingJob = Job()
         lateinit var d: MaterialDialog
@@ -100,27 +103,35 @@ class ShareMediaOrSetWallpaper
                 }
                 if (it == null) {
                     CoroutineScope(Dispatchers.Main).launch {
-                        d.dismiss()
                         if (setWallpaper) {
-                            val manager =
-                                context.getSystemService(Context.WALLPAPER_SERVICE) as WallpaperManager
-                            try {
-                                manager.getCropAndSetWallpaperIntent(
-                                    getFileProviderUriFromFileUri(
-                                        File(fileForSharing?.path)
-                                    )
-                                ).let {
-                                    contextt.startActivity(it)
+                            generalAdsManager.handleNativeFull(
+                                { val manager =
+                                        context.getSystemService(Context.WALLPAPER_SERVICE) as WallpaperManager
+                                    try {
+                                        manager.getCropAndSetWallpaperIntent(
+                                            getFileProviderUriFromFileUri(
+                                                File(fileForSharing?.path)
+                                            )
+                                        ).let {
+                                            contextt.startActivity(it)
+                                        }
+                                    } catch (e: Exception) {
+                                        val bitmap = BitmapFactory.decodeStream(
+                                            contentResolver.openInputStream(getFileProviderUriFromFileUri(
+                                                File(fileForSharing?.path)
+                                            ))
+                                        )
+                                        manager.setBitmap(bitmap)
+                                    }
+                                    fileForSharing!!.path?.let { it1 -> enqueueWorker(it1) }
+                                },
+                                activity, 0, false,
+                                instantlyshowNativeInterstitialAdProgressBar = false,
+                                afterInterstitialShown = {
+                                    d.dismiss()
                                 }
-                            } catch (e: Exception) {
-                                val bitmap = BitmapFactory.decodeStream(
-                                    contentResolver.openInputStream(getFileProviderUriFromFileUri(
-                                        File(fileForSharing?.path)
-                                    ))
-                                )
-                                manager.setBitmap(bitmap)
-                            }
-                            fileForSharing!!.path?.let { it1 -> enqueueWorker(it1) }
+                            )
+
                         } else {
                             Intent().apply {
                                 action = Intent.ACTION_SEND

@@ -39,7 +39,7 @@ class Feedback : Fragment(R.layout.fragment_feedback) {
                     val content = binding.feedbackcontent.text.toString()
                     if (content.isNotEmpty()) {
                         sendEmailIntent()
-                            .sendIntent("pinterestvideodownloader@gmail.com", it, content, requireContext())
+                            .sendIntent("instastorytale@gmail.com", it, content, requireContext())
                     } else {
                         Toast.makeText(
                             requireContext(),
