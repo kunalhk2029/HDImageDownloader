@@ -27,9 +27,9 @@ import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainActivity
-import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.changeStatusAndNavigationBarColor
-import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.handleAdsOnBackPressed
-import com.app.imagedownloader.framework.presentation.ui.main.SystemUiVisibility.setDefaultBarColor
+import com.app.imagedownloader.framework.presentation.ui.SystemUiVisibility.changeStatusAndNavigationBarColor
+import com.app.imagedownloader.framework.presentation.ui.SystemUiVisibility.handleAdsOnBackPressed
+import com.app.imagedownloader.framework.presentation.ui.SystemUiVisibility.setDefaultBarColor
 import com.app.imagedownloader.framework.presentation.ui.main.downloadsPreview.DownloadsPreview
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers

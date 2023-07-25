@@ -1,4 +1,4 @@
-package com.app.imagedownloader.business.domain.model
+package com.app.imagedownloader.business.domain
 
 
 sealed class PhotoOrienationType(val uiValue: String) :java.io.Serializable{

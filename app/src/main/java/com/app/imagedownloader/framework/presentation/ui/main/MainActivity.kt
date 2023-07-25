@@ -23,11 +23,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
-import com.android.volley.Request
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.app.imagedownloader.R
-import com.app.imagedownloader.Utils.PremiumFeaturesService
 import com.app.imagedownloader.Utils.VibrateExtension
 import com.app.imagedownloader.business.domain.core.DataState.DataState
 import com.app.imagedownloader.databinding.ActivityMainBinding
@@ -36,7 +32,6 @@ import com.app.imagedownloader.framework.AdsManager.GeneralAdsManager.Companion.
 import com.app.imagedownloader.framework.Glide.GlideManager
 import com.app.imagedownloader.framework.InAppUpdatesManager.InAppUpdatesManager
 import com.app.imagedownloader.framework.PlayStoreRatingFlow.PlayStoreRatingFlow
-import com.app.imagedownloader.framework.Utils.Logger
 import com.app.imagedownloader.framework.presentation.ui.AppUpdateInfo.UpdateAvailableActivity
 import com.app.imagedownloader.framework.presentation.ui.UICommunicationListener
 import com.app.imagedownloader.framework.presentation.ui.main.MainViewModel.Companion.appThemeChannel
@@ -49,7 +44,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import javax.inject.Inject
 
 
